@@ -1,0 +1,24 @@
+---
+import Header from "./header.astro";
+import Footer from "./footer.astro";
+import Comments from "./comments.astro";
+import Work from "./work.astro";
+---
+<Header />
+<main>
+    <slot />
+    <div class="container">
+        <!-- hero section -->
+        <section class="hero">
+    <h1>Jason Derifaj</h1>
+    <h2>Creative Front-End <span>Developer</span></h2>
+    <p>Interactive developer blending animation and design to tell compelling stories on the web.</p>
+    </section>
+    <!-- work section -->
+    <Work />
+
+<!-- Collegues section -->
+     <Comments />
+</div>
+</main>
+<Footer />
