@@ -3,7 +3,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const tl = gsap.timeline({ defaults: { duration: 0.75, ease: "power1.out" } });
-
+export function initScrollAnimation() {
 tl.to('.line', {
   scrollTrigger: {
     trigger: ".work",
@@ -16,3 +16,4 @@ tl.to('.line', {
   width: '100%',
   stagger: 0.25
 });
+}

@@ -1,3 +1,6 @@
+---
+
+---
 <!doctype html>
 <html lang="en">
 	<head>
@@ -20,4 +23,9 @@
 		height: 100%;
 	}
 </style>
-<script type="module" src="/src/assets/js/home.js"></script>
+<script>
+import {initScrollAnimation} from '../assets/js/home'
+      window.addEventListener("DOMContentLoaded", () => {
+        initScrollAnimation();
+      });
+</script>
