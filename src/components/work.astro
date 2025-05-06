@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
 --- 
 
 <section class="work">
@@ -7,7 +9,7 @@
     <div class="item">
         <a href="https://njready.com/">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-jerseyready.jpg" /></div>
+            <div class="photo"><Image src={ThumbJR} alt="Jersey Ready Thumb"/></div>
             <div class="descrip">Jersey Ready, PSEG</div>
             <div class="year">2025</div>
         </div>
