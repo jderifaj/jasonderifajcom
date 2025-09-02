@@ -11,7 +11,7 @@ tl.to('.line', {
     end: "bottom top",
     scrub: true,
     pin: true,
-    markers: true
+    markers: false
   },
   width: '100%',
   stagger: 0.25
