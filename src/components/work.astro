@@ -1,6 +1,16 @@
 ---
 import { Image } from 'astro:assets';
-import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
+import ThumbJR from '../assets/images/thumb-jerseyready.jpg';
+import ThumbComeOnIn from '../assets/images/thumb-comonin.webp';
+import ThumbBGE from '../assets/images/thumb-bge.webp';
+import ThumbHUDPP from '../assets/images/thumb-hud-pp.webp';
+import ThumbDCCPS24 from '../assets/images/thumb-dccps24.webp';
+import ThumbRISE from '../assets/images/thumb-rise.webp';
+import ThumbDTT from '../assets/images/thumb-dtt.webp';
+import ThumbHUDInfo from '../assets/images/thumb-hud-info.webp';
+import ThumbDCCPS23 from '../assets/images/thumb-dccps23.webp';
+import ThumbRefresh from '../assets/images/thumb-refresh.webp';
+import ThumbNYC from '../assets/images/thumb-nyc.webp';
 --- 
 
 <section class="work">
@@ -19,7 +29,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
      <div class="item">
         <a href="https://bgesmartenergy.com/comeonin/index.html">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-comonin.webp" /></div>
+            <div class="photo"><Image src={ThumbComeOnIn} alt="Come On In Campaign Thumb"/></div>
             <div class="descrip">Come On In Campaign, BGE</div>
             <div class="year">2025</div>
         </div>
@@ -29,7 +39,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
     <div class="item">
         <a href="https://bgesmartenergy.com/magazine/issue3/">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-bge.webp" /></div>
+            <div class="photo"><Image src={ThumbBGE} alt="The Efficient Home BGE Thumb"/></div>
             <div class="descrip">The Efficient Home, BGE</div>
             <div class="year">2022, 2023, 2024</div>
         </div>
@@ -39,7 +49,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
      <div class="item">
         <a href="https://www.hudexchange.info/programs/section-108/project-profiles/">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-hud-pp.webp" /></div>
+            <div class="photo"><Image src={ThumbHUDPP} alt="HUD Project Profiles Thumb"/></div>
             <div class="descrip">Project Profiles, HUD</div>
             <div class="year">2024</div>
         </div>
@@ -49,7 +59,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
      <div class="item">
         <a href="https://cancercontrol.cancer.gov/overview-highlights/2024/">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-dccps24.webp" /></div>
+            <div class="photo"><Image src={ThumbDCCPS24} alt="Division of Cancer Control 2024 Thumb"/></div>
             <div class="descrip">Div of Cancer Control, National Cancer Institute</div>
             <div class="year">2024</div>
         </div>
@@ -59,7 +69,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
     <div class="item">
         <a href="https://www.icfcreative.com/2024/RISE/v7/index-v2.html">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-rise.webp" /></div>
+            <div class="photo"><Image src={ThumbRISE} alt="RISE Homes Thumb"/></div>
             <div class="descrip">RISE Homes</div>
             <div class="year">2024</div>
         </div>
@@ -69,7 +79,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
     <div class="item">
         <a href="https://www.icfcreative.com/2024/DTT/NIEHS/index.html">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-dtt.webp" /></div>
+            <div class="photo"><Image src={ThumbDTT} alt="DTT Interactive Thumb"/></div>
             <div class="descrip">DTT Interactive</div>
             <div class="year">2024</div>
         </div>
@@ -79,7 +89,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
     <div class="item">
         <a href="https://www.icfcreative.com/2023/HUD/buildforfuture/index.html">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-hud-info.webp" /></div>
+            <div class="photo"><Image src={ThumbHUDInfo} alt="HUD Infographic Thumb"/></div>
             <div class="descrip">HUD Infographic</div>
             <div class="year">2023</div>
         </div>
@@ -89,7 +99,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
      <div class="item">
         <a href="https://cancercontrol.cancer.gov/overview-highlights/2023/">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-dccps23.webp" /></div>
+            <div class="photo"><Image src={ThumbDCCPS23} alt="Division of Cancer Control 2023 Thumb"/></div>
             <div class="descrip">Div of Cancer Control, National Cancer Institute</div>
             <div class="year">2023</div>
         </div>
@@ -97,11 +107,10 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
         <div class="line"></div>
     </div>
 
-
     <div class="item">
         <a href="https://brandhub.pseg.com/public/index.html">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-refresh.webp" /></div>
+            <div class="photo"><Image src={ThumbRefresh} alt="We Hit Refresh PSEG Thumb"/></div>
             <div class="descrip">We hit refresh, PSEG</div>
             <div class="year">2023</div>
         </div>
@@ -111,7 +120,7 @@ import ThumbJR from '../assets/images/thumb-jerseyready.jpg'
     <div class="item">
         <a href="https://accelerator.nyc/">
         <div class="group">
-            <div class="photo"><img src="/src/assets/images/thumb-nyc.webp" /></div>
+            <div class="photo"><Image src={ThumbNYC} alt="NYC Accelerator Thumb"/></div>
             <div class="descrip">NYC Accelerator, NYC</div>
             <div class="year">2022</div>
         </div></a>
