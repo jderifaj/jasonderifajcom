@@ -1,48 +1,30 @@
-# Astro Starter Kit: Basics
+# jasonderifaj.com
 
-```sh
-npm create astro@latest -- --template basics
-```
+  My portfolio site: https://jasonderifaj.com/
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+  Built with Astro and Bootstrap 5. It shows my client work for PSEG, BGE, HUD, the National
+  Cancer Institute and others, with links to each live site.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+  ## Decisions
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+  - **Astro** because the site is mostly static content; it ships plain HTML and adds
+  JavaScript only where a section needs it.
+  - **Content in the HTML**, so it reads without JavaScript and is easy for search engines
+  and screen readers.
+  - [One more decision you made, e.g. how you handle the animations or images.]
 
-## 🚀 Project Structure
+  ## Run it
 
-Inside of your Astro project, you'll see the following folders and files:
+      npm install
+      npm run dev      # http://localhost:4321
+      npm run build    # production build in ./dist
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+  ## Deploy
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+  [Where it's hosted and how it deploys, e.g. "Pushes to main deploy to Netlify."]
 
-## 🧞 Commands
+  Add a license: click Add file → Create new file, name it LICENSE, click Choose a license
+  template, and pick MIT.
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+  Committing these before November 21 also keeps the repo's last push within a year. After
+  that date, the kit stops counting it as evidence of your skills.
