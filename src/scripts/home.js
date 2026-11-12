@@ -1,7 +1,7 @@
 import { initCaseStudyPulse } from './case-study.js';
 import { playIntro } from './intro.js';
 import { initPanels } from './panels.js';
-import { drawRoute, sizeRoute } from './route.js';
+import { drawRoute, measureCopy, sizeRoute } from './route.js';
 import { drawState } from './state.js';
 import { initWorkPreview } from './work-preview.js';
 
@@ -9,6 +9,7 @@ const intro = playIntro();
 initPanels();
 initWorkPreview();
 initCaseStudyPulse();
+measureCopy();
 sizeRoute();
 
 // The map starts drawing once the intro is most of the way in and everything has loaded:

@@ -61,7 +61,6 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 	data-route
 	data-width={width}
 	data-height={height}
-	style={`--route-ratio: ${(height / width).toFixed(4)}; --route-start: ${(points[0].x / width).toFixed(4)}`}
 >
 	<svg class="route-map" viewBox={viewBox} aria-hidden="true" focusable="false">
 		<defs>

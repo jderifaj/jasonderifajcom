@@ -269,21 +269,61 @@ ul {
    coast. Its stops reuse the city dot and label below; the camera is its viewBox. */
 /* Athens starts left of centre and the route runs up and to the right. The land west of
    Athens (Alabama, Georgia) sits under the URL, so the dark text reads on a lighter ground. */
-.state--route {
-	/* Sized by the width, and by the height on short screens, so Athens stays above the URL */
+/* The map's width is set on the copy, so the map and the text below it (the URL, intro line,
+   contacts and the stop labels) are all sized from it and grow and shrink together. Sized by
+   the screen's width, and by its height on short screens, so Athens stays above the URL. */
+.copy--route {
 	--route-width: min(clamp(26rem, 58vw, 66rem), 88svh);
+	--url-size: calc(var(--route-width) * 0.077);
+	--note-size: max(0.8125rem, calc(var(--route-width) * 0.023));
+}
+
+.copy--route .poster-url {
+	font-size: var(--url-size);
+}
+
+.copy--route .poster-meta,
+.copy--route .poster-contact {
+	font-size: var(--note-size);
+}
+
+/* Athens' dot sits over the "j" that starts the URL (a quarter of its type size in from the
+   margin), and the rest of the map extends from there. --route-start is Athens' share of
+   the map's width. */
+.state--route {
+	--athens-x: calc(var(--gutter) + var(--url-size) * 0.25);
 	top: 0.5rem;
-	left: 4vw;
+	left: calc(var(--athens-x) - var(--route-width) * var(--route-start));
 	width: var(--route-width);
 	transform: rotate(4deg);
 	transform-origin: 50% 50%;
 }
 
-/* Where the tiles float, the URL sits at the foot of the poster: the map rides down with it,
-   so its lower land stays behind the URL, but never higher than just under the band. */
+/* Where the tiles float, the map is as big as the poster allows: Athens' dot sits just above
+   the URL's "j" while the map's top runs up under the white band, with the highest stop
+   (Washington) just clear of it. The URL's size follows the map's width, so there's one width
+   that does both, solved from the copy's height (--copy-h, measured by src/scripts/route.js;
+   without script the map keeps the sizing above):
+
+     top = 100% - 3rem - H + 0.85 × url     (Athens above the "j")
+     top = 1.5rem - H × top-stop            (Washington just below the band)
+     H = width × ratio, url = 0.077 × width
+
+   */
 @media (min-width: 900px) {
+	.copy--route[style*='--copy-h'] {
+		--route-width: clamp(
+			26rem,
+			calc((var(--copy-h) - 4.5rem) / (var(--route-ratio) * (1 - var(--route-top-stop)) - 0.0655)),
+			110vw
+		);
+	}
+
 	.state--route {
-		top: max(-2.25rem, calc(100% - 1.5rem - var(--route-width) * var(--route-ratio)));
+		top: max(
+			calc(1.5rem - var(--route-width) * var(--route-ratio) * var(--route-top-stop)),
+			calc(100% - 3rem - var(--route-width) * var(--route-ratio) + var(--url-size) * 0.85)
+		);
 	}
 }
 
@@ -296,7 +336,7 @@ ul {
 	   while the middle (route and the land under the URL) stays solid */
 	mask-image:
 		linear-gradient(to right, transparent, #000 14%, #000 86%, transparent),
-		linear-gradient(to bottom, transparent, #000 12%, #000 86%, transparent);
+		linear-gradient(to bottom, transparent, #000 5%, #000 86%, transparent);
 	mask-composite: intersect;
 }
 
@@ -344,8 +384,9 @@ ul {
 	stroke-width: calc(1.2 * var(--unit));
 }
 
+/* A share of the map's own width (cqi), so the labels scale with it; never below 11px */
 .stops {
-	font-size: clamp(0.6875rem, 1.3cqi, 1rem);
+	font-size: max(0.6875rem, 1.4cqi);
 }
 
 .city {
@@ -1086,14 +1127,19 @@ ul {
 	/* The route map joins the page flow with Athens close to the left edge of the screen
 	   (--route-start is its share of the map's width). The copy follows it, rising onto the
 	   map's lower land so the URL sits on its lighter ground. */
-	.state.state--route {
+	.copy--route {
 		--route-width: min(95vw, 42rem);
+		--url-size: calc(var(--route-width) * 0.05);
+	}
+
+	.state.state--route {
 		position: relative;
 		top: auto;
 		left: auto;
 		width: var(--route-width);
-		margin: 0.5rem 0 calc(var(--route-width) * var(--route-ratio) * -0.33)
-			calc(0.9rem - var(--route-width) * var(--route-start) - var(--gutter));
+		/* In the flow, the margin starts at the copy's padding, so Athens lands over the URL's "j" */
+		margin: 0.5rem 0 calc(var(--route-width) * var(--route-ratio) * -0.29)
+			calc(var(--url-size) * 0.25 - var(--route-width) * var(--route-start));
 	}
 
 	.state--route + .poster-url {
@@ -1119,8 +1165,14 @@ ul {
 	}
 
 	/* Large on phones, but no bigger than 38rem, so wider small screens don't balloon */
-	.state.state--route {
+	.copy--route {
 		--route-width: min(150vw, 38rem);
+		--url-size: calc(var(--route-width) * 0.039);
+	}
+
+	/* Labels on the phone map: a larger share of it, so they stay readable */
+	.stops {
+		font-size: max(0.6875rem, 1.8cqi);
 	}
 
 	/* The URL sits low on the map here: keep the land under it at full strength, and lighter */

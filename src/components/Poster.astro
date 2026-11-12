@@ -2,7 +2,7 @@
 import { Picture } from 'astro:assets';
 import NorthCarolina from './NorthCarolina.astro';
 import RouteMap from './RouteMap.astro';
-import { posterMap } from '../data/route';
+import { posterMap, routeGeometry } from '../data/route';
 import portrait from '../assets/images/jason-magazine.jpg';
 
 const contacts = [
@@ -38,7 +38,12 @@ const tiles = [
 		</div>
 	</div>
 
-	<div class="copy">
+	<div
+		class:list={['copy', { 'copy--route': posterMap === 'route' }]}
+		style={posterMap === 'route'
+			? `--route-ratio: ${routeGeometry.ratio.toFixed(4)}; --route-start: ${routeGeometry.start.toFixed(4)}; --route-top-stop: ${routeGeometry.topStop.toFixed(4)}`
+			: undefined}
+	>
 		{posterMap === 'route' ? (
 			<RouteMap />
 		) : (

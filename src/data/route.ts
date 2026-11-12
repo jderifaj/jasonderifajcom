@@ -1,3 +1,5 @@
+import { eastCoast, project } from './east-coast';
+
 /**
  * The route map (src/components/RouteMap.astro): places I've done web work, on site and
  * remotely, in the order the route visits them. Each label first names the city, then, as the
@@ -32,3 +34,18 @@ export const stops: Stop[] = [
  * four disciplines pinned to its cities.
  */
 export const posterMap: 'route' | 'north-carolina' = 'route';
+
+/**
+ * The map's shape, for laying out the poster around it (set as CSS variables on the copy):
+ * its height as a share of its width, and Athens' and the highest stop's positions as shares
+ * of its width and height.
+ */
+export const routeGeometry = (() => {
+	const [, , width, height] = eastCoast.viewBox.split(' ').map(Number);
+	const points = stops.map((stop) => project(stop.lat, stop.lon));
+	return {
+		ratio: height / width,
+		start: points[0].x / width,
+		topStop: Math.min(...points.map((p) => p.y)) / height,
+	};
+})();

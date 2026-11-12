@@ -25,6 +25,18 @@ const CHANGE_AFTER = 0.35; // a stop's label changes this long after the next ci
 const LAST_CHANGE = 1.4; // nothing follows the last stop: its label changes this long after it appears
 
 /**
+ * Gives the CSS the copy's height (--copy-h), which it solves the map's size from on wide
+ * screens: as big as fits between the white band and the URL (see .copy--route in global.css).
+ */
+export function measureCopy() {
+	const copy = document.querySelector('.copy--route');
+	if (!copy) return;
+	const set = () => copy.style.setProperty('--copy-h', `${copy.clientHeight}px`);
+	set();
+	new ResizeObserver(set).observe(copy);
+}
+
+/**
  * Keeps line widths steady on screen: sets --unit, the map units per screen pixel, from the
  * current viewBox. Called on every camera move, and on load and resize for the still map.
  */
