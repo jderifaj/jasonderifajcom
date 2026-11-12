@@ -1,3 +1,4 @@
+import { initCaseStudies } from './case-study.js';
 import { playIntro } from './intro.js';
 import { initPanels } from './panels.js';
 import { drawState } from './state.js';
@@ -6,6 +7,7 @@ import { initWorkPreview } from './work-preview.js';
 const intro = playIntro();
 initPanels();
 initWorkPreview();
+initCaseStudies();
 
 // North Carolina comes in last, once the intro has finished and everything has loaded.
 if (intro) {

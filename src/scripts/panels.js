@@ -29,7 +29,7 @@ export function initPanels() {
 function animateIn(dialog) {
 	if (prefersReducedMotion()) return;
 
-	const content = dialog.querySelectorAll('.work-link, .earlier, .recommendations > li');
+	const content = dialog.querySelectorAll('.work-row, .earlier, .recommendations > li');
 	const rules = dialog.querySelectorAll('.work-rule');
 
 	gsap.timeline({ defaults: { ease: 'power3.out' } })

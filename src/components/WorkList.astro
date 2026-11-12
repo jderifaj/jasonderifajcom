@@ -1,7 +1,13 @@
 ---
 import { Image, getImage } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
+import type { ImageMetadata, MarkdownInstance } from 'astro';
 import { projects } from '../data/projects';
+
+/** A project with src/content/case-studies/<slug>.md gets a "Case study" toggle on its row. */
+const caseStudies = import.meta.glob<MarkdownInstance<Record<string, unknown>>>('../content/case-studies/*.md', {
+	eager: true,
+});
+const caseStudyFor = (slug: string) => caseStudies[`../content/case-studies/${slug}.md`]?.Content;
 
 const screenshots = import.meta.glob<{ default: ImageMetadata }>('../assets/images/work/*.webp', {
 	eager: true,
@@ -23,6 +29,7 @@ const rows = await Promise.all(
 	projects.map(async (project) => ({
 		...project,
 		screenshot: screenshotFor(project.slug),
+		CaseStudy: caseStudyFor(project.slug),
 		preview: await previewFor(project.slug),
 		earlier: project.earlier
 			? await Promise.all(project.earlier.map(async (issue) => ({ ...issue, preview: await previewFor(issue.slug) })))
@@ -35,12 +42,35 @@ const newTab = { target: '_blank', rel: 'noopener' };
 <ul class="work-list">
 	{rows.map((project) => (
 		<li class="work-item">
-			<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
-				<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
-				<span class="work-title">{project.title}</span>
-				<span class="work-year">{project.year}</span>
-				<span class="visually-hidden">(opens in a new tab)</span>
-			</a>
+			<div class="work-row">
+				<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
+					<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
+					<span class="work-title">{project.title}</span>
+					<span class="work-year">{project.year}</span>
+					<span class="visually-hidden">(opens in a new tab)</span>
+				</a>
+				{project.CaseStudy && (
+					<button
+						class="case-toggle"
+						type="button"
+						aria-expanded="false"
+						aria-controls={`${project.slug}-case`}
+						aria-label={`Case study: ${project.title}`}
+						data-case-toggle
+					>
+						Case study
+						<span class="case-icon" aria-hidden="true"></span>
+					</button>
+				)}
+			</div>
+
+			{project.CaseStudy && (
+				<section class="case-study" id={`${project.slug}-case`} aria-label={`${project.title} case study`}>
+					<div class="case-study-body">
+						<project.CaseStudy />
+					</div>
+				</section>
+			)}
 
 			{project.earlier && (
 				<div class="earlier">
