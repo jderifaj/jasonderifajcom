@@ -203,6 +203,40 @@ ul {
 	line-height: 1.5;
 }
 
+.poster-contact {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0;
+	margin-top: 0.35rem;
+	padding: 0;
+	list-style: none;
+	font-size: clamp(0.85rem, 0.6vw + 0.6rem, 1.15rem);
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.poster-contact li::after {
+	content: '—';
+	margin: 0 0.5em;
+	font-weight: 400;
+}
+
+.poster-contact a {
+	color: var(--paper);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+}
+
+.poster-contact a:hover {
+	text-decoration-thickness: 2px;
+}
+
+.poster-contact a:focus-visible {
+	outline: 2px solid var(--paper);
+	outline-offset: 2px;
+}
+
 .ctas {
 	display: flex;
 	margin-top: auto;
@@ -562,7 +596,8 @@ ul {
 		font-size: clamp(1.75rem, 2.7vw, 3rem);
 	}
 
-	.poster-meta {
+	.poster-meta,
+	.poster-contact {
 		max-width: min(72ch, calc(100% - 2 * clamp(9rem, 13vw, 13rem) - 3rem));
 	}
 

@@ -13,7 +13,7 @@ function intro() {
 		.from('.mono-tile', { opacity: 0, y: 60, stagger: 0.15, duration: 1.1 }, 0.7)
 		.from('.lines li', { x: -40, opacity: 0, stagger: 0.09, duration: 0.7 }, 0.9)
 		.from('.lines .dash', { scaleX: 0, stagger: 0.09, duration: 0.5 }, 1.25)
-		.from(['.poster-url', '.poster-meta'], { opacity: 0, y: 16, stagger: 0.12, duration: 0.6 }, 1.35)
+		.from(['.poster-url', '.poster-meta', '.poster-contact'], { opacity: 0, y: 16, stagger: 0.12, duration: 0.6 }, 1.35)
 		.from('.cta', { opacity: 0, y: 30, stagger: 0.12, duration: 0.7 }, 1.5);
 
 	// Subtle parallax: the portrait drifts against the pointer, the monogram with it.
@@ -67,7 +67,14 @@ function workPreview() {
 	if (!box) return;
 	const frame = box.querySelector('.work-preview-frame');
 	const shadow = box.querySelector('.work-preview-shadow');
-	const layers = [...frame.querySelectorAll('img')];
+	// The two image layers are made here, not in the HTML, so they never exist without a src.
+	const layers = [0, 1].map(() => {
+		const img = document.createElement('img');
+		img.alt = '';
+		img.decoding = 'async';
+		frame.append(img);
+		return img;
+	});
 	const calm = reduceMotion();
 
 	let front = 0;
