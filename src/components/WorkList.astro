@@ -51,7 +51,7 @@ const newTab = { target: '_blank', rel: 'noopener' };
 					<div class="work-link" data-preview={project.preview}>
 						<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
 						<span class="work-title">
-							{project.title} <span class="work-offline">No live site</span>
+							{project.title} <span class="work-offline">{project.noLink ?? 'No live site'}</span>
 						</span>
 					</div>
 				)}

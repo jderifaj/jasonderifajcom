@@ -20,8 +20,10 @@ export interface Project {
 	/** Describes what the screenshot shows; the title is already the link text. */
 	alt: string;
 	year: number;
-	/** The live site. Leave it out when the site is no longer public: the row then says "No live site". */
+	/** The live site. Leave it out when there's nothing to link to: the row then shows `noLink` instead. */
 	url?: string;
+	/** Shown in place of the link when there's no `url`. Defaults to "No live site". */
+	noLink?: string;
 	/** Earlier editions, listed in a strip under the project instead of as rows of their own. */
 	earlier?: EarlierIssue[];
 }
@@ -35,6 +37,14 @@ const bgeIssue = (issue: number, year: number): EarlierIssue => ({
 });
 
 export const projects: Project[] = [
+	{
+		slug: 'bge-winter',
+		title: 'Winter Tips, BGE',
+		alt: 'Winter Tips, Neighbor-to-Neighbor headline with snow piled on it, beside a neighbor on a snowy Baltimore street',
+		year: 2026,
+		// Link to come.
+		noLink: 'Link coming soon',
+	},
 	{
 		slug: 'alexrenew',
 		title: 'AlexRenew',

@@ -41,7 +41,7 @@ const { Content, frontmatter } = caseStudy;
 						</a>
 					</p>
 				) : (
-					<p class="case-offline">No live site: this project isn't public.</p>
+					<p class="case-offline">{project.noLink ?? "No live site: this project isn't public."}</p>
 				)}
 				<Content />
 			</article>
