@@ -92,20 +92,6 @@ export const projects: Project[] = [
 		url: 'https://cancercontrol.cancer.gov/overview-highlights/2024/',
 	},
 	{
-		slug: 'rise',
-		title: 'RISE Homes',
-		alt: 'RISE Homes homepage, “Building back California smarter”',
-		year: 2024,
-		url: 'https://www.icfcreative.com/2024/RISE/v7/index-v2.html',
-	},
-	{
-		slug: 'dtt',
-		title: 'DTT Interactive',
-		alt: 'Hexavalent Chromium interactive title screen with a hexagon pattern',
-		year: 2024,
-		url: 'https://www.icfcreative.com/2024/DTT/NIEHS/index.html',
-	},
-	{
 		slug: 'dccps23',
 		title: 'Div of Cancer Control, National Cancer Institute',
 		alt: '2023 cancer control highlights with an illustrated mountain',
