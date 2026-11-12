@@ -1,8 +1,7 @@
 ---
 /**
  * North Carolina, overprinted on the portrait the way Max Huber laid flat spot-color
- * shapes over photographs: a translucent fill, a truss lattice like his oil derrick,
- * and an outline printed slightly out of register.
+ * shapes over photographs: an outline and a truss lattice like his oil derrick.
  *
  * The lattice is real line segments rather than a pattern, so src/scripts/state.js
  * can draw them one by one.
@@ -22,7 +21,6 @@ const lattice = buildLattice({ path, width, height, cell: 96, rotate: -14 });
 		</clipPath>
 	</defs>
 
-	<path class="state-fill" d={path} />
 	<g class="state-truss" clip-path="url(#state-clip)">
 		{lattice.map(({ x1, y1, x2, y2, from, to }) => (
 			<line x1={x1} y1={y1} x2={x2} y2={y2} pathLength="1" data-from={from} data-to={to} />

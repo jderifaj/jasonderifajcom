@@ -217,11 +217,6 @@ ul {
 	pointer-events: none;
 }
 
-.state-fill {
-	fill: rgb(255 255 255 / 0.15);
-	transform: translate(-6px, 5px); /* out of register with the outline */
-}
-
 .state-truss line {
 	stroke-dasharray: 1; /* with pathLength="1", lets each line be drawn on */
 	fill: none;
@@ -239,7 +234,6 @@ ul {
 
 /* With script and motion, the state waits to be drawn in by src/scripts/state.js */
 @media (prefers-reduced-motion: no-preference) {
-	.js .state-fill,
 	.js .state-line {
 		opacity: 0;
 	}

@@ -1,8 +1,8 @@
 import gsap from 'gsap';
 
 /**
- * Brings North Carolina in once the rest of the page has settled: the outline and fill
- * fade up, then the lattice draws itself.
+ * Brings North Carolina in once the rest of the page has settled: the outline fades up,
+ * then the lattice draws itself.
  *
  * The lattice grows like frost. A few lines start at random nodes; whenever a line
  * finishes, the lines leaving its far end start after a random pause. The clusters
@@ -20,12 +20,11 @@ const pickFrom = (items) => items[Math.floor(Math.random() * items.length)];
 
 export function drawState() {
 	const outline = document.querySelector('.state-line');
-	const fill = document.querySelector('.state-fill');
 	const lines = [...document.querySelectorAll('.state-truss line')];
 	if (!outline) return;
 
 	gsap.timeline()
-		.to([outline, fill], { opacity: 1, duration: 1.8, ease: 'sine.inOut' })
+		.to(outline, { opacity: 1, duration: 1.8, ease: 'sine.inOut' })
 		.add(() => growLattice(lines), '+=0.4');
 }
 
