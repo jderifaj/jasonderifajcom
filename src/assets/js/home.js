@@ -34,7 +34,7 @@ function animatePanel(dialog) {
 	if (reduceMotion()) return;
 	gsap.timeline({ defaults: { ease: 'power3.out' } })
 		.from(dialog.querySelector('.panel-head'), { yPercent: -100, duration: 0.5 })
-		.from(dialog.querySelectorAll('.item .group, .comments li'), { y: 24, opacity: 0, stagger: 0.05, duration: 0.5 }, 0.15)
+		.from(dialog.querySelectorAll('.item .group, .archive, .comments li'), { y: 24, opacity: 0, stagger: 0.05, duration: 0.5 }, 0.15)
 		.fromTo(dialog.querySelectorAll('.line'), { width: '0%' }, { width: '100%', stagger: 0.05, duration: 0.6, ease: 'power2.inOut' }, 0.3);
 }
 
@@ -59,27 +59,101 @@ function panels() {
 	}
 }
 
-// Hovering or focusing a project shows its thumbnail, enlarged, in the lower right.
+// Hovering or focusing a project shows its screenshot, enlarged, in the lower right.
+// The card rises in, new screenshots wipe up over the old one, and the card tilts toward the pointer.
 function workPreview() {
-	const box = document.querySelector('#work .work-preview');
+	const panel = document.getElementById('work');
+	const box = panel?.querySelector('.work-preview');
 	if (!box) return;
-	const big = box.querySelector('img');
+	const frame = box.querySelector('.work-preview-frame');
+	const shadow = box.querySelector('.work-preview-shadow');
+	const layers = [...frame.querySelectorAll('img')];
+	const calm = reduceMotion();
 
-	const show = (link) => {
-		const thumb = link.querySelector('.photo img');
-		if (!thumb) return;
-		big.src = thumb.dataset.preview || thumb.currentSrc || thumb.src;
-		box.classList.add('is-visible');
+	let front = 0;
+	let current = '';
+	let visible = false;
+	let hideCall;
+
+	gsap.set(box, { autoAlpha: 0, y: 48, scale: 0.88, rotation: -4, transformOrigin: '100% 100%' });
+	gsap.set(shadow, { x: 12, y: 12 });
+	gsap.set(layers, { autoAlpha: 0 });
+
+	const reveal = () => {
+		hideCall?.kill();
+		if (visible) return;
+		visible = true;
+		gsap.to(box, {
+			autoAlpha: 1, y: 0, scale: 1, rotation: 0,
+			duration: calm ? 0.3 : 1.2,
+			ease: calm ? 'none' : 'elastic.out(1, 0.75)',
+			overwrite: 'auto',
+		});
 	};
-	const hide = () => box.classList.remove('is-visible');
 
-	document.querySelectorAll('#work .item a').forEach((link) => {
-		link.addEventListener('pointerenter', () => show(link));
-		link.addEventListener('pointerleave', hide);
-		link.addEventListener('focus', () => show(link));
-		link.addEventListener('blur', hide);
+	const hide = (now = false) => {
+		hideCall?.kill();
+		const out = () => {
+			visible = false;
+			gsap.to(box, {
+				autoAlpha: 0, y: 28, scale: 0.94, rotation: 2.5,
+				duration: now ? 0 : 0.55, ease: 'power3.in', overwrite: 'auto',
+			});
+		};
+		if (now) out();
+		else hideCall = gsap.delayedCall(0.2, out); // grace period while moving between rows
+	};
+
+	const swap = async (src) => {
+		if (!src || src === current) return;
+		current = src;
+		const next = layers[1 - front];
+		const prev = layers[front];
+		next.src = src;
+		try { await next.decode(); } catch { /* show it anyway */ }
+		if (src !== current) return; // the pointer has already moved on
+		front = 1 - front;
+		gsap.killTweensOf([next, prev]);
+		gsap.set(next, { zIndex: 2 });
+		gsap.set(prev, { zIndex: 1 });
+
+		if (calm) {
+			gsap.fromTo(next, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 });
+			gsap.to(prev, { autoAlpha: 0, duration: 0.25 });
+			return;
+		}
+		gsap.fromTo(next,
+			{ autoAlpha: 1, clipPath: 'inset(100% 0% 0% 0%)', scale: 1.22, yPercent: 6 },
+			{ clipPath: 'inset(0% 0% 0% 0%)', scale: 1, yPercent: 0, duration: 1.15, ease: 'expo.out' });
+		gsap.to(prev, { autoAlpha: 0, scale: 1.08, yPercent: -4, filter: 'blur(6px)', duration: 0.9, ease: 'power2.out',
+			onComplete: () => gsap.set(prev, { filter: 'none' }) });
+	};
+
+	const previewFor = (link) => link.dataset.preview || link.querySelector('[data-preview]')?.dataset.preview;
+
+	panel.querySelectorAll('.item > a, .archive a').forEach((link) => {
+		const show = () => { reveal(); swap(previewFor(link)); };
+		link.addEventListener('pointerenter', show);
+		link.addEventListener('focus', show);
+		link.addEventListener('pointerleave', () => hide());
+		link.addEventListener('blur', () => hide());
 	});
-	document.getElementById('work').addEventListener('close', hide);
+	panel.addEventListener('close', () => hide(true));
+
+	// Tilt toward the pointer; the blue shadow trails behind for depth.
+	if (calm || !window.matchMedia('(pointer: fine)').matches) return;
+	const tiltY = gsap.quickTo(frame, 'rotationY', { duration: 0.8, ease: 'power3.out' });
+	const tiltX = gsap.quickTo(frame, 'rotationX', { duration: 0.8, ease: 'power3.out' });
+	const shadowX = gsap.quickTo(shadow, 'x', { duration: 1.4, ease: 'power3.out' });
+	const shadowY = gsap.quickTo(shadow, 'y', { duration: 1.4, ease: 'power3.out' });
+	panel.addEventListener('pointermove', (e) => {
+		const dx = e.clientX / window.innerWidth - 0.5;
+		const dy = e.clientY / window.innerHeight - 0.5;
+		tiltY(dx * 14);
+		tiltX(dy * -10);
+		shadowX(12 - dx * 16);
+		shadowY(12 - dy * 12);
+	});
 }
 
 export function initHome() {

@@ -12,25 +12,33 @@ const projects = [
 	{ slug: 'jerseyready', title: 'Jersey Ready, PSEG', year: 2025, url: 'https://njready.com/' },
 	{ slug: 'comeonin', title: 'Come On In Campaign, BGE', year: 2025, url: 'https://bgesmartenergy.com/comeonin/index.html' },
 	{ slug: 'dallas', title: 'Dallas Street to Home Initiative', year: 2025, url: 'https://www.icfcreative.com/2025/HUD/Dallas/index.html' },
-	{ slug: 'bge-issue4', title: 'The Efficient Home, Issue 4, BGE', year: 2025, url: 'https://bge.theefficienthome.com/issue4/' },
-	{ slug: 'bge-issue3', title: 'The Efficient Home, Issue 3, BGE', year: 2024, url: 'https://bge.theefficienthome.com/issue3/' },
 	{ slug: 'hud-pp', title: 'Project Profiles, HUD', year: 2024, url: 'https://www.hudexchange.info/programs/section-108/project-profiles/' },
 	{ slug: 'dccps24', title: 'Div of Cancer Control, National Cancer Institute', year: 2024, url: 'https://cancercontrol.cancer.gov/overview-highlights/2024/' },
 	{ slug: 'rise', title: 'RISE Homes', year: 2024, url: 'https://www.icfcreative.com/2024/RISE/v7/index-v2.html' },
 	{ slug: 'dtt', title: 'DTT Interactive', year: 2024, url: 'https://www.icfcreative.com/2024/DTT/NIEHS/index.html' },
-	{ slug: 'bge-issue2', title: 'The Efficient Home, Issue 2, BGE', year: 2023, url: 'https://bge.theefficienthome.com/issue2/' },
-	{ slug: 'hud-info', title: 'HUD Infographic', year: 2023, url: 'https://www.icfcreative.com/2023/HUD/buildforfuture/index.html' },
 	{ slug: 'dccps23', title: 'Div of Cancer Control, National Cancer Institute', year: 2023, url: 'https://cancercontrol.cancer.gov/overview-highlights/2023/' },
 	{ slug: 'refresh', title: 'We hit refresh, PSEG', year: 2023, url: 'https://brandhub.pseg.com/public/index.html' },
-	{ slug: 'bge-issue1', title: 'The Efficient Home, Issue 1, BGE', year: 2022, url: 'https://bge.theefficienthome.com/issue1/' },
-	{ slug: 'nyc', title: 'NYC Accelerator, NYC', year: 2022, url: 'https://accelerator.nyc/' },
 ];
+
+// Earlier issues of the magazine, listed under Issue 5 rather than as rows of their own.
+const archive = [
+	{ slug: 'bge-issue4', label: 'Issue 4', year: 2025, url: 'https://bge.theefficienthome.com/issue4/' },
+	{ slug: 'bge-issue3', label: 'Issue 3', year: 2024, url: 'https://bge.theefficienthome.com/issue3/' },
+	{ slug: 'bge-issue2', label: 'Issue 2', year: 2023, url: 'https://bge.theefficienthome.com/issue2/' },
+	{ slug: 'bge-issue1', label: 'Issue 1', year: 2022, url: 'https://bge.theefficienthome.com/issue1/' },
+];
+
+const previewOf = async (slug: string) => {
+	const src = shot(slug);
+	return (await getImage({ src, width: Math.min(1200, src.width), format: 'webp' })).src;
+};
+
+const earlierIssues = await Promise.all(archive.map(async (a) => ({ ...a, preview: await previewOf(a.slug) })));
 
 const items = await Promise.all(
 	projects.map(async (p) => {
 		const src = shot(p.slug);
-		const preview = await getImage({ src, width: Math.min(1200, src.width), format: 'webp' });
-		return { ...p, src, preview: preview.src };
+		return { ...p, src, preview: await previewOf(p.slug) };
 	}),
 );
 ---
@@ -47,8 +55,25 @@ const items = await Promise.all(
 					<div class="year">{p.year}</div>
 				</div>
 			</a>
+			{p.slug === 'bge-issue5' && (
+				<div class="archive">
+					<span class="archive-label">Earlier issues</span>
+					<ul>
+						{earlierIssues.map((a) => (
+							<li>
+								<a href={a.url} target="_blank" rel="noopener" data-preview={a.preview}>
+									{a.label}<span class="archive-year">{a.year}</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
 			<div class="line"></div>
 		</div>
 	))}
-	<div class="work-preview" aria-hidden="true"><img alt="" /></div>
+	<div class="work-preview" aria-hidden="true">
+		<div class="work-preview-shadow"></div>
+		<div class="work-preview-frame"><img alt="" /><img alt="" /></div>
+	</div>
 </section>
