@@ -102,7 +102,7 @@ ul {
 	display: flex;
 	flex-direction: column;
 	min-height: 100svh;
-	padding: clamp(3rem, 13vh, 8rem) 0 clamp(2.5rem, 6vh, 4rem);
+	padding: clamp(1.25rem, 4vh, 2.5rem) 0 clamp(2.5rem, 6vh, 4rem);
 	overflow: hidden;
 }
 
@@ -148,8 +148,17 @@ ul {
 	pointer-events: none;
 }
 
+/* The credit line and the Work and Words tiles share a row above the band, the tiles at the
+   right; their height sets where the band falls */
+.masthead {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1.5rem;
+	padding: 0 var(--gutter) 0.6rem;
+}
+
 .credit {
-	padding: 0 var(--gutter) 0.35rem;
 	font-size: 0.6rem;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
@@ -267,19 +276,16 @@ ul {
 
 /* The route map (src/components/RouteMap.astro): Athens to Washington over a soft-edged east
    coast. Its stops reuse the city dot and label below; the camera is its viewBox. */
-/* Athens starts left of centre and the route runs up and to the right. The land west of
-   Athens (Alabama, Georgia) sits under the URL, so the dark text reads on a lighter ground. */
-/* The map's width is set on the copy, so the map and the text below it (the URL, intro line,
+/* Athens starts left of centre and the route runs up and to the right. */
+/* The map's width is set on the copy, so the map and the text below it (the intro line,
    contacts and the stop labels) are all sized from it and grow and shrink together. Sized by
-   the screen's width, and by its height on short screens, so Athens stays above the URL. */
+   the screen's width, and by its height on short screens, so Athens stays above the copy.
+   --url-size is the type size the site's URL had when it sat under the map. The URL is gone,
+   but Athens' place is still measured from that size. */
 .copy--route {
 	--route-width: min(clamp(26rem, 58vw, 66rem), 88svh);
 	--url-size: calc(var(--route-width) * 0.077);
 	--note-size: max(0.8125rem, calc(var(--route-width) * 0.023));
-}
-
-.copy--route .poster-url {
-	font-size: var(--url-size);
 }
 
 .copy--route .poster-meta,
@@ -466,18 +472,10 @@ ul {
 	transform: scaleX(0);
 }
 
-/* The URL, intro line and contacts sit at the foot of the poster, leaving the map clear */
-.poster-url {
-	margin-top: auto;
-	font-size: var(--line-size);
-	font-weight: 700;
-	line-height: 1.1;
-	color: var(--ink);
-}
-
+/* The intro line and contacts sit at the foot of the poster, leaving the map clear */
 .poster-meta {
 	max-width: 72ch;
-	margin-top: 0.9rem;
+	margin-top: auto;
 	font-size: var(--small-size);
 	line-height: 1.5;
 }
@@ -517,14 +515,14 @@ ul {
 
 .tiles {
 	display: flex;
-	padding-top: clamp(2rem, 6vh, 5rem);
+	flex-shrink: 0;
 }
 
 .tile {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	width: clamp(9.5rem, 17vw, 15rem);
+	width: clamp(8.5rem, 10.5vw, 12rem);
 	aspect-ratio: 1;
 	padding: clamp(0.75rem, 1.2vw, 1.25rem);
 	font: inherit;
@@ -546,7 +544,7 @@ ul {
 
 .tile-title {
 	/* "Words" is 2.96em wide */
-	font-size: min(clamp(2rem, 3.6vw, 3.6rem), 32cqi);
+	font-size: min(clamp(1.75rem, 2.7vw, 3rem), 32cqi);
 	font-weight: 700;
 	line-height: 0.9;
 }
@@ -1087,28 +1085,8 @@ ul {
 /* 8. Responsive and reduced motion
    ========================================================================== */
 
-/* Wide screens: the tiles move to the lower right */
+/* Wide screens: the copyright moves to the lower left */
 @media (min-width: 900px) {
-	.tiles {
-		position: absolute;
-		right: var(--gutter);
-		bottom: clamp(2.5rem, 7vh, 4.5rem);
-		padding: 0;
-	}
-
-	.tile {
-		width: clamp(9rem, 13vw, 13rem);
-	}
-
-	.tile-title {
-		font-size: min(clamp(1.75rem, 2.7vw, 3rem), 32cqi);
-	}
-
-	.poster-meta,
-	.poster-contact {
-		max-width: min(72ch, calc(100% - 2 * clamp(9rem, 13vw, 13rem) - 3rem));
-	}
-
 	.copyright {
 		right: auto;
 		left: var(--gutter);
@@ -1142,11 +1120,11 @@ ul {
 			calc(var(--url-size) * 0.25 - var(--route-width) * var(--route-start));
 	}
 
-	.state--route + .poster-url {
+	.state--route + .poster-meta {
 		margin-top: 0;
 	}
 
-	/* Athens' label rises above its dot here, so the URL can come up beside it */
+	/* Athens' label rises above its dot here, so the intro line can come up beside it */
 	.stop[data-phone-above] .city-label {
 		transform: translateY(-125%);
 	}
@@ -1154,8 +1132,15 @@ ul {
 
 /* Small screens */
 @media (max-width: 640px) {
+	/* The tiles take the top right, and the credit drops below them */
+	.masthead {
+		flex-direction: column-reverse;
+		align-items: stretch;
+		gap: 0.6rem;
+	}
+
 	.tiles {
-		padding-top: 1.5rem;
+		align-self: flex-end;
 	}
 
 	/* Narrow map: some route labels move to the left of their dots (phoneSide in src/data/route.ts) */
@@ -1194,16 +1179,6 @@ ul {
 		left: -20vw;
 		width: 120vw;
 		transform: rotate(-7deg);
-	}
-
-	.tiles {
-		width: 100%;
-	}
-
-	.tile {
-		flex: 1;
-		width: auto;
-		aspect-ratio: 1.1;
 	}
 
 	.copyright {

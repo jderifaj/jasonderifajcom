@@ -12,7 +12,7 @@ export function playIntro() {
 		.from('.poster-photo', { scale: 1.12, duration: 2.4, ease: 'power2.out' }, 0)
 		.from('.band', { clipPath: 'inset(0 100% 0 0)', duration: 0.9, ease: 'power4.inOut' }, 0.15)
 		.from('.band-title > *', { yPercent: 60, opacity: 0, stagger: 0.12, duration: 0.7 }, 0.6)
-		.from(['.poster-url', '.poster-meta', '.poster-contact'], { opacity: 0, y: 16, stagger: 0.12, duration: 0.6 }, 1.35)
+		.from(['.poster-meta', '.poster-contact'], { opacity: 0, y: 16, stagger: 0.12, duration: 0.6 }, 1.35)
 		.from('.tile', { opacity: 0, y: 30, stagger: 0.12, duration: 0.7 }, 1.5);
 
 	if (hasFinePointer()) followPointer();

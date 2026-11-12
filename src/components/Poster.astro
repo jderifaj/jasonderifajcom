@@ -29,7 +29,25 @@ const tiles = [
 		fetchpriority="high"
 	/>
 
-	<p class="credit">Photo: self-portrait&ensp;|&ensp;Design &amp; code: Jason Derifaj</p>
+	<div class="masthead">
+		<p class="credit">Photo: self-portrait&ensp;|&ensp;Design &amp; code: Jason Derifaj</p>
+
+		<div class="tiles">
+			{tiles.map(({ panel, title, label }) => (
+				<button
+					class="tile"
+					type="button"
+					commandfor={panel}
+					command="show-modal"
+					aria-haspopup="dialog"
+					data-open={panel}
+				>
+					<span class="tile-title">{title}</span>
+					<span class="tile-label">{label} <span class="dash" aria-hidden="true"></span></span>
+				</button>
+			))}
+		</div>
+	</div>
 
 	<div class="band">
 		<div class="band-title">
@@ -50,7 +68,6 @@ const tiles = [
 			<NorthCarolina />
 		)}
 
-		<p class="poster-url">jasonderifaj.com</p>
 		<p class="poster-meta">
 			Interactive developer blending animation and design to tell compelling stories on the web
 			— résumé on request — #creativefrontend —
@@ -60,22 +77,6 @@ const tiles = [
 				<li><a href={href} rel={rel}>{label}</a></li>
 			))}
 		</ul>
-
-		<div class="tiles">
-			{tiles.map(({ panel, title, label }) => (
-				<button
-					class="tile"
-					type="button"
-					commandfor={panel}
-					command="show-modal"
-					aria-haspopup="dialog"
-					data-open={panel}
-				>
-					<span class="tile-title">{title}</span>
-					<span class="tile-label">{label} <span class="dash" aria-hidden="true"></span></span>
-				</button>
-			))}
-		</div>
 	</div>
 
 	<p class="copyright">&copy; {new Date().getFullYear()} Jason Derifaj</p>
