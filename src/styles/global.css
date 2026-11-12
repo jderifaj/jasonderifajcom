@@ -459,6 +459,18 @@ ul {
 	transition: background 0.25s;
 }
 
+/* A project whose site is no longer public: the title isn't a link, and this says why */
+.work-offline {
+	display: inline-block;
+	margin-left: 0.4em;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	vertical-align: 0.3em;
+	color: #555;
+}
+
 .work-item:hover .work-title,
 .work-item:focus-within .work-title {
 	color: var(--accent);
@@ -651,6 +663,14 @@ ul {
 
 .case-live:hover {
 	color: var(--ink);
+}
+
+.case-offline {
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #555;
 }
 
 .case-live:focus-visible {

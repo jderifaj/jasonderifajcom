@@ -33,12 +33,16 @@ const { Content, frontmatter } = caseStudy;
 			<article class="case-study-body">
 				<h1 class="case-title">{project.title}<span class="dash" aria-hidden="true"></span></h1>
 				<p class="case-summary">{frontmatter.summary}</p>
-				<p>
-					<a class="case-live" href={project.url} target="_blank" rel="noopener">
-						Visit the live site<span class="visually-hidden"> (opens in a new tab)</span>
-						<span aria-hidden="true"> ↗</span>
-					</a>
-				</p>
+				{project.url ? (
+					<p>
+						<a class="case-live" href={project.url} target="_blank" rel="noopener">
+							Visit the live site<span class="visually-hidden"> (opens in a new tab)</span>
+							<span aria-hidden="true"> ↗</span>
+						</a>
+					</p>
+				) : (
+					<p class="case-offline">No live site: this project isn't public.</p>
+				)}
 				<Content />
 			</article>
 		</main>

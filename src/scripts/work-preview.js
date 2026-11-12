@@ -13,7 +13,8 @@ export function initWorkPreview() {
 	const card = panel?.querySelector('.work-preview');
 	if (!card) return;
 
-	const links = [...panel.querySelectorAll('a[data-preview]')];
+	// Mostly links; a project with no live site is a plain row, which shows its preview on hover only.
+	const links = [...panel.querySelectorAll('[data-preview]')];
 	const preview = createPreview(card);
 
 	for (const link of links) {

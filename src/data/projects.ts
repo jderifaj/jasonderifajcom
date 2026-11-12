@@ -20,7 +20,8 @@ export interface Project {
 	/** Describes what the screenshot shows; the title is already the link text. */
 	alt: string;
 	year: number;
-	url: string;
+	/** The live site. Leave it out when the site is no longer public: the row then says "No live site". */
+	url?: string;
 	/** Earlier editions, listed in a strip under the project instead of as rows of their own. */
 	earlier?: EarlierIssue[];
 }
@@ -75,7 +76,7 @@ export const projects: Project[] = [
 		title: 'Dallas Street to Home Initiative',
 		alt: 'Dallas Street to Home interactive overview with section navigation',
 		year: 2025,
-		url: 'https://www.icfcreative.com/2025/HUD/Dallas/index.html',
+		// Never launched, and now behind a login: the case study tells the story instead.
 	},
 	{
 		slug: 'hud-pp',

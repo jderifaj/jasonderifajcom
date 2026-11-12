@@ -41,11 +41,20 @@ const newTab = { target: '_blank', rel: 'noopener' };
 	{rows.map((project) => (
 		<li class="work-item">
 			<div class="work-row">
-				<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
-					<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
-					<span class="work-title">{project.title}</span>
-					<span class="visually-hidden">(opens in a new tab)</span>
-				</a>
+				{project.url ? (
+					<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
+						<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
+						<span class="work-title">{project.title}</span>
+						<span class="visually-hidden">(opens in a new tab)</span>
+					</a>
+				) : (
+					<div class="work-link" data-preview={project.preview}>
+						<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
+						<span class="work-title">
+							{project.title} <span class="work-offline">No live site</span>
+						</span>
+					</div>
+				)}
 				{project.caseStudy && (
 					<a class="case-toggle" href={project.caseStudy} aria-label={`Case study: ${project.title}`}>
 						Case study
