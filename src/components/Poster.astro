@@ -1,6 +1,8 @@
 ---
 import { Picture } from 'astro:assets';
 import NorthCarolina from './NorthCarolina.astro';
+import RouteMap from './RouteMap.astro';
+import { posterMap } from '../data/route';
 import portrait from '../assets/images/jason-magazine.jpg';
 
 const contacts = [
@@ -37,7 +39,11 @@ const tiles = [
 	</div>
 
 	<div class="copy">
-		<NorthCarolina />
+		{posterMap === 'route' ? (
+			<RouteMap />
+		) : (
+			<NorthCarolina />
+		)}
 
 		<p class="poster-url">jasonderifaj.com</p>
 		<p class="poster-meta">

@@ -1,0 +1,107 @@
+---
+/**
+ * The route map: Athens, GA → Cary, NC → Richmond, VA → Washington, DC, over a soft-edged
+ * east coast. src/scripts/route.js flies it in: the camera starts close on Athens and pulls
+ * back as each leg draws north, a few strands fanning out from one stop and meeting at the
+ * next, with a sparse lattice drawing in near the route.
+ *
+ * The viewBox below is the final, zoomed-out frame, which is what shows without script or
+ * with reduced motion. Dots and labels are HTML laid over the map, so they keep their size
+ * while the camera moves. Each label names its city, then changes to what I do as the route
+ * moves on; the finished map (and screen readers) show both.
+ */
+import { eastCoast, project } from '../data/east-coast';
+import { stops } from '../data/route';
+import { buildLattice } from '../lib/lattice';
+
+const { viewBox, states } = eastCoast;
+const [, , width, height] = viewBox.split(' ').map(Number);
+
+const points = stops.map((stop) => ({ ...stop, ...project(stop.lat, stop.lon) }));
+
+/** Each leg is a few strands: a gentle main curve and two fainter ones bowing either side. */
+const BOWS = [
+	{ bow: 0.06, kind: 'main' },
+	{ bow: 0.2, kind: 'side' },
+	{ bow: -0.14, kind: 'side' },
+];
+const legs = points.slice(1).map((to, i) => {
+	const from = points[i];
+	const [dx, dy] = [to.x - from.x, to.y - from.y];
+	return BOWS.map(({ bow, kind }) => {
+		// Control point: the midpoint, pushed sideways by a share of the leg's length.
+		const cx = (from.x + to.x) / 2 - dy * bow;
+		const cy = (from.y + to.y) / 2 + dx * bow;
+		return { kind, leg: i, d: `M${from.x.toFixed(1)} ${from.y.toFixed(1)}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${to.x.toFixed(1)} ${to.y.toFixed(1)}` };
+	});
+}).flat();
+
+/** Distance from a point to the straight line of a leg, and how far along it the point falls (0–1). */
+const along = (x: number, y: number, a: { x: number; y: number }, b: { x: number; y: number }) => {
+	const [dx, dy] = [b.x - a.x, b.y - a.y];
+	const t = Math.max(0, Math.min(1, ((x - a.x) * dx + (y - a.y) * dy) / (dx * dx + dy * dy)));
+	return { t, d: Math.hypot(x - (a.x + t * dx), y - (a.y + t * dy)) };
+};
+
+// A sparse lattice over the route's states, kept only near the route so the page stays calm.
+const land = states.filter((s) => s.core).map((s) => s.path).join('');
+const lattice = buildLattice({ path: land, width, height, cell: 74, rotate: -14 })
+	.map((edge) => {
+		const [mx, my] = [(edge.x1 + edge.x2) / 2, (edge.y1 + edge.y2) / 2];
+		const nearest = points.slice(1).map((to, leg) => ({ leg, ...along(mx, my, points[leg], to) }))
+			.reduce((a, b) => (b.d < a.d ? b : a));
+		return { ...edge, ...nearest };
+	})
+	.filter((edge) => edge.d < 58);
+
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+---
+<div
+	class="state state--route"
+	data-route
+	data-width={width}
+	data-height={height}
+	style={`--route-ratio: ${(height / width).toFixed(4)}; --route-start: ${(points[0].x / width).toFixed(4)}`}
+>
+	<svg class="route-map" viewBox={viewBox} aria-hidden="true" focusable="false">
+		<defs>
+			<clipPath id="route-land">
+				<path d={land} />
+			</clipPath>
+		</defs>
+
+		<g class="route-states">
+			{states.map(({ path, core }) => (
+				<path class:list={['route-state', { 'route-state--near': !core }]} d={path} />
+			))}
+		</g>
+
+		<g class="route-lattice" clip-path="url(#route-land)">
+			{lattice.map(({ x1, y1, x2, y2, leg, t }) => (
+				<line x1={x1} y1={y1} x2={x2} y2={y2} pathLength="1" data-leg={leg} data-t={t.toFixed(3)} />
+			))}
+		</g>
+
+		<g class="route-legs">
+			{legs.map(({ d, kind, leg }) => (
+				<path class={`route-strand route-strand--${kind}`} d={d} pathLength="1" data-leg={leg} />
+			))}
+		</g>
+	</svg>
+
+	<ul class="stops" aria-label="Where I've worked, on site and remotely">
+		{points.map(({ name, role, side, phoneSide, x, y }) => (
+			<li class="city stop" data-side={side} data-phone-side={phoneSide} data-city={name} data-role={role} data-x={x.toFixed(1)} data-y={y.toFixed(1)} style={`left: ${pct(x, width)}; top: ${pct(y, height)}`}>
+				<span class="city-dot" aria-hidden="true"></span>
+				<span class="city-label">
+					<span class="city-plate" aria-hidden="true"></span>
+					<span class="city-shine" aria-hidden="true"></span>
+					{/* Shows the role, the end state; route.js starts it on the city name */}
+					<span class="city-text" aria-hidden="true">{role}</span>
+					<span class="visually-hidden">{name}: {role}</span>
+					<span class="city-wipe" aria-hidden="true"></span>
+				</span>
+			</li>
+		))}
+	</ul>
+</div>

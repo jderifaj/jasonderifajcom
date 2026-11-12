@@ -25,9 +25,77 @@ test.describe('home page', () => {
 		await expect.poll(() => portrait.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
 	});
 
+	test('names the four disciplines for screen readers, whichever map is showing', async ({ page }) => {
+		await page.goto('/');
+		for (const discipline of [
+			'Interactive Web Development',
+			'Motion & Scroll Animation',
+			'Design Systems & UI Engineering',
+			'Accessible, Fast Front-End',
+		]) {
+			await expect(page.getByRole('listitem').filter({ hasText: discipline })).toHaveCount(1);
+		}
+	});
+
+	test('route map: Athens, Cary, Richmond, then Washington, all on screen', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		await page.goto('/');
+		test.skip(!(await page.locator('[data-route]').count()), 'the poster shows the North Carolina map');
+
+		const stops = page.getByRole('list', { name: /Where I've worked/ });
+		// Screen readers hear the city and what I do there; the finished map shows what I do.
+		await expect(stops.locator('.visually-hidden')).toHaveText([
+			'Athens, GA: Interactive Web Development',
+			'Cary, NC: Motion & Scroll Animation',
+			'Richmond, VA: Accessible, Fast Front-End',
+			'Washington, DC: Design Systems & UI Engineering',
+		]);
+		await expect(stops.locator('.city-text')).toHaveText([
+			'Interactive Web Development',
+			'Motion & Scroll Animation',
+			'Accessible, Fast Front-End',
+			'Design Systems & UI Engineering',
+		]);
+		const width = page.viewportSize()!.width;
+		for (const label of await stops.locator('.city-label').all()) {
+			await expect(label).toBeVisible();
+			const box = (await label.boundingBox())!;
+			expect(box.x).toBeGreaterThanOrEqual(0);
+			expect(box.x + box.width).toBeLessThanOrEqual(width);
+		}
+	});
+
+	test('route map: flies out from Athens and ends on the whole route, every stop uncovered', async ({ page }) => {
+		await page.goto('/');
+		test.skip(!(await page.locator('[data-route]').count()), 'the poster shows the North Carolina map');
+
+		// Athens is named first, then changes to what I do there once the line leaves it.
+		const athens = page.locator('.stop .city-text').first();
+		await expect(athens).toHaveText('Athens, GA', { timeout: 8_000 });
+		await expect(athens).toHaveText('Interactive Web Development', { timeout: 8_000 });
+
+		const map = page.locator('.route-map');
+		// It opens close on Athens…
+		// …and ends on the full frame, with every stop's label showing.
+		const full = await page.locator('[data-route]').evaluate((el) => `0 0 ${el.dataset.width} ${el.dataset.height}`);
+		await expect.poll(() => map.getAttribute('viewBox'), { timeout: 20_000 }).toBe(full);
+		await expect(page.locator('.stop .city-text')).toHaveText(
+			['Interactive Web Development', 'Motion & Scroll Animation', 'Accessible, Fast Front-End', 'Design Systems & UI Engineering'],
+			{ timeout: 5_000 },
+		);
+		for (const text of await page.locator('.stop .city-text').all()) {
+			await expect.poll(() => text.evaluate((el) => getComputedStyle(el).opacity), { timeout: 5_000 }).toBe('1');
+		}
+		// Every strand is drawn all the way to its stop.
+		for (const strand of await page.locator('.route-strand').all()) {
+			await expect.poll(() => strand.evaluate((el) => getComputedStyle(el).strokeDashoffset)).toBe('0px');
+		}
+	});
+
 	test('pins the four disciplines to Cary, Charlotte, Asheville and Wilmington, all on screen', async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await page.goto('/');
+		test.skip(!(await page.locator('.cities').count()), 'the poster shows the route map');
 		const list = page.getByRole('list', { name: 'What I do' });
 		await expect(list.getByRole('listitem')).toHaveText([
 			'Interactive Web Development',
@@ -53,6 +121,7 @@ test.describe('home page', () => {
 
 	test('brings each city in with its dot, then uncovers its label', async ({ page }) => {
 		await page.goto('/');
+		test.skip(!(await page.locator('.cities').count()), 'the poster shows the route map');
 		const last = page.locator('.city[data-city="Wilmington"] .city-text');
 		await expect.poll(() => last.evaluate((el) => getComputedStyle(el).opacity), { timeout: 15_000 }).toBe('1');
 		for (const wipe of await page.locator('.city-wipe').all()) {
