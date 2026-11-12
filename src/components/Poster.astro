@@ -3,13 +3,6 @@ import { Picture } from 'astro:assets';
 import NorthCarolina from './NorthCarolina.astro';
 import portrait from '../assets/images/jason-magazine.jpg';
 
-const disciplines = [
-	'Interactive Web Development',
-	'Motion & Scroll Animation',
-	'Design Systems & UI Engineering',
-	'Accessible, Fast Front-End',
-];
-
 const contacts = [
 	{ label: 'jderifaj@gmail.com', href: 'mailto:jderifaj@gmail.com' },
 	{ label: 'GitHub', href: 'https://github.com/jderifaj', rel: 'me' },
@@ -45,12 +38,6 @@ const tiles = [
 
 	<div class="copy">
 		<NorthCarolina />
-
-		<ul class="disciplines">
-			{disciplines.map((discipline) => (
-				<li>{discipline}<span class="dash" aria-hidden="true"></span></li>
-			))}
-		</ul>
 
 		<p class="poster-url">jasonderifaj.com</p>
 		<p class="poster-meta">

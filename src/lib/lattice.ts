@@ -98,3 +98,43 @@ export function buildLattice({ path, width, height, cell, rotate }: Options): La
 
 	return edges;
 }
+
+export interface LatticePoint {
+	x: number;
+	y: number;
+	/** A grid corner, where lines meet end to end, by node id… */
+	node?: number;
+	/** …or the middle of a cell, where its two diagonals cross, by their indexes in the edge list. */
+	cross?: [number, number];
+}
+
+/**
+ * The lattice point nearest (x, y) where lines meet, inside the shape so it's never
+ * clipped away: a grid corner, or a cell centre where the two diagonals cross.
+ */
+export function nearestIntersection(edges: LatticeEdge[], path: string, x: number, y: number): LatticePoint {
+	const rings = ringsOf(path);
+	const points: LatticePoint[] = [];
+
+	const corners = new Map<number, LatticePoint>();
+	for (const { x1, y1, x2, y2, from, to } of edges) {
+		corners.set(from, { x: x1, y: y1, node: from });
+		corners.set(to, { x: x2, y: y2, node: to });
+	}
+	points.push(...corners.values());
+
+	// Two edges sharing a midpoint are the diagonals of one cell.
+	const byMiddle = new Map<string, number[]>();
+	edges.forEach(({ x1, y1, x2, y2 }, index) => {
+		const key = `${Math.round(x1 + x2)},${Math.round(y1 + y2)}`;
+		byMiddle.set(key, [...(byMiddle.get(key) ?? []), index]);
+	});
+	for (const pair of byMiddle.values()) {
+		if (pair.length !== 2) continue;
+		const { x1, y1, x2, y2 } = edges[pair[0]];
+		points.push({ x: (x1 + x2) / 2, y: (y1 + y2) / 2, cross: [pair[0], pair[1]] });
+	}
+
+	const inside = points.filter((p) => contains(rings, [p.x, p.y]));
+	return inside.reduce((best, p) => (Math.hypot(p.x - x, p.y - y) < Math.hypot(best.x - x, best.y - y) ? p : best));
+}

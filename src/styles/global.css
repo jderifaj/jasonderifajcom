@@ -185,18 +185,25 @@ ul {
 }
 
 /* North Carolina, overprinted on the portrait (src/components/NorthCarolina.astro).
-   Oversized, tilted and bleeding off the left edge, like Max Huber's derrick. */
+   Oversized, tilted and bleeding off the left edge, like Max Huber's derrick.
+   The map and its city labels share this box, so the labels tilt, drift and scale with it. */
 .state {
 	position: absolute;
-	top: -1.5rem;
+	top: 0.5rem;
 	left: -9vw;
 	z-index: -1;
 	width: clamp(40rem, 92vw, 96rem);
-	height: auto;
-	overflow: visible;
 	transform: rotate(-7deg);
 	transform-origin: 30% 50%;
 	pointer-events: none;
+	container-type: inline-size;
+}
+
+.state-map {
+	display: block;
+	width: 100%;
+	height: auto;
+	overflow: visible;
 }
 
 .state-truss line {
@@ -223,19 +230,89 @@ ul {
 	.js .state-truss line {
 		stroke-dashoffset: 1;
 	}
+
+	/* Each city waits for its dot, then its wipe */
+	.js .city-dot {
+		transform: scale(0);
+	}
+
+	.js .city-plate,
+	.js .city-text {
+		opacity: 0;
+	}
 }
 
-.disciplines {
-	font-size: var(--line-size);
-	line-height: 1.04;
-	letter-spacing: -0.01em;
+/* The disciplines, each pinned to a city on the map. Sized to the map, not the page:
+   about 1% of its width, never smaller than 11px. */
+.cities {
+	font-size: clamp(0.6875rem, 1.05cqi, 1rem);
 }
 
-.disciplines li {
-	text-wrap: balance;
+.city {
+	position: absolute;
+	width: 0;
+	height: 0;
 }
 
+.city-dot {
+	position: absolute;
+	top: -0.3em;
+	left: -0.3em;
+	width: 0.6em;
+	height: 0.6em;
+	border-radius: 50%;
+	background: var(--paper);
+	box-shadow: 0 0 0 0.18em var(--accent-hot);
+}
+
+/* The label sits beside its dot, centered on it */
+.city-label {
+	position: absolute;
+	top: 0;
+	left: 0.85em;
+	padding: 0.3em 0.5em;
+	font-weight: 600;
+	line-height: 1.15;
+	white-space: nowrap;
+	color: var(--accent);
+	transform: translateY(-50%);
+}
+
+.city[data-side='left'] .city-label {
+	right: 0.85em;
+	left: auto;
+}
+
+/* On a smaller map, Asheville and Charlotte are close: Asheville's label rises above its dot */
+@media (max-width: 899px) {
+	.city[data-city='Asheville'] .city-label {
+		transform: translateY(-125%);
+	}
+}
+
+/* The light bar, offset below the text */
+.city-plate {
+	position: absolute;
+	inset: 0;
+	background: var(--accent-soft);
+	transform: translate(0.3em, 0.3em);
+}
+
+.city-text {
+	position: relative;
+}
+
+/* The blue bar that wipes across and uncovers the label (src/scripts/state.js) */
+.city-wipe {
+	position: absolute;
+	inset: 0 -0.3em -0.3em 0;
+	background: var(--accent-hot);
+	transform: scaleX(0);
+}
+
+/* The URL, intro line and contacts sit at the foot of the poster, leaving the map clear */
 .poster-url {
+	margin-top: auto;
 	font-size: var(--line-size);
 	font-weight: 700;
 	line-height: 1.1;
@@ -284,7 +361,6 @@ ul {
 
 .tiles {
 	display: flex;
-	margin-top: auto;
 	padding-top: clamp(2rem, 6vh, 5rem);
 }
 
@@ -889,11 +965,12 @@ ul {
 		object-position: 50% 72%;
 	}
 
+	/* Narrow enough that all four cities and their labels stay on screen */
 	.state {
-		top: 0;
-		left: -45vw;
-		width: 190vw;
-		transform: rotate(-9deg);
+		top: 2rem;
+		left: -20vw;
+		width: 120vw;
+		transform: rotate(-7deg);
 	}
 
 	.tiles {

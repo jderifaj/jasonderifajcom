@@ -5,26 +5,58 @@
  *
  * The lattice is real line segments rather than a pattern, so src/scripts/state.js
  * can draw them one by one.
+ *
+ * The four disciplines are pinned to cities on the map, as a list, so they tilt and
+ * drift with it and scale with it. Each city sits on the lattice intersection nearest
+ * to it, so state.js can pop its dot the moment the growing lines meet there, then
+ * wipe a blue bar across to uncover the label.
  */
-import { northCarolina } from '../data/north-carolina';
-import { buildLattice } from '../lib/lattice';
+import { cities, northCarolina, project } from '../data/north-carolina';
+import { buildLattice, nearestIntersection } from '../lib/lattice';
 
 const { viewBox, path } = northCarolina;
 const [, , width, height] = viewBox.split(' ').map(Number);
 
 const lattice = buildLattice({ path, width, height, cell: 96, rotate: -14 });
----
-<svg class="state" viewBox={viewBox} aria-hidden="true" focusable="false">
-	<defs>
-		<clipPath id="state-clip">
-			<path d={path} />
-		</clipPath>
-	</defs>
 
-	<g class="state-truss" clip-path="url(#state-clip)">
-		{lattice.map(({ x1, y1, x2, y2, from, to }) => (
-			<line x1={x1} y1={y1} x2={x2} y2={y2} pathLength="1" data-from={from} data-to={to} />
+const pins = cities.map((city) => {
+	const { x: cityX, y: cityY } = project(city.lat, city.lon);
+	const { x, y, node, cross } = nearestIntersection(lattice, path, cityX, cityY);
+	return {
+		...city,
+		left: `${(x / width) * 100}%`,
+		top: `${(y / height) * 100}%`,
+		meet: node !== undefined ? { 'data-node': node } : { 'data-cross': cross!.join(' ') },
+		at: { 'data-x': x.toFixed(1), 'data-y': y.toFixed(1) },
+	};
+});
+---
+<div class="state">
+	<svg class="state-map" viewBox={viewBox} aria-hidden="true" focusable="false">
+		<defs>
+			<clipPath id="state-clip">
+				<path d={path} />
+			</clipPath>
+		</defs>
+
+		<g class="state-truss" clip-path="url(#state-clip)">
+			{lattice.map(({ x1, y1, x2, y2, from, to }) => (
+				<line x1={x1} y1={y1} x2={x2} y2={y2} pathLength="1" data-from={from} data-to={to} />
+			))}
+		</g>
+		<path class="state-line" d={path} />
+	</svg>
+
+	<ul class="cities" aria-label="What I do">
+		{pins.map(({ name, label, side, left, top, meet, at }) => (
+			<li class="city" data-side={side} data-city={name} {...meet} {...at} style={`left: ${left}; top: ${top}`}>
+				<span class="city-dot" aria-hidden="true"></span>
+				<span class="city-label">
+					<span class="city-plate" aria-hidden="true"></span>
+					<span class="city-text">{label}</span>
+					<span class="city-wipe" aria-hidden="true"></span>
+				</span>
+			</li>
 		))}
-	</g>
-	<path class="state-line" d={path} />
-</svg>
+	</ul>
+</div>

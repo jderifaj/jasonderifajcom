@@ -25,6 +25,41 @@ test.describe('home page', () => {
 		await expect.poll(() => portrait.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
 	});
 
+	test('pins the four disciplines to Cary, Charlotte, Asheville and Wilmington, all on screen', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		await page.goto('/');
+		const list = page.getByRole('list', { name: 'What I do' });
+		await expect(list.getByRole('listitem')).toHaveText([
+			'Interactive Web Development',
+			'Motion & Scroll Animation',
+			'Design Systems & UI Engineering',
+			'Accessible, Fast Front-End',
+		]);
+		expect(await list.getByRole('listitem').evaluateAll((items) => items.map((li) => (li as HTMLElement).dataset.city))).toEqual([
+			'Cary',
+			'Charlotte',
+			'Asheville',
+			'Wilmington',
+		]);
+
+		const width = page.viewportSize()!.width;
+		for (const label of await page.locator('.city-label').all()) {
+			await expect(label).toBeVisible();
+			const box = (await label.boundingBox())!;
+			expect(box.x).toBeGreaterThanOrEqual(0);
+			expect(box.x + box.width).toBeLessThanOrEqual(width);
+		}
+	});
+
+	test('brings each city in with its dot, then uncovers its label', async ({ page }) => {
+		await page.goto('/');
+		const last = page.locator('.city[data-city="Wilmington"] .city-text');
+		await expect.poll(() => last.evaluate((el) => getComputedStyle(el).opacity), { timeout: 15_000 }).toBe('1');
+		for (const wipe of await page.locator('.city-wipe').all()) {
+			await expect.poll(() => wipe.evaluate((el) => getComputedStyle(el).transform)).toBe('matrix(0, 0, 0, 1, 0, 0)');
+		}
+	});
+
 	test('has working contact links', async ({ page }) => {
 		await page.goto('/');
 		const contact = page.getByRole('list', { name: 'Contact' });

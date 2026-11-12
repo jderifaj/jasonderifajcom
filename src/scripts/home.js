@@ -9,9 +9,9 @@ initPanels();
 initWorkPreview();
 initCaseStudyPulse();
 
-// North Carolina comes in last, once the intro has finished and everything has loaded.
+// North Carolina starts drawing once the intro is most of the way in and everything has loaded.
 if (intro) {
-	const introDone = new Promise((resolve) => intro.eventCallback('onComplete', resolve));
+	const introDone = new Promise((resolve) => intro.call(resolve, undefined, 1.2));
 	const pageLoaded =
 		document.readyState === 'complete'
 			? Promise.resolve()
