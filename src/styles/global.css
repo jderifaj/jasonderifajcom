@@ -1,15 +1,36 @@
-/* Poster palette */
+/* ==========================================================================
+   jasonderifaj.com
+   1. Tokens          5. Panels
+   2. Base            6. Curated work
+   3. Utilities       7. Recommendations
+   4. Poster          8. Responsive and reduced motion
+   ========================================================================== */
+
+
+/* 1. Tokens
+   ========================================================================== */
+
 :root {
 	--accent: #255987;
 	--accent-hot: #4b9cd3;
 	--accent-soft: #edf4fa;
 	--ink: #16100e;
 	--paper: #fff;
+
 	--gutter: clamp(1rem, 8vw, 9rem);
 	--band-size: clamp(1.45rem, 3.6vw + 0.4rem, 4.4rem);
 	--line-size: clamp(1.5rem, 4vw + 0.2rem, 4.6rem);
-	font-family: 'Figtree', system-ui, sans-serif;
+	--small-size: clamp(0.85rem, 0.6vw + 0.6rem, 1.15rem);
+
+	--thumb-width: 75px;
+	--work-gap: clamp(0.75rem, 2vw, 1.5rem);
+
+	font-family: 'Figtree Variable', system-ui, sans-serif;
 }
+
+
+/* 2. Base
+   ========================================================================== */
 
 *,
 *::before,
@@ -25,6 +46,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
+/* Keep the page behind an open panel still */
 html:has(dialog[open]) {
 	overflow: hidden;
 }
@@ -32,10 +54,34 @@ html:has(dialog[open]) {
 h1,
 h2,
 p,
-ul {
+ul,
+figure,
+blockquote {
 	margin: 0;
 }
 
+ul {
+	padding: 0;
+	list-style: none;
+}
+
+
+/* 3. Utilities
+   ========================================================================== */
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* The short accent rule that ends a line of type */
 .dash {
 	display: inline-block;
 	width: 0.85em;
@@ -46,30 +92,33 @@ ul {
 	transform-origin: left center;
 }
 
-/* ---------- Poster ---------- */
+
+/* 4. Poster
+   ========================================================================== */
 
 .poster {
 	position: relative;
-	min-height: 100svh;
-	overflow: hidden;
+	isolation: isolate;
 	display: flex;
 	flex-direction: column;
+	min-height: 100svh;
 	padding: clamp(3rem, 13vh, 8rem) 0 clamp(2.5rem, 6vh, 4rem);
-	isolation: isolate;
+	overflow: hidden;
 }
 
+/* Bleeds past the edges so the pointer parallax never shows a gap */
 .poster-photo {
 	position: absolute;
 	inset: -24px;
+	z-index: -2;
 	width: calc(100% + 48px);
-	height: calc(100% + 48px);
 	max-width: none;
+	height: calc(100% + 48px);
 	object-fit: cover;
 	object-position: 50% 18%;
-	z-index: -2;
 }
 
-/* Deepen the sky behind the type so white lines hold their contrast */
+/* Deepens the sky behind the type so the white lines hold their contrast */
 .poster::before {
 	content: '';
 	position: absolute;
@@ -87,29 +136,32 @@ ul {
 	opacity: 0.85;
 }
 
+/* White band with the name and title ---------------------------------------- */
+
 .band {
 	position: relative;
-	background: var(--paper);
-	color: var(--ink);
+	z-index: 2;
 	padding: 0.18em calc(var(--gutter) + 2.8em) 0 var(--gutter);
 	font-size: var(--band-size);
 	line-height: 1.05;
-	z-index: 2;
+	color: var(--ink);
+	background: var(--paper);
 }
 
 .band h1 {
 	font-size: 1em;
 	font-weight: 700;
-	color: var(--accent);
 	letter-spacing: -0.005em;
+	color: var(--accent);
 }
 
 .band .role {
+	margin-bottom: -0.2em; /* descenders spill out of the band */
 	font-weight: 600;
 	line-height: 1;
-	margin-bottom: -0.2em; /* descenders spill out of the band, like the poster */
 }
 
+/* Boxed J D </> mark, top right */
 .logo {
 	position: absolute;
 	top: 0;
@@ -117,7 +169,6 @@ ul {
 	display: grid;
 	grid-template-columns: repeat(2, 1.2em);
 	grid-auto-rows: 1.2em;
-	font-size: 1em;
 	font-weight: 600;
 	line-height: 1;
 }
@@ -125,41 +176,44 @@ ul {
 .logo span {
 	display: grid;
 	place-items: center;
-	background: var(--paper);
-	color: var(--ink);
-	border: 0.07em solid var(--ink);
 	margin: 0 -0.035em -0.035em 0;
+	color: var(--ink);
+	background: var(--paper);
+	border: 0.07em solid var(--ink);
 }
 
-.logo .empty {
+.logo .logo-empty {
 	visibility: hidden;
 }
 
-.logo .code {
+.logo .logo-code {
+	margin: 0 -0.07em -0.07em 0;
 	font-size: 0.48em;
 	border-width: 0.145em;
-	margin: 0 -0.07em -0.07em 0;
 }
+
+/* Copy below the band ------------------------------------------------------- */
 
 .copy {
 	position: relative;
+	isolation: isolate;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	padding: 0.4em var(--gutter) 0;
-	isolation: isolate;
 }
 
-.mono {
+/* Large translucent J D tiles behind the lines */
+.monogram {
 	position: absolute;
 	top: 0.6rem;
 	left: clamp(0.5rem, 2.5vw, 2.5rem);
-	display: flex;
 	z-index: -1;
+	display: flex;
 	pointer-events: none;
 }
 
-.mono-tile {
+.monogram-tile {
 	display: grid;
 	place-items: center;
 	width: clamp(8rem, 26vw, 26rem);
@@ -172,19 +226,17 @@ ul {
 	border: clamp(6px, 1vw, 16px) solid rgb(255 255 255 / 0.28);
 }
 
-.mono-tile + .mono-tile {
+.monogram-tile + .monogram-tile {
 	border-left: 0;
 }
 
-.lines {
-	list-style: none;
-	padding: 0;
+.disciplines {
 	font-size: var(--line-size);
 	line-height: 1.04;
 	letter-spacing: -0.01em;
 }
 
-.lines li {
+.disciplines li {
 	text-wrap: balance;
 }
 
@@ -196,10 +248,9 @@ ul {
 }
 
 .poster-meta {
-	margin-top: 0.9rem;
 	max-width: 72ch;
-	font-size: clamp(0.85rem, 0.6vw + 0.6rem, 1.15rem);
-	font-weight: 400;
+	margin-top: 0.9rem;
+	font-size: var(--small-size);
 	line-height: 1.5;
 }
 
@@ -208,9 +259,7 @@ ul {
 	flex-wrap: wrap;
 	gap: 0.25rem 0;
 	margin-top: 0.35rem;
-	padding: 0;
-	list-style: none;
-	font-size: clamp(0.85rem, 0.6vw + 0.6rem, 1.15rem);
+	font-size: var(--small-size);
 	font-weight: 600;
 	line-height: 1.5;
 }
@@ -223,8 +272,7 @@ ul {
 
 .poster-contact a {
 	color: var(--paper);
-	text-decoration: underline;
-	text-decoration-thickness: 1px;
+	text-decoration: underline 1px;
 	text-underline-offset: 0.2em;
 }
 
@@ -237,13 +285,15 @@ ul {
 	outline-offset: 2px;
 }
 
-.ctas {
+/* Work and Words tiles that open the panels ---------------------------------- */
+
+.tiles {
 	display: flex;
 	margin-top: auto;
 	padding-top: clamp(2rem, 6vh, 5rem);
 }
 
-.cta {
+.tile {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -261,22 +311,22 @@ ul {
 	transition: background 0.25s, color 0.25s;
 }
 
-.cta + .cta {
+.tile + .tile {
 	border-left: 0;
 }
 
-.cta-big {
+.tile-title {
 	font-size: clamp(2rem, 3.6vw, 3.6rem);
 	font-weight: 700;
 	line-height: 0.9;
 }
 
-.cta-label {
+.tile-label {
 	font-size: clamp(0.8rem, 0.5vw + 0.6rem, 1rem);
 	font-weight: 500;
 }
 
-.cta .dash {
+.tile .dash {
 	width: 1.6em;
 	height: 0.15em;
 	vertical-align: 0.25em;
@@ -284,19 +334,18 @@ ul {
 	transition: width 0.25s;
 }
 
-.cta:hover,
-.cta:focus-visible {
-	background: var(--paper);
+.tile:hover,
+.tile:focus-visible {
 	color: var(--accent);
+	background: var(--paper);
 }
 
-.cta:hover .dash,
-.cta:focus-visible .dash {
+.tile:hover .dash,
+.tile:focus-visible .dash {
 	width: 2.6em;
 }
 
-.cta:focus-visible,
-.panel-close:focus-visible {
+.tile:focus-visible {
 	outline: 3px solid var(--ink);
 	outline-offset: 3px;
 }
@@ -309,23 +358,25 @@ ul {
 	font-weight: 300;
 }
 
-/* ---------- Panels (work, kind words) ---------- */
+
+/* 5. Panels
+   ========================================================================== */
 
 .panel {
 	width: 100vw;
-	height: 100dvh;
 	max-width: none;
+	height: 100dvh;
 	max-height: none;
 	margin: 0;
 	padding: 0;
-	border: 0;
 	overflow: auto;
-	background: var(--paper);
 	color: var(--ink);
+	background: var(--paper);
+	border: 0;
 }
 
 .panel::backdrop {
-	background: rgb(222 90 34 / 0.7);
+	background: rgb(37 89 135 / 0.7);
 }
 
 .panel-head {
@@ -360,90 +411,89 @@ ul {
 }
 
 .panel-close:hover {
-	background: var(--ink);
 	color: var(--paper);
+	background: var(--ink);
+}
+
+.panel-close:focus-visible {
+	outline: 3px solid var(--ink);
+	outline-offset: 3px;
 }
 
 .panel-body {
 	padding: 1.5rem var(--gutter) 4rem;
 }
 
-/* Work list */
-.work .item > a {
-	display: block;
+
+/* 6. Curated work
+   ========================================================================== */
+
+.work-link {
+	display: grid;
+	grid-template-columns: var(--thumb-width) 1fr auto;
+	align-items: center;
+	gap: var(--work-gap);
+	padding: 1rem 0;
+	font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.75rem);
 	color: inherit;
 	text-decoration: none;
 }
 
-.work .group {
-	display: grid;
-	grid-template-columns: 75px 1fr auto;
-	align-items: center;
-	gap: clamp(0.75rem, 2vw, 1.5rem);
-	padding: 1rem 0;
-	font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.75rem);
-}
-
-.work .photo {
-	width: 75px;
+.work-thumb {
+	display: block;
+	width: var(--thumb-width);
 	height: 40px;
+	object-fit: cover;
 	background: var(--accent-soft);
 }
 
-.work .photo img {
-	display: block;
-	width: 75px;
-	height: 40px;
-	object-fit: cover;
-}
-
-.work .year {
+.work-year {
 	font-weight: 700;
-	color: var(--accent);
 	font-variant-numeric: tabular-nums;
+	color: var(--accent);
 }
 
-.work .line {
+.work-rule {
 	width: 100%;
 	height: 2px;
 	background: var(--ink);
 	transition: background 0.25s;
 }
 
-.work .item:hover .descrip,
-.work .item:focus-within .descrip {
+.work-item:hover .work-title,
+.work-item:focus-within .work-title {
 	color: var(--accent);
 }
 
-.work .item:hover .line,
-.work .item:focus-within .line {
+.work-item:hover .work-rule,
+.work-item:focus-within .work-rule {
 	background: var(--accent);
 }
 
-/* Earlier magazine issues: type riding on a light blue bar, offset like the poster band */
-.archive {
+/* Earlier issues: type riding on a light blue bar, offset like the poster band */
+.earlier {
 	position: relative;
 	isolation: isolate;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: baseline;
 	gap: 0.35rem 1.5rem;
-	margin: -0.4rem 0 1.25rem calc(75px + clamp(0.75rem, 2vw, 1.5rem));
+	margin: -0.4rem 0 1.25rem calc(var(--thumb-width) + var(--work-gap));
 	padding-right: 1rem;
 }
 
-.archive::before {
+.earlier::before {
 	content: '';
 	position: absolute;
-	z-index: -1;
 	top: 0.55em;
+	right: 0;
 	bottom: -0.55rem;
 	left: -0.75rem;
-	right: 0;
+	z-index: -1;
 	background: var(--accent-soft);
 }
 
-.archive-label {
+.earlier-label {
 	font-size: 0.7rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
@@ -451,18 +501,18 @@ ul {
 	color: var(--accent);
 }
 
-.archive ul {
+.earlier-list {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.35rem 1.5rem;
-	padding: 0;
-	list-style: none;
 }
 
-.archive a {
+.earlier-link {
 	display: inline-flex;
 	align-items: baseline;
 	gap: 0.4rem;
+	min-height: 24px; /* comfortable target size */
+	padding-block: 0.15rem;
 	font-size: clamp(0.95rem, 0.6vw + 0.7rem, 1.2rem);
 	font-weight: 500;
 	color: var(--ink);
@@ -470,7 +520,7 @@ ul {
 	transition: color 0.3s;
 }
 
-.archive a::after {
+.earlier-link::after {
 	content: '';
 	align-self: center;
 	width: 0.9em;
@@ -479,32 +529,25 @@ ul {
 	transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.archive a:hover,
-.archive a:focus-visible {
+.earlier-link:hover,
+.earlier-link:focus-visible {
 	color: var(--accent);
 }
 
-.archive a:hover::after,
-.archive a:focus-visible::after {
+.earlier-link:hover::after,
+.earlier-link:focus-visible::after {
 	width: 1.8em;
 }
 
-.archive-year {
+.earlier-year {
 	font-size: 0.75em;
 	font-weight: 600;
-	color: var(--accent);
 	font-variant-numeric: tabular-nums;
+	color: var(--accent);
 }
 
-@media (max-width: 640px) {
-	.archive {
-		margin-left: 0;
-	}
-}
-
-/* Enlarged screenshot, lower right, while a project link is hovered or focused.
-   GSAP drives the reveal and the image swap (src/assets/js/home.js). Everything settles on
-   whole-pixel, untransformed layers so the screenshot stays sharp. */
+/* Enlarged screenshot, lower right, while a project is hovered or focused.
+   GSAP drives the reveal and the swap (src/scripts/work-preview.js). */
 .work-preview {
 	position: fixed;
 	right: var(--gutter);
@@ -530,8 +573,8 @@ ul {
 
 .work-preview-frame {
 	overflow: hidden;
-	border: 3px solid var(--ink);
 	background: var(--paper);
+	border: 3px solid var(--ink);
 }
 
 .work-preview-frame img {
@@ -543,56 +586,57 @@ ul {
 	object-fit: cover;
 }
 
-@media (hover: none), (max-width: 640px) {
-	.work-preview {
-		display: none;
-	}
-}
 
-/* Kind words */
-.comments ul {
-	list-style: none;
-	padding: 0;
+/* 7. Recommendations
+   ========================================================================== */
+
+.recommendations {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
 	gap: 1.5rem;
 }
 
-.comments li {
+.recommendations > li {
 	padding: clamp(1.25rem, 2vw, 2rem);
-	border: 2px solid var(--ink);
 	font-size: 1.1rem;
 	line-height: 1.55;
+	border: 2px solid var(--ink);
 }
 
-.comments .person {
+.recommendations figcaption {
 	margin-top: 1.5rem;
+}
+
+.recommendation-name {
+	display: block;
 	font-weight: 700;
 	color: var(--accent);
 }
 
-.comments .person span {
+.recommendation-role {
 	display: block;
 	font-size: 0.95rem;
-	font-weight: 400;
 	color: #555;
 }
 
-/* ---------- Wide screens: tiles move to the lower right ---------- */
 
+/* 8. Responsive and reduced motion
+   ========================================================================== */
+
+/* Wide screens: the tiles move to the lower right */
 @media (min-width: 900px) {
-	.ctas {
+	.tiles {
 		position: absolute;
 		right: var(--gutter);
 		bottom: clamp(2.5rem, 7vh, 4.5rem);
 		padding: 0;
 	}
 
-	.cta {
+	.tile {
 		width: clamp(9rem, 13vw, 13rem);
 	}
 
-	.cta-big {
+	.tile-title {
 		font-size: clamp(1.75rem, 2.7vw, 3rem);
 	}
 
@@ -607,23 +651,22 @@ ul {
 	}
 }
 
-/* ---------- Small screens ---------- */
-
+/* Small screens */
 @media (max-width: 640px) {
 	.poster-photo {
 		object-position: 50% 72%;
 	}
 
-	.mono-tile {
+	.monogram-tile {
 		width: 42vw;
 		font-size: 32vw;
 	}
 
-	.ctas {
+	.tiles {
 		width: 100%;
 	}
 
-	.cta {
+	.tile {
 		flex: 1;
 		width: auto;
 		aspect-ratio: 1.1;
@@ -632,5 +675,24 @@ ul {
 	.copyright {
 		position: static;
 		padding: 1.25rem var(--gutter) 0;
+	}
+
+	.earlier {
+		margin-left: 0;
+	}
+}
+
+/* Touch screens and narrow windows skip the hover preview */
+@media (hover: none), (max-width: 640px) {
+	.work-preview {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		transition-duration: 0.01ms !important;
 	}
 }

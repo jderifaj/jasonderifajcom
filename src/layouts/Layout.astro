@@ -1,4 +1,6 @@
 ---
+import '@fontsource-variable/figtree';
+import figtreeLatin from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 
 interface Props {
@@ -69,16 +71,11 @@ const imageUrl = new URL(image, Astro.site);
 				image: imageUrl.href,
 			})}
 		/>
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..800&display=swap" rel="stylesheet" />
+
+		<!-- Self-hosted Figtree; preload the Latin subset the page is set in -->
+		<link rel="preload" href={figtreeLatin} as="font" type="font/woff2" crossorigin />
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
-
-<script>
-	import { initHome } from '../assets/js/home';
-	initHome();
-</script>

@@ -1,0 +1,24 @@
+---
+/**
+ * A full-screen modal panel. Buttons elsewhere open it with
+ * commandfor="<id>" command="show-modal".
+ */
+interface Props {
+	id: string;
+	title: string;
+}
+
+const { id, title } = Astro.props;
+const titleId = `${id}-title`;
+---
+<dialog id={id} class="panel" aria-labelledby={titleId}>
+	<header class="panel-head">
+		<h2 id={titleId}>{title}<span class="dash" aria-hidden="true"></span></h2>
+		<button class="panel-close" type="button" commandfor={id} command="close" data-close>
+			Close <span aria-hidden="true">×</span>
+		</button>
+	</header>
+	<div class="panel-body">
+		<slot />
+	</div>
+</dialog>

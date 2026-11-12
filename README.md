@@ -15,21 +15,39 @@ The work and the testimonials are tucked behind two tiles, **Work** and **Words*
 ## How it works
 
 - **Astro 7** renders the site to static HTML.
-  - `src/components/poster.astro` is the home page poster.
-  - `src/components/work.astro` is the Curated work list. Projects are a data array at the top of the file, newest first. Earlier issues of BGE's magazine are listed in a strip under Issue 5 instead of as rows of their own.
-  - `src/components/comments.astro` holds the testimonials.
-  - `src/pages/index.astro` puts the poster and the two panels together; `src/layouts/Layout.astro` is the page shell.
-- **Plain CSS** in `src/styles/global.css`, with the palette as custom properties on `:root` (`--accent`, `--accent-hot`, `--accent-soft`, `--ink`, `--paper`). Type is Figtree from Google Fonts.
+- **Plain CSS** in `src/styles/global.css`, in numbered sections, with the palette and type sizes as custom properties on `:root`. Type is Figtree, self-hosted from `@fontsource-variable/figtree`, with the Latin subset preloaded.
 - **Native `<dialog>`** elements for the panels, opened with `commandfor`/`command` buttons, with a small script fallback for browsers that don't support those yet.
-- **GSAP** (`src/assets/js/home.js`) runs the poster's intro animation and pointer parallax, draws the lines in when the Work panel opens, and drives the hover preview: hovering or focusing a project shows a large screenshot in the lower right, and new screenshots wipe in over the old one.
-- **Astro's image pipeline** turns the screenshots into small thumbnails and 1024 px hover previews (WebP) at build time.
+- **GSAP** runs the poster's intro and pointer parallax, draws the lines in when a panel opens, and drives the hover preview: hovering or focusing a project shows a large screenshot in the lower right, and new screenshots wipe in over the old one.
+- **Astro's image pipeline** serves the portrait as AVIF with a WebP fallback, and turns the project screenshots into small thumbnails and 1024 px hover previews at build time.
+
+```
+src/
+├── data/
+│   ├── projects.ts          Curated work, newest first
+│   └── recommendations.ts   Quotes from colleagues
+├── components/
+│   ├── Poster.astro         The home page poster
+│   ├── Panel.astro          Full-screen dialog shell
+│   ├── WorkList.astro       Curated work rows and the hover preview card
+│   └── Recommendations.astro
+├── scripts/
+│   ├── home.js              Entry point
+│   ├── intro.js             Poster intro and pointer parallax
+│   ├── panels.js            Opening, closing and animating the panels
+│   ├── work-preview.js      The hover preview card
+│   └── motion.js            Reduced-motion and pointer helpers
+├── layouts/Layout.astro     Page shell, metadata and font preload
+├── pages/index.astro        Puts the poster and panels together
+└── styles/global.css
+tests/                       Playwright end-to-end and accessibility tests
+```
 
 ## Adding a project
 
 1. Take a screenshot of the live site at 2x, cropped to 75:40 (for example 2048 × 1092), and save it as `src/assets/images/work/<slug>.webp`.
-2. Add a line to the `projects` array in `src/components/work.astro`, for example `{ slug, title, year, url }`.
+2. Add an entry to `src/data/projects.ts` with its `slug`, `title`, `year`, `url`, and `alt` text describing what the screenshot shows.
 
-A project without a screenshot still gets a row, with a plain tile and no hover preview.
+The build stops with a clear error if a project's screenshot is missing.
 
 ## Decisions
 
@@ -37,6 +55,7 @@ A project without a screenshot still gets a row, with a plain tile and no hover 
 - **Content in the HTML**, so it reads without JavaScript and is easy for search engines and screen readers. Without JavaScript, the panels still open in browsers that support invoker commands.
 - **Animation as an enhancement:** everything is in the HTML first, and GSAP adds motion on top. Visitors with reduced motion turned on get plain fades instead.
 - **Sharp previews:** the hover card loses its transforms once it settles, because a transformed layer is resampled by the browser and looks soft.
+- **Accessible by default:** links that open a new tab say so to screen readers, the earlier magazine issues name the magazine, recommendations are marked up as quotes, and every target is at least 24 px. Axe checks run on every page state in the tests.
 
 ## Run it
 
@@ -48,6 +67,17 @@ npm run dev      # http://localhost:4321
 npm run build    # production build in ./dist
 npm run preview  # serve the build locally
 ```
+
+## Test
+
+[Playwright](https://playwright.dev/) runs the suite against the production build, at desktop and phone sizes. It covers the page loading cleanly, the panels with mouse and keyboard, the hover preview staying sharp, contact links, the sitemap, and [axe](https://github.com/dequelabs/axe-core) accessibility checks (color contrast is reviewed separately).
+
+```sh
+npx playwright install chromium   # once
+npm test                          # builds, serves on port 4325, runs the tests
+```
+
+Set `TEST_PORT` to use a different port.
 
 ## Deploy
 

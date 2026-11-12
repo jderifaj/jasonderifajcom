@@ -1,0 +1,18 @@
+---
+import { recommendations } from '../data/recommendations';
+---
+<ul class="recommendations">
+	{recommendations.map(({ quote, name, role }) => (
+		<li>
+			<figure>
+				<blockquote>
+					<p>{quote}</p>
+				</blockquote>
+				<figcaption>
+					<span class="recommendation-name">{name}</span>
+					<span class="recommendation-role">{role}</span>
+				</figcaption>
+			</figure>
+		</li>
+	))}
+</ul>

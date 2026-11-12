@@ -1,0 +1,71 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { projects } from '../data/projects';
+
+const screenshots = import.meta.glob<{ default: ImageMetadata }>('../assets/images/work/*.webp', {
+	eager: true,
+});
+
+const screenshotFor = (slug: string) => {
+	const image = screenshots[`../assets/images/work/${slug}.webp`]?.default;
+	if (!image) throw new Error(`Missing screenshot: src/assets/images/work/${slug}.webp`);
+	return image;
+};
+
+/** The hover card is at most 512 CSS px wide, so 1024 px covers 2x screens. */
+const previewFor = async (slug: string) => {
+	const image = await getImage({ src: screenshotFor(slug), width: 1024, format: 'webp', quality: 82 });
+	return image.src;
+};
+
+const rows = await Promise.all(
+	projects.map(async (project) => ({
+		...project,
+		screenshot: screenshotFor(project.slug),
+		preview: await previewFor(project.slug),
+		earlier: project.earlier
+			? await Promise.all(project.earlier.map(async (issue) => ({ ...issue, preview: await previewFor(issue.slug) })))
+			: undefined,
+	})),
+);
+
+const newTab = { target: '_blank', rel: 'noopener' };
+---
+<ul class="work-list">
+	{rows.map((project) => (
+		<li class="work-item">
+			<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
+				<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
+				<span class="work-title">{project.title}</span>
+				<span class="work-year">{project.year}</span>
+				<span class="visually-hidden">(opens in a new tab)</span>
+			</a>
+
+			{project.earlier && (
+				<div class="earlier">
+					<span class="earlier-label" id={`${project.slug}-earlier`}>Earlier issues</span>
+					<ul class="earlier-list" aria-labelledby={`${project.slug}-earlier`}>
+						{project.earlier.map((issue) => (
+							<li>
+								<a class="earlier-link" href={issue.url} {...newTab} data-preview={issue.preview}>
+									<span class="visually-hidden">{issue.series},</span>
+									{issue.label}
+									<span class="earlier-year">{issue.year}</span>
+									<span class="visually-hidden">(opens in a new tab)</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+
+			<div class="work-rule"></div>
+		</li>
+	))}
+</ul>
+
+<div class="work-preview" aria-hidden="true">
+	<div class="work-preview-shadow"></div>
+	<div class="work-preview-frame"></div>
+</div>

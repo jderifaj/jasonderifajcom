@@ -1,0 +1,87 @@
+---
+import { Picture } from 'astro:assets';
+import portrait from '../assets/images/jason-duotone.jpg';
+
+const disciplines = [
+	'Interactive Web Development',
+	'Motion & Scroll Animation',
+	'Design Systems & UI Engineering',
+	'Accessible, Fast Front-End',
+];
+
+const contacts = [
+	{ label: 'jderifaj@gmail.com', href: 'mailto:jderifaj@gmail.com' },
+	{ label: 'GitHub', href: 'https://github.com/jderifaj', rel: 'me' },
+	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/jason-derifaj-b219a72', rel: 'me' },
+];
+
+const tiles = [
+	{ panel: 'work', title: 'Work', label: 'Curated projects' },
+	{ panel: 'recommendations', title: 'Words', label: 'Recommendations' },
+];
+---
+<section class="poster" aria-labelledby="poster-name">
+	<Picture
+		src={portrait}
+		formats={['avif', 'webp']}
+		widths={[800, 1200, 1600]}
+		sizes="100vw"
+		alt="Jason Derifaj, smiling, in a blue duotone portrait"
+		class="poster-photo"
+		loading="eager"
+		fetchpriority="high"
+	/>
+
+	<p class="credit">Photo: self-portrait&ensp;|&ensp;Design &amp; code: Jason Derifaj</p>
+
+	<div class="band">
+		<div class="band-title">
+			<h1 id="poster-name">Jason Derifaj</h1>
+			<p class="role">Creative Front-End Developer</p>
+		</div>
+		<div class="logo" aria-hidden="true">
+			<span>J</span><span>D</span><span class="logo-empty"></span><span class="logo-code">&lt;/&gt;</span>
+		</div>
+	</div>
+
+	<div class="copy">
+		<div class="monogram" aria-hidden="true">
+			<span class="monogram-tile">J</span><span class="monogram-tile">D</span>
+		</div>
+
+		<ul class="disciplines">
+			{disciplines.map((discipline) => (
+				<li>{discipline}<span class="dash" aria-hidden="true"></span></li>
+			))}
+		</ul>
+
+		<p class="poster-url">jasonderifaj.com</p>
+		<p class="poster-meta">
+			Interactive developer blending animation and design to tell compelling stories on the web
+			— résumé on request — #creativefrontend —
+		</p>
+		<ul class="poster-contact" aria-label="Contact">
+			{contacts.map(({ label, href, rel }) => (
+				<li><a href={href} rel={rel}>{label}</a></li>
+			))}
+		</ul>
+
+		<div class="tiles">
+			{tiles.map(({ panel, title, label }) => (
+				<button
+					class="tile"
+					type="button"
+					commandfor={panel}
+					command="show-modal"
+					aria-haspopup="dialog"
+					data-open={panel}
+				>
+					<span class="tile-title">{title}</span>
+					<span class="tile-label">{label} <span class="dash" aria-hidden="true"></span></span>
+				</button>
+			))}
+		</div>
+	</div>
+
+	<p class="copyright">&copy; {new Date().getFullYear()} Jason Derifaj</p>
+</section>
