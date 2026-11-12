@@ -8,7 +8,7 @@ Most of my work is client sites built at ICF's Creative Studio for PSEG, BGE, Co
 
 ## The design
 
-The home page is a single typographic poster, after Erik Desombere's posters for DAS Kortrijk: a duotone close-up portrait fills the screen, a white band carries my name and title, and large lines of type end in short accent dashes. Translucent monogram tiles sit behind the type, and a small boxed `J D </>` mark echoes the poster's logo.
+The home page is a single typographic poster: a duotone close-up portrait fills the screen, a white band carries my name and title, and large lines of type end in short accent dashes. Translucent monogram tiles sit behind the type, and a small boxed `J D </>` mark echoes the poster's logo.
 
 The work and the testimonials are tucked behind two tiles, **Work** and **Words**, which open full-screen panels.
 
