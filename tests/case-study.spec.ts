@@ -22,10 +22,25 @@ test('the AlexRenew row links to its case study page, which links back to Curate
 	await expect(page).toHaveURL('/');
 });
 
-test('the case study page has no accessibility violations', async ({ page }) => {
-	await page.goto('/work/alexrenew/');
-	const { violations } = await new AxeBuilder({ page })
-		.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
-		.analyze();
-	expect(violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+test('the ComEd feature row links to its case study page', async ({ page }) => {
+	await page.goto('/');
+	await page.getByRole('button', { name: /^Work/ }).click();
+	const name = 'The Efficient Home, Issue 2 Feature, ComEd';
+	await page.getByRole('link', { name: `Case study: ${name}` }).click();
+	await expect(page).toHaveURL('/work/comed-feature/');
+	await expect(page.getByRole('heading', { level: 1, name })).toBeVisible();
+	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveAttribute(
+		'href',
+		'https://comed.theefficienthome.com/issue2/feature.html',
+	);
 });
+
+for (const slug of ['alexrenew', 'comed-feature']) {
+	test(`the ${slug} case study page has no accessibility violations`, async ({ page }) => {
+		await page.goto(`/work/${slug}/`);
+		const { violations } = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
+			.analyze();
+		expect(violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+	});
+}
