@@ -123,6 +123,9 @@ function workPreview() {
 		if (src !== current) return; // the pointer has already moved on
 		front = 1 - front;
 		gsap.killTweensOf([next, prev]);
+		// A layer pulled back in mid-fade (moving back up the list) still carries that
+		// fade's blur and zoom; wipe them so it always arrives sharp.
+		gsap.set(next, { clearProps: 'filter,transform,clipPath' });
 		gsap.set(next, { zIndex: 2 });
 		gsap.set(prev, { zIndex: 1 });
 
