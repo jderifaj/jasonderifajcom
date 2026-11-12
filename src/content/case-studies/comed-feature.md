@@ -6,7 +6,7 @@ summary: A scroll-driven feature page for ComEd's magazine, built in a few days 
 	<div><dt>Client</dt><dd>ComEd, The Efficient Home, Issue 2</dd></div>
 	<div><dt>Role</dt><dd>Front-end developer and motion design lead</dd></div>
 	<div><dt>Year</dt><dd>2026</dd></div>
-	<div><dt>Stack</dt><dd>HTML, CSS, Bootstrap, JavaScript, GSAP, DrawSVG, SVG, Claude Code</dd></div>
+	<div><dt>Stack</dt><dd>HTML, CSS, Bootstrap, JavaScript, GSAP, DrawSVG, SVG</dd></div>
 </dl>
 
 ## The challenge
@@ -15,7 +15,7 @@ summary: A scroll-driven feature page for ComEd's magazine, built in a few days 
 
 ## The first traditional page I built with AI
 
-I'd used AI on bigger builds, but this was the first traditional, hand-built page I made with Claude alongside me. I didn't use it to generate a page and walk away. I used it to remove the slow parts, so I could spend my time on the parts of the design that make the page feel special.
+I'd used AI on bigger builds, but this was the first traditional, hand-built page I made with AI assisting me. I didn't use it to generate a page and walk away. I used it to remove the slow parts, so I could spend my time on the parts of the design that make the page feel special.
 
 That changed what was possible in the time we had. Features that would usually be cut for schedule made it in.
 

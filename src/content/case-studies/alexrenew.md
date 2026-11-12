@@ -44,10 +44,6 @@ I treated quality control as part of the work, not a phase at the end:
 
 Just as important, I asked questions. When something in a pull request or a plan felt wrong, I said so, and when something worked but could be better, I said that too. Working with traditional back-end teams, I pressed for those standards to hold across the whole build, not only in my own code.
 
-## AI-assisted development
-
-I was part of ICF's Claude Code pilot program, and this project was where I put it to work. I used AI-assisted development to move faster on scaffolding, refactors and test coverage, while every change still went through review, testing and design QA.
-
 ## The result
 
 AlexRenew got a site with modern design and real interactivity, and their content team kept the Drupal workflow they already knew. Bringing Astro into Drupal let us deliver what we promised in the pitch.

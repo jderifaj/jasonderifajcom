@@ -6,7 +6,7 @@ summary: A headless magazine platform for BGE, with Drupal on Pantheon for edito
 	<div><dt>Client</dt><dd>BGE, The Efficient Home magazine</dd></div>
 	<div><dt>Role</dt><dd>Lead front-end developer and architect of the Astro build</dd></div>
 	<div><dt>Year</dt><dd>2025–2026</dd></div>
-	<div><dt>Stack</dt><dd>Astro, Drupal (JSON:API), Pantheon, Fuse.js, Sass, Node.js, GitHub Actions, Microsoft Copilot</dd></div>
+	<div><dt>Stack</dt><dd>Astro, Drupal (JSON:API), Pantheon, Fuse.js, Sass, Node.js, GitHub Actions</dd></div>
 </dl>
 
 ## The challenge
@@ -35,7 +35,7 @@ A site editors update weekly needs checks that don't depend on someone rememberi
 
 ## AI-assisted development
 
-I used **Microsoft Copilot** to help with parts of the technical work, such as the build scripts and the Drupal data handling, and I reviewed and tested everything it suggested.
+I used AI to assist with parts of the technical work, such as the build scripts and the Drupal data handling, and I reviewed and tested everything it suggested.
 
 ## My role
 
