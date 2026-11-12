@@ -3,22 +3,30 @@
  * North Carolina, overprinted on the portrait the way Max Huber laid flat spot-color
  * shapes over photographs: a translucent fill, a truss lattice like his oil derrick,
  * and an outline printed slightly out of register.
+ *
+ * The lattice is real line segments rather than a pattern, so src/scripts/state.js
+ * can draw them one by one.
  */
 import { northCarolina } from '../data/north-carolina';
+import { buildLattice } from '../lib/lattice';
 
 const { viewBox, path } = northCarolina;
+const [, , width, height] = viewBox.split(' ').map(Number);
+
+const lattice = buildLattice({ path, width, height, cell: 96, rotate: -14 });
 ---
 <svg class="state" viewBox={viewBox} aria-hidden="true" focusable="false">
 	<defs>
 		<clipPath id="state-clip">
 			<path d={path} />
 		</clipPath>
-		<pattern id="state-truss" width="96" height="96" patternUnits="userSpaceOnUse" patternTransform="rotate(-14)">
-			<path class="state-truss-line" d="M0 0H96V96H0ZM0 0L96 96M96 0L0 96" />
-		</pattern>
 	</defs>
 
 	<path class="state-fill" d={path} />
-	<rect class="state-truss" width="100%" height="100%" fill="url(#state-truss)" clip-path="url(#state-clip)" />
+	<g class="state-truss" clip-path="url(#state-clip)">
+		{lattice.map(({ x1, y1, x2, y2, from, to }) => (
+			<line x1={x1} y1={y1} x2={x2} y2={y2} pathLength="1" data-from={from} data-to={to} />
+		))}
+	</g>
 	<path class="state-line" d={path} />
 </svg>

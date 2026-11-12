@@ -17,13 +17,14 @@ The work and the testimonials are tucked behind two tiles, **Work** and **Words*
 - **Astro 7** renders the site to static HTML.
 - **Plain CSS** in `src/styles/global.css`, in numbered sections, with the palette and type sizes as custom properties on `:root`. Type is Figtree, self-hosted from `@fontsource-variable/figtree`, with the Latin subset preloaded.
 - **Native `<dialog>`** elements for the panels, opened with `commandfor`/`command` buttons, with a small script fallback for browsers that don't support those yet.
-- **GSAP** runs the poster's intro and pointer parallax, draws the lines in when a panel opens, and drives the hover preview: hovering or focusing a project shows a large screenshot in the lower right, and new screenshots wipe in over the old one.
+- **GSAP** runs the poster's intro and pointer parallax, then brings North Carolina in last: the outline fades up and the lattice draws itself line by line, growing from a few random points until the clusters meet, draws the lines in when a panel opens, and drives the hover preview: hovering or focusing a project shows a large screenshot in the lower right, and new screenshots wipe in over the old one.
 - **Astro's image pipeline** serves the portrait as AVIF with a WebP fallback, and turns the project screenshots into small thumbnails and 1024 px hover previews at build time.
 
 ```
 src/
 ├── data/
 │   ├── projects.ts          Curated work, newest first
+│   ├── north-carolina.ts    The state outline (U.S. Census, public domain)
 │   └── recommendations.ts   Quotes from colleagues
 ├── components/
 │   ├── Poster.astro         The home page poster
@@ -33,9 +34,11 @@ src/
 ├── scripts/
 │   ├── home.js              Entry point
 │   ├── intro.js             Poster intro and pointer parallax
+│   ├── state.js             North Carolina's outline and growing lattice
 │   ├── panels.js            Opening, closing and animating the panels
 │   ├── work-preview.js      The hover preview card
 │   └── motion.js            Reduced-motion and pointer helpers
+├── lib/lattice.ts           Builds the state's truss lattice as line segments
 ├── layouts/Layout.astro     Page shell, metadata and font preload
 ├── pages/index.astro        Puts the poster and panels together
 └── styles/global.css

@@ -222,7 +222,8 @@ ul {
 	transform: translate(-6px, 5px); /* out of register with the outline */
 }
 
-.state-truss-line {
+.state-truss line {
+	stroke-dasharray: 1; /* with pathLength="1", lets each line be drawn on */
 	fill: none;
 	stroke: rgb(255 255 255 / 0.22);
 	stroke-width: 1.6;
@@ -234,6 +235,18 @@ ul {
 	stroke-width: 2.5;
 	stroke-linejoin: round;
 	vector-effect: non-scaling-stroke;
+}
+
+/* With script and motion, the state waits to be drawn in by src/scripts/state.js */
+@media (prefers-reduced-motion: no-preference) {
+	.js .state-fill,
+	.js .state-line {
+		opacity: 0;
+	}
+
+	.js .state-truss line {
+		stroke-dashoffset: 1;
+	}
 }
 
 .disciplines {
