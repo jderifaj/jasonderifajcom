@@ -141,7 +141,7 @@ ul {
 .band {
 	position: relative;
 	z-index: 2;
-	padding: 0.18em calc(var(--gutter) + 2.8em) 0 var(--gutter);
+	padding: 0.18em var(--gutter) 0;
 	font-size: var(--band-size);
 	line-height: 1.05;
 	color: var(--ink);
@@ -159,37 +159,6 @@ ul {
 	margin-bottom: -0.2em; /* descenders spill out of the band */
 	font-weight: 600;
 	line-height: 1;
-}
-
-/* Boxed J D </> mark, top right */
-.logo {
-	position: absolute;
-	top: 0;
-	right: 0;
-	display: grid;
-	grid-template-columns: repeat(2, 1.2em);
-	grid-auto-rows: 1.2em;
-	font-weight: 600;
-	line-height: 1;
-}
-
-.logo span {
-	display: grid;
-	place-items: center;
-	margin: 0 -0.035em -0.035em 0;
-	color: var(--ink);
-	background: var(--paper);
-	border: 0.07em solid var(--ink);
-}
-
-.logo .logo-empty {
-	visibility: hidden;
-}
-
-.logo .logo-code {
-	margin: 0 -0.07em -0.07em 0;
-	font-size: 0.48em;
-	border-width: 0.145em;
 }
 
 /* Copy below the band ------------------------------------------------------- */

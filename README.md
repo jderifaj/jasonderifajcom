@@ -8,7 +8,7 @@ Most of my work is client sites built at ICF's Creative Studio for PSEG, BGE, Co
 
 ## The design
 
-The home page is a single typographic poster: a duotone close-up portrait fills the screen, a white band carries my name and title, and large lines of type end in short accent dashes. Behind the type, an outline of North Carolina is overprinted on the portrait in the manner of Max Huber's 1950s covers: an outline and a truss lattice. A small boxed `J D </>` mark sits in the top right.
+The home page is a single typographic poster: a duotone close-up portrait fills the screen, a white band carries my name and title, and large lines of type end in short accent dashes. Behind the type, an outline of North Carolina is overprinted on the portrait in the manner of Max Huber's 1950s covers: an outline and a truss lattice.
 
 The work and the testimonials are tucked behind two tiles, **Work** and **Words**, which open full-screen panels.
 
