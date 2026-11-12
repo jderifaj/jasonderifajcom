@@ -1,13 +1,30 @@
 ---
-import Head from "../components/head.astro";
-import Main from '../components/main.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Poster from '../components/poster.astro';
+import Work from '../components/work.astro';
+import Comments from '../components/comments.astro';
 ---
+<Layout
+	title="Jason Derifaj — Creative Front-End Developer"
+	description="Interactive developer blending animation and design to tell compelling stories on the web."
+>
+	<main>
+		<Poster />
+	</main>
 
-<Layout>
-<Head title="My Astro Site" description="Welcome to my Astro site!" />
-	<Main />
+	<dialog id="work" class="panel" aria-labelledby="work-title">
+		<header class="panel-head">
+			<h2 id="work-title">Curated work<span class="dash" aria-hidden="true"></span></h2>
+			<button class="panel-close" type="button" commandfor="work" command="close" data-close>Close <span aria-hidden="true">×</span></button>
+		</header>
+		<div class="panel-body"><Work /></div>
+	</dialog>
+
+	<dialog id="words" class="panel" aria-labelledby="words-title">
+		<header class="panel-head">
+			<h2 id="words-title">Kind words<span class="dash" aria-hidden="true"></span></h2>
+			<button class="panel-close" type="button" commandfor="words" command="close" data-close>Close <span aria-hidden="true">×</span></button>
+		</header>
+		<div class="panel-body"><Comments /></div>
+	</dialog>
 </Layout>

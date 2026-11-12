@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import portrait from '../assets/images/jason-duotone.jpg';
+
+const disciplines = [
+	'Interactive Web Development',
+	'Motion & Scroll Animation',
+	'Design Systems & UI Engineering',
+	'Accessible, Fast Front-End',
+];
+---
+<section class="poster" aria-labelledby="poster-name">
+	<Image
+		src={portrait}
+		alt="Jason Derifaj, smiling, in a blue duotone portrait"
+		class="poster-photo"
+		widths={[800, 1200, 1600]}
+		sizes="100vw"
+		loading="eager"
+		fetchpriority="high"
+	/>
+
+	<p class="credit">Photo: self-portrait&ensp;|&ensp;Design &amp; code: Jason Derifaj</p>
+
+	<div class="band">
+		<div class="band-title">
+			<h1 id="poster-name">Jason Derifaj</h1>
+			<p class="role">Creative Front-End Developer</p>
+		</div>
+		<div class="logo" aria-hidden="true">
+			<span>J</span><span>D</span><span class="empty"></span><span class="code">&lt;/&gt;</span>
+		</div>
+	</div>
+
+	<div class="copy">
+		<div class="mono" aria-hidden="true">
+			<span class="mono-tile">J</span><span class="mono-tile">D</span>
+		</div>
+
+		<ul class="lines">
+			{disciplines.map((d) => (
+				<li>{d}<span class="dash" aria-hidden="true"></span></li>
+			))}
+		</ul>
+		<p class="poster-url">jasonderifaj.com</p>
+		<p class="poster-meta">
+			Interactive developer blending animation and design to tell compelling stories on the web — résumé on request — #creativefrontend —
+		</p>
+
+		<div class="ctas">
+			<button class="cta" type="button" commandfor="work" command="show-modal" data-open="work">
+				<span class="cta-big">Work</span>
+				<span class="cta-label">Curated projects <span class="dash" aria-hidden="true"></span></span>
+			</button>
+			<button class="cta" type="button" commandfor="words" command="show-modal" data-open="words">
+				<span class="cta-big">Words</span>
+				<span class="cta-label">From colleagues <span class="dash" aria-hidden="true"></span></span>
+			</button>
+		</div>
+	</div>
+
+	<p class="copyright">&copy; {new Date().getFullYear()} Jason Derifaj</p>
+</section>

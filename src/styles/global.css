@@ -1,0 +1,515 @@
+/* Poster palette, after Erik Desombere's DAS Kortrijk posters */
+:root {
+	--accent: #255987;
+	--accent-hot: #4b9cd3;
+	--ink: #16100e;
+	--paper: #fff;
+	--gutter: clamp(1rem, 8vw, 9rem);
+	--band-size: clamp(1.45rem, 3.6vw + 0.4rem, 4.4rem);
+	--line-size: clamp(1.5rem, 4vw + 0.2rem, 4.6rem);
+	font-family: 'Figtree', system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	background: var(--accent);
+	color: var(--paper);
+	-webkit-font-smoothing: antialiased;
+}
+
+html:has(dialog[open]) {
+	overflow: hidden;
+}
+
+h1,
+h2,
+p,
+ul {
+	margin: 0;
+}
+
+.dash {
+	display: inline-block;
+	width: 0.85em;
+	height: 0.08em;
+	margin-left: 0.3em;
+	vertical-align: 0.28em;
+	background: var(--accent-hot);
+	transform-origin: left center;
+}
+
+/* ---------- Poster ---------- */
+
+.poster {
+	position: relative;
+	min-height: 100svh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	padding: clamp(3rem, 13vh, 8rem) 0 clamp(2.5rem, 6vh, 4rem);
+	isolation: isolate;
+}
+
+.poster-photo {
+	position: absolute;
+	inset: -24px;
+	width: calc(100% + 48px);
+	height: calc(100% + 48px);
+	max-width: none;
+	object-fit: cover;
+	object-position: 50% 18%;
+	z-index: -2;
+}
+
+/* Deepen the sky behind the type so white lines hold their contrast */
+.poster::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(180deg, rgb(22 16 14 / 0.3) 0%, rgb(22 16 14 / 0.16) 60%, rgb(22 16 14 / 0) 80%);
+	pointer-events: none;
+}
+
+.credit {
+	padding: 0 var(--gutter) 0.35rem;
+	font-size: 0.6rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	opacity: 0.85;
+}
+
+.band {
+	position: relative;
+	background: var(--paper);
+	color: var(--ink);
+	padding: 0.18em calc(var(--gutter) + 2.8em) 0 var(--gutter);
+	font-size: var(--band-size);
+	line-height: 1.05;
+	z-index: 2;
+}
+
+.band h1 {
+	font-size: 1em;
+	font-weight: 700;
+	color: var(--accent);
+	letter-spacing: -0.005em;
+}
+
+.band .role {
+	font-weight: 600;
+	line-height: 1;
+	margin-bottom: -0.2em; /* descenders spill out of the band, like the poster */
+}
+
+.logo {
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: grid;
+	grid-template-columns: repeat(2, 1.2em);
+	grid-auto-rows: 1.2em;
+	font-size: 1em;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.logo span {
+	display: grid;
+	place-items: center;
+	background: var(--paper);
+	color: var(--ink);
+	border: 0.07em solid var(--ink);
+	margin: 0 -0.035em -0.035em 0;
+}
+
+.logo .empty {
+	visibility: hidden;
+}
+
+.logo .code {
+	font-size: 0.48em;
+	border-width: 0.145em;
+	margin: 0 -0.07em -0.07em 0;
+}
+
+.copy {
+	position: relative;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 0.4em var(--gutter) 0;
+	isolation: isolate;
+}
+
+.mono {
+	position: absolute;
+	top: 0.6rem;
+	left: clamp(0.5rem, 2.5vw, 2.5rem);
+	display: flex;
+	z-index: -1;
+	pointer-events: none;
+}
+
+.mono-tile {
+	display: grid;
+	place-items: center;
+	width: clamp(8rem, 26vw, 26rem);
+	aspect-ratio: 1;
+	font-size: clamp(6rem, 19vw, 19rem);
+	font-weight: 600;
+	line-height: 1;
+	color: rgb(255 255 255 / 0.28);
+	background: rgb(255 255 255 / 0.12);
+	border: clamp(6px, 1vw, 16px) solid rgb(255 255 255 / 0.28);
+}
+
+.mono-tile + .mono-tile {
+	border-left: 0;
+}
+
+.lines {
+	list-style: none;
+	padding: 0;
+	font-size: var(--line-size);
+	line-height: 1.04;
+	letter-spacing: -0.01em;
+}
+
+.lines li {
+	text-wrap: balance;
+}
+
+.poster-url {
+	font-size: var(--line-size);
+	font-weight: 700;
+	line-height: 1.1;
+	color: var(--ink);
+}
+
+.poster-meta {
+	margin-top: 0.9rem;
+	max-width: 72ch;
+	font-size: clamp(0.85rem, 0.6vw + 0.6rem, 1.15rem);
+	font-weight: 400;
+	line-height: 1.5;
+}
+
+.ctas {
+	display: flex;
+	margin-top: auto;
+	padding-top: clamp(2rem, 6vh, 5rem);
+}
+
+.cta {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: clamp(9.5rem, 17vw, 15rem);
+	aspect-ratio: 1;
+	padding: clamp(0.75rem, 1.2vw, 1.25rem);
+	font: inherit;
+	text-align: left;
+	color: var(--paper);
+	background: rgb(255 255 255 / 0.16);
+	border: clamp(5px, 0.7vw, 10px) solid rgb(255 255 255 / 0.4);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	cursor: pointer;
+	transition: background 0.25s, color 0.25s;
+}
+
+.cta + .cta {
+	border-left: 0;
+}
+
+.cta-big {
+	font-size: clamp(2rem, 3.6vw, 3.6rem);
+	font-weight: 700;
+	line-height: 0.9;
+}
+
+.cta-label {
+	font-size: clamp(0.8rem, 0.5vw + 0.6rem, 1rem);
+	font-weight: 500;
+}
+
+.cta .dash {
+	width: 1.6em;
+	height: 0.15em;
+	vertical-align: 0.25em;
+	background: currentColor;
+	transition: width 0.25s;
+}
+
+.cta:hover,
+.cta:focus-visible {
+	background: var(--paper);
+	color: var(--accent);
+}
+
+.cta:hover .dash,
+.cta:focus-visible .dash {
+	width: 2.6em;
+}
+
+.cta:focus-visible,
+.panel-close:focus-visible {
+	outline: 3px solid var(--ink);
+	outline-offset: 3px;
+}
+
+.copyright {
+	position: absolute;
+	right: var(--gutter);
+	bottom: clamp(1rem, 3vh, 2rem);
+	font-size: 0.75rem;
+	font-weight: 300;
+}
+
+/* ---------- Panels (work, kind words) ---------- */
+
+.panel {
+	width: 100vw;
+	height: 100dvh;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: auto;
+	background: var(--paper);
+	color: var(--ink);
+}
+
+.panel::backdrop {
+	background: rgb(222 90 34 / 0.7);
+}
+
+.panel-head {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem var(--gutter);
+	background: var(--paper);
+	border-bottom: 3px solid var(--ink);
+}
+
+.panel-head h2 {
+	font-size: clamp(1.75rem, 4vw, 3.5rem);
+	font-weight: 700;
+	line-height: 1.1;
+	color: var(--accent);
+}
+
+.panel-close {
+	flex-shrink: 0;
+	padding: 0.5rem 1rem;
+	font: inherit;
+	font-weight: 600;
+	color: var(--ink);
+	background: transparent;
+	border: 2px solid var(--ink);
+	cursor: pointer;
+}
+
+.panel-close:hover {
+	background: var(--ink);
+	color: var(--paper);
+}
+
+.panel-body {
+	padding: 1.5rem var(--gutter) 4rem;
+}
+
+/* Work list */
+.work .item a {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+}
+
+.work .group {
+	display: grid;
+	grid-template-columns: 75px 1fr auto;
+	align-items: center;
+	gap: clamp(0.75rem, 2vw, 1.5rem);
+	padding: 1rem 0;
+	font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.75rem);
+}
+
+.work .photo img {
+	display: block;
+	width: 75px;
+	height: 40px;
+	object-fit: cover;
+	filter: grayscale(1) contrast(1.1);
+	transition: filter 0.25s;
+}
+
+.work .year {
+	font-weight: 700;
+	color: var(--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.work .line {
+	width: 100%;
+	height: 2px;
+	background: var(--ink);
+	transition: background 0.25s;
+}
+
+.work .item:hover .photo img,
+.work .item:focus-within .photo img {
+	filter: none;
+}
+
+.work .item:hover .descrip,
+.work .item:focus-within .descrip {
+	color: var(--accent);
+}
+
+.work .item:hover .line,
+.work .item:focus-within .line {
+	background: var(--accent);
+}
+
+/* Enlarged thumbnail, lower right, while a project link is hovered or focused */
+.work-preview {
+	position: fixed;
+	right: var(--gutter);
+	bottom: clamp(1.5rem, 4vh, 3rem);
+	z-index: 2;
+	width: clamp(16rem, 30vw, 32rem);
+	aspect-ratio: 75 / 40;
+	border: 3px solid var(--ink);
+	background: var(--paper);
+	box-shadow: 0.75rem 0.75rem 0 var(--accent);
+	opacity: 0;
+	transform: translateY(1.5rem) scale(0.96);
+	transform-origin: bottom right;
+	transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+	pointer-events: none;
+}
+
+.work-preview.is-visible {
+	opacity: 1;
+	transform: none;
+}
+
+.work-preview img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+@media (hover: none), (max-width: 640px) {
+	.work-preview {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.work-preview {
+		transform: none;
+		transition: opacity 0.15s linear;
+	}
+}
+
+/* Kind words */
+.comments ul {
+	list-style: none;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+	gap: 1.5rem;
+}
+
+.comments li {
+	padding: clamp(1.25rem, 2vw, 2rem);
+	border: 2px solid var(--ink);
+	font-size: 1.1rem;
+	line-height: 1.55;
+}
+
+.comments .person {
+	margin-top: 1.5rem;
+	font-weight: 700;
+	color: var(--accent);
+}
+
+.comments .person span {
+	display: block;
+	font-size: 0.95rem;
+	font-weight: 400;
+	color: #555;
+}
+
+/* ---------- Wide screens: tiles move to the lower right ---------- */
+
+@media (min-width: 900px) {
+	.ctas {
+		position: absolute;
+		right: var(--gutter);
+		bottom: clamp(2.5rem, 7vh, 4.5rem);
+		padding: 0;
+	}
+
+	.cta {
+		width: clamp(9rem, 13vw, 13rem);
+	}
+
+	.cta-big {
+		font-size: clamp(1.75rem, 2.7vw, 3rem);
+	}
+
+	.poster-meta {
+		max-width: min(72ch, calc(100% - 2 * clamp(9rem, 13vw, 13rem) - 3rem));
+	}
+
+	.copyright {
+		right: auto;
+		left: var(--gutter);
+	}
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 640px) {
+	.poster-photo {
+		object-position: 50% 72%;
+	}
+
+	.mono-tile {
+		width: 42vw;
+		font-size: 32vw;
+	}
+
+	.ctas {
+		width: 100%;
+	}
+
+	.cta {
+		flex: 1;
+		width: auto;
+		aspect-ratio: 1.1;
+	}
+
+	.copyright {
+		position: static;
+		padding: 1.25rem var(--gutter) 0;
+	}
+}
