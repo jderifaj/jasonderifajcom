@@ -1,6 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
-import portrait from '../assets/images/jason-duotone.jpg';
+import portrait from '../assets/images/jason-newspaper.jpg';
 
 const disciplines = [
 	'Interactive Web Development',
@@ -26,7 +26,8 @@ const tiles = [
 		formats={['avif', 'webp']}
 		widths={[800, 1200, 1600]}
 		sizes="100vw"
-		alt="Jason Derifaj, smiling, in a blue duotone portrait"
+		quality={50}
+		alt="Jason Derifaj, smiling, in a blue halftone newspaper-style portrait"
 		class="poster-photo"
 		loading="eager"
 		fetchpriority="high"
