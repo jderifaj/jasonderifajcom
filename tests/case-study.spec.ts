@@ -58,3 +58,26 @@ for (const slug of ['alexrenew', 'comed-feature', 'bge-issue5', 'dallas']) {
 		expect(violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
 	});
 }
+
+test('the Dallas case study shows the navigation recording, looping, with a Pause button', async ({ page }) => {
+	await page.goto('/work/dallas/');
+	const video = page.getByRole('figure').locator('video');
+	await expect(video).toHaveAttribute('src', '/case-studies/dallas-nav.mp4');
+	expect(await video.evaluate((v: HTMLVideoElement) => v.loop && v.muted)).toBe(true);
+
+	const toggle = page.getByRole('button', { name: 'Pause' });
+	await expect(toggle).toBeVisible();
+	await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
+	await toggle.click();
+	await expect(page.getByRole('button', { name: 'Play' })).toBeVisible();
+	expect(await video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+});
+
+test('with reduced motion the recording waits on its poster until Play is pressed', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.goto('/work/dallas/');
+	const video = page.getByRole('figure').locator('video');
+	await expect(page.getByRole('button', { name: 'Play' })).toBeVisible();
+	await page.waitForTimeout(500);
+	expect(await video.evaluate((v: HTMLVideoElement) => v.paused && v.currentTime === 0)).toBe(true);
+});

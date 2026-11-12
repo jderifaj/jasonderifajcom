@@ -673,6 +673,59 @@ ul {
 	color: #555;
 }
 
+/* A looping screen recording inside a case study (src/scripts/case-video.js) */
+.case-video {
+	margin: 1.5rem 0 2rem;
+}
+
+.case-video video {
+	display: block;
+	width: 100%;
+	height: auto;
+	background: var(--accent-soft);
+	border: 3px solid var(--ink);
+}
+
+.case-video figcaption {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: 0.6rem;
+	font-size: 0.9rem;
+	color: #555;
+}
+
+.case-video-toggle {
+	flex-shrink: 0;
+	min-width: 5.5rem;
+	min-height: 44px;
+	padding: 0 1rem;
+	font: inherit;
+	font-weight: 600;
+	color: var(--ink);
+	background: transparent;
+	border: 2px solid var(--ink);
+	cursor: pointer;
+}
+
+.case-video-toggle:hover {
+	color: var(--paper);
+	background: var(--ink);
+}
+
+.case-video-toggle:focus-visible {
+	outline: 3px solid var(--ink);
+	outline-offset: 3px;
+}
+
+.case-study-body code {
+	padding: 0.1em 0.3em;
+	font-size: 0.88em;
+	background: var(--accent-soft);
+	border-radius: 3px;
+}
+
 .case-live:focus-visible {
 	outline: 3px solid var(--ink);
 	outline-offset: 3px;
