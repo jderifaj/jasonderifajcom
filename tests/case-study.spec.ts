@@ -49,7 +49,16 @@ test('the Dallas row says it has no live site and links only to its case study',
 	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveCount(0);
 });
 
-for (const slug of ['alexrenew', 'comed-feature', 'bge-issue5', 'dallas']) {
+test('the Jersey Ready row links to its case study page', async ({ page }) => {
+	await page.goto('/');
+	await page.getByRole('button', { name: /^Work/ }).click();
+	await page.getByRole('link', { name: 'Case study: Jersey Ready, PSEG' }).click();
+	await expect(page).toHaveURL('/work/jerseyready/');
+	await expect(page.getByRole('heading', { level: 1, name: 'Jersey Ready, PSEG' })).toBeVisible();
+	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveAttribute('href', 'https://njready.com/');
+});
+
+for (const slug of ['alexrenew', 'comed-feature', 'bge-issue5', 'dallas', 'jerseyready']) {
 	test(`the ${slug} case study page has no accessibility violations`, async ({ page }) => {
 		await page.goto(`/work/${slug}/`);
 		const { violations } = await new AxeBuilder({ page })
