@@ -57,6 +57,7 @@ The build stops with a clear error if a project's screenshot is missing.
 - **Astro** because the site is mostly static content; it ships plain HTML and adds JavaScript only where a section needs it.
 - **Content in the HTML**, so it reads without JavaScript and is easy for search engines and screen readers. Without JavaScript, the panels still open in browsers that support invoker commands.
 - **Animation as an enhancement:** everything is in the HTML first, and GSAP adds motion on top. Visitors with reduced motion turned on get plain fades instead.
+- **Grain as a texture, not in the photo:** the portrait's film grain is a 7 KB tile blended over a smooth image with `mix-blend-mode: soft-light`. Noise barely compresses, so keeping it out of the photo makes the portrait about a third the size.
 - **Sharp previews:** the hover card loses its transforms once it settles, because a transformed layer is resampled by the browser and looks soft.
 - **Accessible by default:** links that open a new tab say so to screen readers, the earlier magazine issues name the magazine, recommendations are marked up as quotes, and every target is at least 24 px. Axe checks run on every page state in the tests.
 
