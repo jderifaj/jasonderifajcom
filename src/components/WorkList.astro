@@ -46,7 +46,6 @@ const newTab = { target: '_blank', rel: 'noopener' };
 				<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
 					<Image class="work-thumb" src={project.screenshot} width={150} alt={project.alt} />
 					<span class="work-title">{project.title}</span>
-					<span class="work-year">{project.year}</span>
 					<span class="visually-hidden">(opens in a new tab)</span>
 				</a>
 				{project.CaseStudy && (
@@ -59,9 +58,13 @@ const newTab = { target: '_blank', rel: 'noopener' };
 						data-case-toggle
 					>
 						Case study
-						<span class="case-icon" aria-hidden="true"></span>
+						<span class="case-pulse" aria-hidden="true">
+							<span class="case-pulse-ring"></span>
+							<span class="case-pulse-dot"></span>
+						</span>
 					</button>
 				)}
+				<span class="work-year">{project.year}</span>
 			</div>
 
 			{project.CaseStudy && (
