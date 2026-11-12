@@ -1,5 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
+import NorthCarolina from './NorthCarolina.astro';
 import portrait from '../assets/images/jason-magazine.jpg';
 
 const disciplines = [
@@ -46,9 +47,7 @@ const tiles = [
 	</div>
 
 	<div class="copy">
-		<div class="monogram" aria-hidden="true">
-			<span class="monogram-tile">J</span><span class="monogram-tile">D</span>
-		</div>
+		<NorthCarolina />
 
 		<ul class="disciplines">
 			{disciplines.map((discipline) => (
