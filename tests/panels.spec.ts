@@ -43,7 +43,11 @@ test.describe('panels', () => {
 	test('every project links out in a new tab and says so', async ({ page }) => {
 		await page.goto('/');
 		await page.getByRole('button', { name: /^Work/ }).click();
-		const links = page.getByRole('dialog', { name: 'Curated work' }).getByRole('link');
+		// Case study links stay on this site, at /work/<slug>/ (see case-study.spec.ts).
+		const links = page
+			.getByRole('dialog', { name: 'Curated work' })
+			.getByRole('link')
+			.and(page.locator(':not(.case-toggle)'));
 
 		for (const link of await links.all()) {
 			await expect(link).toHaveAttribute('target', '_blank');

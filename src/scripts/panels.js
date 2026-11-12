@@ -19,10 +19,24 @@ export function initPanels() {
 		});
 	}
 
+	openFromHash();
+
 	if (hasInvokers) return;
 	for (const button of document.querySelectorAll('[data-close]')) {
 		button.addEventListener('click', () => button.closest('dialog')?.close());
 	}
+}
+
+/** A link to /#work (such as "Back to work" on a case study) arrives with that panel open. */
+function openFromHash() {
+	const id = decodeURIComponent(location.hash.slice(1));
+	const dialog = id && document.getElementById(id);
+	if (!(dialog instanceof HTMLDialogElement) || !dialog.classList.contains('panel')) return;
+
+	dialog.showModal();
+	animateIn(dialog);
+	// Drop the hash so closing the panel and reloading lands on the poster.
+	history.replaceState(null, '', location.pathname + location.search);
 }
 
 /** Slides the header down, lifts the content in and draws the rules across. */
