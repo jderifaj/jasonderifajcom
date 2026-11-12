@@ -60,7 +60,7 @@ function panels() {
 }
 
 // Hovering or focusing a project shows its screenshot, enlarged, in the lower right.
-// The card rises in, new screenshots wipe up over the old one, and the card tilts toward the pointer.
+// The card rises in, new screenshots wipe up over the old one, and the blue shadow drifts with the pointer.
 function workPreview() {
 	const panel = document.getElementById('work');
 	const box = panel?.querySelector('.work-preview');
@@ -88,6 +88,8 @@ function workPreview() {
 			duration: calm ? 0.3 : 1.2,
 			ease: calm ? 'none' : 'elastic.out(1, 0.75)',
 			overwrite: 'auto',
+			// Drop the transform once settled: a transformed layer is resampled and looks soft.
+			onComplete: () => gsap.set(box, { clearProps: 'transform' }),
 		});
 	};
 
@@ -124,15 +126,15 @@ function workPreview() {
 		}
 		gsap.fromTo(next,
 			{ autoAlpha: 1, clipPath: 'inset(100% 0% 0% 0%)', scale: 1.22, yPercent: 6 },
-			{ clipPath: 'inset(0% 0% 0% 0%)', scale: 1, yPercent: 0, duration: 1.15, ease: 'expo.out' });
+			{ clipPath: 'inset(0% 0% 0% 0%)', scale: 1, yPercent: 0, duration: 1.15, ease: 'expo.out',
+				onComplete: () => gsap.set(next, { clearProps: 'transform,clipPath' }) });
 		gsap.to(prev, { autoAlpha: 0, scale: 1.08, yPercent: -4, filter: 'blur(6px)', duration: 0.9, ease: 'power2.out',
-			onComplete: () => gsap.set(prev, { filter: 'none' }) });
+			onComplete: () => gsap.set(prev, { clearProps: 'transform,filter' }) });
 	};
 
-	const previewFor = (link) => link.dataset.preview || link.querySelector('[data-preview]')?.dataset.preview;
-
-	panel.querySelectorAll('.item > a, .archive a').forEach((link) => {
-		const show = () => { reveal(); swap(previewFor(link)); };
+	const links = [...panel.querySelectorAll('a[data-preview]')];
+	links.forEach((link) => {
+		const show = () => { reveal(); swap(link.dataset.preview); };
 		link.addEventListener('pointerenter', show);
 		link.addEventListener('focus', show);
 		link.addEventListener('pointerleave', () => hide());
@@ -140,17 +142,21 @@ function workPreview() {
 	});
 	panel.addEventListener('close', () => hide(true));
 
-	// Tilt toward the pointer; the blue shadow trails behind for depth.
+	// Fetch the screenshots the first time the panel opens, so the first hover is instant.
+	let warmed = false;
+	document.querySelector('[data-open="work"]')?.addEventListener('click', () => {
+		if (warmed) return;
+		warmed = true;
+		setTimeout(() => links.forEach((link) => { new Image().src = link.dataset.preview; }), 600);
+	});
+
+	// The blue shadow trails the pointer for a little depth; the screenshot itself stays flat and sharp.
 	if (calm || !window.matchMedia('(pointer: fine)').matches) return;
-	const tiltY = gsap.quickTo(frame, 'rotationY', { duration: 0.8, ease: 'power3.out' });
-	const tiltX = gsap.quickTo(frame, 'rotationX', { duration: 0.8, ease: 'power3.out' });
 	const shadowX = gsap.quickTo(shadow, 'x', { duration: 1.4, ease: 'power3.out' });
 	const shadowY = gsap.quickTo(shadow, 'y', { duration: 1.4, ease: 'power3.out' });
 	panel.addEventListener('pointermove', (e) => {
 		const dx = e.clientX / window.innerWidth - 0.5;
 		const dy = e.clientY / window.innerHeight - 0.5;
-		tiltY(dx * 14);
-		tiltX(dy * -10);
 		shadowX(12 - dx * 16);
 		shadowY(12 - dy * 12);
 	});

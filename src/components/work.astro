@@ -2,12 +2,15 @@
 import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
-// Screenshots of each live project live in src/assets/images/work/<slug>.webp (1500×800).
+// Screenshots of each live project live in src/assets/images/work/<slug>.webp (captured at 2x, 2048 px wide).
+// A project without a screenshot yet still gets a row, with a plain tile and no hover preview.
 const shots = import.meta.glob<{ default: ImageMetadata }>('../assets/images/work/*.webp', { eager: true });
-const shot = (slug: string) => shots[`../assets/images/work/${slug}.webp`].default;
+const shot = (slug: string) => shots[`../assets/images/work/${slug}.webp`]?.default;
 
 // Newest first.
-const projects = [
+const projects: { slug: string; title: string; year?: number; url: string }[] = [
+	{ slug: 'alexrenew', title: 'AlexRenew', year: 2026, url: 'https://www.alexrenew.com/' },
+	{ slug: 'comed-feature', title: 'The Efficient Home, Issue 2 Feature, ComEd', year: 2026, url: 'https://comed.theefficienthome.com/issue2/feature.html' },
 	{ slug: 'bge-issue5', title: 'The Efficient Home, Issue 5, BGE', year: 2026, url: 'https://bge.theefficienthome.com/issue5/' },
 	{ slug: 'jerseyready', title: 'Jersey Ready, PSEG', year: 2025, url: 'https://njready.com/' },
 	{ slug: 'comeonin', title: 'Come On In Campaign, BGE', year: 2025, url: 'https://bgesmartenergy.com/comeonin/index.html' },
@@ -30,7 +33,9 @@ const archive = [
 
 const previewOf = async (slug: string) => {
 	const src = shot(slug);
-	return (await getImage({ src, width: Math.min(1200, src.width), format: 'webp' })).src;
+	if (!src) return undefined;
+	// The card is at most 512 CSS px wide, so 1024 px covers 2x screens.
+	return (await getImage({ src, width: Math.min(1024, src.width), format: 'webp', quality: 82 })).src;
 };
 
 const earlierIssues = await Promise.all(archive.map(async (a) => ({ ...a, preview: await previewOf(a.slug) })));
@@ -46,10 +51,10 @@ const items = await Promise.all(
 <section class="work">
 	{items.map((p) => (
 		<div class="item">
-			<a href={p.url} target="_blank" rel="noopener">
+			<a href={p.url} target="_blank" rel="noopener" data-preview={p.preview}>
 				<div class="group">
 					<div class="photo">
-						<Image src={p.src} width={Math.min(150, p.src.width)} alt="" data-preview={p.preview} />
+						{p.src && <Image src={p.src} width={Math.min(150, p.src.width)} alt="" />}
 					</div>
 					<div class="descrip">{p.title}</div>
 					<div class="year">{p.year}</div>
