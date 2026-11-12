@@ -1,0 +1,46 @@
+---
+import type { MarkdownInstance } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+import { projects } from '../../data/projects';
+
+/** One page per src/content/case-studies/<slug>.md, at /work/<slug>/. */
+export function getStaticPaths() {
+	const caseStudies = import.meta.glob<MarkdownInstance<{ summary: string }>>('../../content/case-studies/*.md', {
+		eager: true,
+	});
+
+	return Object.entries(caseStudies).map(([path, caseStudy]) => {
+		const slug = path.split('/').pop()!.replace(/\.md$/, '');
+		const project = projects.find((p) => p.slug === slug);
+		if (!project) throw new Error(`Case study ${slug}.md has no matching project in src/data/projects.ts`);
+		return { params: { slug }, props: { project, caseStudy } };
+	});
+}
+
+const { project, caseStudy } = Astro.props;
+const { Content, frontmatter } = caseStudy;
+---
+<Layout title={`${project.title} case study — Jason Derifaj`} description={frontmatter.summary}>
+	<div class="case-page">
+		<header class="panel-head">
+			<p class="case-kicker">Case study</p>
+			<a class="panel-close" href="/#work">
+				<span aria-hidden="true">←</span> Back to work
+			</a>
+		</header>
+
+		<main class="panel-body">
+			<article class="case-study-body">
+				<h1 class="case-title">{project.title}<span class="dash" aria-hidden="true"></span></h1>
+				<p class="case-summary">{frontmatter.summary}</p>
+				<p>
+					<a class="case-live" href={project.url} target="_blank" rel="noopener">
+						Visit the live site<span class="visually-hidden"> (opens in a new tab)</span>
+						<span aria-hidden="true"> ↗</span>
+					</a>
+				</p>
+				<Content />
+			</article>
+		</main>
+	</div>
+</Layout>

@@ -1,41 +1,46 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test('the AlexRenew case study drops down under its row and closes again', async ({ page }) => {
+test('the AlexRenew row links to its case study page, which links back to Curated work', async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('button', { name: /^Work/ }).click();
 	const work = page.getByRole('dialog', { name: 'Curated work' });
 	await expect(work).toBeVisible();
 
-	const toggle = work.getByRole('button', { name: 'Case study: AlexRenew' });
-	const caseStudy = work.getByRole('region', { name: 'AlexRenew case study' });
-	await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-	await expect(caseStudy).toBeHidden();
-
-	await toggle.click();
-	await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-	await expect(caseStudy).toBeVisible();
-	await expect(caseStudy.getByRole('heading', { name: 'The challenge' })).toBeInViewport();
-
 	// The project link itself still goes to the live site.
 	await expect(work.getByRole('link', { name: /^AlexRenew/ })).toHaveAttribute('href', 'https://www.alexrenew.com/');
 
-	await toggle.click();
-	await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-	await expect(caseStudy).toBeHidden();
+	await work.getByRole('link', { name: 'Case study: AlexRenew' }).click();
+	await expect(page).toHaveURL('/work/alexrenew/');
+	await expect(page).toHaveTitle('AlexRenew case study — Jason Derifaj');
+	await expect(page.getByRole('heading', { level: 1, name: 'AlexRenew' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'The challenge' })).toBeVisible();
+	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveAttribute('href', 'https://www.alexrenew.com/');
+
+	await page.getByRole('link', { name: /Back to work/ }).click();
+	await expect(page.getByRole('dialog', { name: 'Curated work' })).toBeVisible();
+	await expect(page).toHaveURL('/');
 });
 
-test('the open case study has no accessibility violations', async ({ page }) => {
-	await page.emulateMedia({ reducedMotion: 'reduce' });
+test('the ComEd feature row links to its case study page', async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('button', { name: /^Work/ }).click();
-	await page.getByRole('button', { name: 'Case study: AlexRenew' }).click();
-	await expect(page.getByRole('region', { name: 'AlexRenew case study' })).toBeVisible();
-
-	const { violations } = await new AxeBuilder({ page })
-		.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
-		.disableRules(['color-contrast'])
-		.include('#alexrenew-case')
-		.analyze();
-	expect(violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+	const name = 'The Efficient Home, Issue 2 Feature, ComEd';
+	await page.getByRole('link', { name: `Case study: ${name}` }).click();
+	await expect(page).toHaveURL('/work/comed-feature/');
+	await expect(page.getByRole('heading', { level: 1, name })).toBeVisible();
+	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveAttribute(
+		'href',
+		'https://comed.theefficienthome.com/issue2/feature.html',
+	);
 });
+
+for (const slug of ['alexrenew', 'comed-feature', 'bge-issue5']) {
+	test(`the ${slug} case study page has no accessibility violations`, async ({ page }) => {
+		await page.goto(`/work/${slug}/`);
+		const { violations } = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
+			.analyze();
+		expect(violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+	});
+}

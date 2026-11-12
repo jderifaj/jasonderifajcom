@@ -541,7 +541,7 @@ ul {
 	color: var(--accent);
 }
 
-/* A row with a case study: the project link, then a "Case study" toggle */
+/* A row with a case study: the project link, then a "Case study" link */
 .work-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto auto;
@@ -554,7 +554,7 @@ ul {
 	font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.75rem);
 }
 
-/* "Case study" sits just left of the year, set like the "Earlier issues" label */
+/* The "Case study" link sits just left of the year, set like the "Earlier issues" label */
 .case-toggle {
 	grid-column: 2;
 	display: inline-flex;
@@ -562,15 +562,12 @@ ul {
 	gap: 0.6em;
 	min-height: 44px;
 	padding: 0 0.25em;
-	font: inherit;
 	font-size: 0.7rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 	color: var(--accent);
-	background: none;
-	border: 0;
-	cursor: pointer;
+	text-decoration: none;
 	transition: color 0.25s;
 }
 
@@ -604,28 +601,60 @@ ul {
 	opacity: 0;
 }
 
-.case-toggle[aria-expanded='true'] .case-pulse-dot {
-	background: var(--accent);
+/* The case study page, /work/<slug>/, set like an open panel */
+.case-page {
+	min-height: 100svh;
+	color: var(--ink);
+	background: var(--paper);
 }
 
-/* Without JavaScript the case study is always shown, so the toggle has nothing to do */
-html:not(.js) .case-toggle {
-	display: none;
+.case-kicker {
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--accent);
 }
 
-.case-study {
-	overflow: hidden;
+.case-page .panel-close {
+	text-decoration: none;
 }
 
 .case-study-body {
 	max-width: 70ch;
-	margin-left: calc(var(--thumb-width) + var(--work-gap));
-	padding: 0.5rem 0 2.5rem;
 	font-size: 1.05rem;
 	line-height: 1.6;
 }
 
-.case-study-body h3 {
+.case-title {
+	font-size: clamp(2.25rem, 6vw, 4.5rem);
+	font-weight: 700;
+	line-height: 1.05;
+	color: var(--accent);
+}
+
+.case-summary {
+	margin: 1rem 0;
+	font-size: clamp(1.15rem, 1vw + 0.9rem, 1.5rem);
+	line-height: 1.4;
+}
+
+.case-live {
+	font-weight: 600;
+	color: var(--accent);
+	text-underline-offset: 0.2em;
+}
+
+.case-live:hover {
+	color: var(--ink);
+}
+
+.case-live:focus-visible {
+	outline: 3px solid var(--ink);
+	outline-offset: 3px;
+}
+
+.case-study-body h2 {
 	margin: 2rem 0 0.5rem;
 	font-size: clamp(1.2rem, 1vw + 0.8rem, 1.6rem);
 	line-height: 1.2;
@@ -805,8 +834,7 @@ html:not(.js) .case-toggle {
 		padding: 1.25rem var(--gutter) 0;
 	}
 
-	.earlier,
-	.case-study-body {
+	.earlier {
 		margin-left: 0;
 	}
 

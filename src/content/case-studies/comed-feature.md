@@ -9,17 +9,17 @@ summary: A scroll-driven feature page for ComEd's magazine, built in a few days 
 	<div><dt>Stack</dt><dd>HTML, CSS, Bootstrap, JavaScript, GSAP, DrawSVG, SVG, Claude Code</dd></div>
 </dl>
 
-### The challenge
+## The challenge
 
 "Every Neighbor Has a Story" is the cover feature of ComEd's Efficient Home magazine. It profiles people around Chicagoland and the steps they've taken to use energy more efficiently. The design called for a page that felt crafted, like flipping through a print magazine, with layered portraits and cut-paper graphics coming to life as you read. The timeline was a few days.
 
-### The first traditional page I built with AI
+## The first traditional page I built with AI
 
 I'd used AI on bigger builds, but this was the first traditional, hand-built page I made with Claude alongside me. I didn't use it to generate a page and walk away. I used it to remove the slow parts, so I could spend my time on the parts of the design that make the page feel special.
 
 That changed what was possible in the time we had. Features that would usually be cut for schedule made it in.
 
-### Motion that tells the story
+## Motion that tells the story
 
 The motion was my idea as well as my build. I proposed the hero line animations, the side animations and the curtain effect, then oversaw them from concept to launch so they matched the design and supported the story rather than distracting from it.
 
@@ -30,7 +30,7 @@ The motion was my idea as well as my build. I proposed the hero line animations,
 
 Every animation starts when its section scrolls into view, and the SVGs load only then, so the first view stays light. Visitors who prefer reduced motion get the finished artwork with no movement.
 
-### Checking the work with AI
+## Checking the work with AI
 
 Speed only counts if quality holds, so I used AI as a second set of eyes:
 
@@ -40,11 +40,11 @@ Speed only counts if quality holds, so I used AI as a second set of eyes:
 
 I reviewed every change myself and tested it in the browser before it shipped.
 
-### The result
+## The result
 
 ComEd got a feature page with print-quality craft and motion that moves the story forward, delivered in a few days. It showed me that AI doesn't make you skip the details. It gives you time to do more of them.
 
-### What I'd take to the next project
+## What I'd take to the next project
 
 - Use AI for the slow, repetitive parts, so you can spend your time on design and motion.
 - Ask it to check your work across devices, accessibility and performance, then verify what it finds yourself.
