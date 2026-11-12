@@ -107,15 +107,22 @@ ul {
 }
 
 /* Bleeds past the edges so the pointer parallax never shows a gap */
+/* The bottom of the nose (75% down the photo) never shows, and sits right at the bottom edge.
+   object-position pins the photo's 75% line to the box's 75% line, and the box is sized so that
+   line falls 16px below the poster, which is more than the pointer drift
+   (src/scripts/intro.js) ever lifts it. Cover scaling then only decides the crop at the sides
+   and top. */
 .poster-photo {
+	--nose-line: 0.75;
 	position: absolute;
-	inset: -24px;
+	top: -24px;
+	left: -24px;
 	z-index: -2;
 	width: calc(100% + 48px);
 	max-width: none;
-	height: calc(100% + 48px);
+	height: calc((100% + 40px) / var(--nose-line));
 	object-fit: cover;
-	object-position: 50% 18%;
+	object-position: 50% 75%;
 }
 
 /* Deepens the sky behind the type so the white lines hold their contrast */
@@ -295,7 +302,7 @@ ul {
 
 /* The route's states are lightly filled, which also lifts the dark URL text that sits over them */
 .route-state {
-	fill: rgb(255 255 255 / 0.22);
+	fill: rgb(255 255 255 / 0.16);
 	stroke: rgb(255 255 255 / 0.4);
 	stroke-width: 1.2;
 	stroke-linejoin: round;
@@ -303,7 +310,7 @@ ul {
 }
 
 .route-state--near {
-	fill: rgb(255 255 255 / 0.11);
+	fill: rgb(255 255 255 / 0.08);
 	stroke: rgb(255 255 255 / 0.16);
 }
 
@@ -1067,10 +1074,42 @@ ul {
 	}
 }
 
+/* Narrower layouts, where the poster can run taller than the screen and nothing drifts: the
+   same rule without the drift, so the bottom of the nose lands on the poster's bottom edge. */
+@media (max-width: 899px) {
+	.poster-photo {
+		inset: 0 auto auto 0;
+		width: 100%;
+		height: calc(100% / var(--nose-line));
+	}
+
+	/* The route map joins the page flow with Athens close to the left edge of the screen
+	   (--route-start is its share of the map's width). The copy follows it, rising onto the
+	   map's lower land so the URL sits on its lighter ground. */
+	.state.state--route {
+		--route-width: min(95vw, 42rem);
+		position: relative;
+		top: auto;
+		left: auto;
+		width: var(--route-width);
+		margin: 0.5rem 0 calc(var(--route-width) * var(--route-ratio) * -0.33)
+			calc(0.9rem - var(--route-width) * var(--route-start) - var(--gutter));
+	}
+
+	.state--route + .poster-url {
+		margin-top: 0;
+	}
+
+	/* Athens' label rises above its dot here, so the URL can come up beside it */
+	.stop[data-phone-above] .city-label {
+		transform: translateY(-125%);
+	}
+}
+
 /* Small screens */
 @media (max-width: 640px) {
-	.poster-photo {
-		object-position: 50% 72%;
+	.tiles {
+		padding-top: 1.5rem;
 	}
 
 	/* Narrow map: some route labels move to the left of their dots (phoneSide in src/data/route.ts) */
@@ -1079,17 +1118,9 @@ ul {
 		left: auto;
 	}
 
-	/* The route map joins the page flow, larger, with Athens close to the left edge of the
-	   screen (--route-start is its share of the map's width). The copy rises onto the map's
-	   lower land, so the URL sits on its lighter ground. */
+	/* Large on phones, but no bigger than 38rem, so wider small screens don't balloon */
 	.state.state--route {
-		--route-width: 150vw;
-		position: relative;
-		top: auto;
-		left: auto;
-		width: var(--route-width);
-		margin: 0.5rem 0 calc(var(--route-width) * var(--route-ratio) * -0.27)
-			calc(0.9rem - var(--route-width) * var(--route-start) - var(--gutter));
+		--route-width: min(150vw, 38rem);
 	}
 
 	/* The URL sits low on the map here: keep the land under it at full strength, and lighter */
@@ -1100,8 +1131,10 @@ ul {
 	}
 
 	.state--route .route-state:not(.route-state--near) {
-		fill: rgb(255 255 255 / 0.3);
+		fill: rgb(255 255 255 / 0.2);
 	}
+
+
 
 	/* Narrow enough that all four cities and their labels stay on screen */
 	.state {

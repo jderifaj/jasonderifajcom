@@ -129,6 +129,29 @@ test.describe('home page', () => {
 		}
 	});
 
+	test('the portrait never shows below the bottom of the nose, at any size', async ({ page }) => {
+		const sizes = [[360, 740], [412, 915], [640, 900], [820, 1180], [900, 700], [1024, 768], [1280, 720], [1440, 900], [1851, 1000], [1920, 1080], [2560, 1440]];
+		for (const [width, height] of sizes) {
+			await page.setViewportSize({ width, height });
+			await page.goto('/');
+			const photo = page.locator('.poster-photo');
+			await photo.evaluate((img: HTMLImageElement) => img.decode());
+			const { noseAt, posterBottom } = await photo.evaluate((img: HTMLImageElement) => {
+				const box = img.getBoundingClientRect();
+				const poster = img.closest('.poster')!.getBoundingClientRect();
+				// object-fit: cover at the computed object-position. The bottom of the nose is 75% down the photo.
+				const scale = Math.max(box.width / img.naturalWidth, box.height / img.naturalHeight);
+				const shown = img.naturalHeight * scale;
+				const y = parseFloat(getComputedStyle(img).objectPosition.split(' ')[1]) / 100;
+				const top = box.top + (box.height - shown) * y;
+				return { noseAt: top + shown * 0.75, posterBottom: poster.bottom };
+			});
+			// From 900px the photo drifts with the pointer, up to 16px, so the nose needs that much to spare.
+			const drift = width >= 900 ? 16 : 0;
+			expect(noseAt, `${width}×${height}`).toBeGreaterThanOrEqual(posterBottom + drift - 1);
+		}
+	});
+
 	test('has working contact links', async ({ page }) => {
 		await page.goto('/');
 		const contact = page.getByRole('list', { name: 'Contact' });

@@ -13,10 +13,13 @@ export interface Stop {
 	lon: number;
 	side: Side;
 	phoneSide?: Side;
+	/** On phones, put the label above its dot instead of beside it. */
+	phoneAbove?: boolean;
 }
 
 export const stops: Stop[] = [
-	{ name: 'Athens, GA', role: 'Interactive Web Development', lat: 33.9519, lon: -83.3576, side: 'right' },
+	// On phones Athens' label sits above its dot, so the URL below can rise up beside it.
+	{ name: 'Athens, GA', role: 'Interactive Web Development', lat: 33.9519, lon: -83.3576, side: 'right', phoneAbove: true },
 	// On phones the map is narrow, so these labels go left too or they'd run off the screen.
 	{ name: 'Cary, NC', role: 'Motion & Scroll Animation', lat: 35.7915, lon: -78.7811, side: 'right', phoneSide: 'left' },
 	{ name: 'Richmond, VA', role: 'Accessible, Fast Front-End', lat: 37.5407, lon: -77.436, side: 'right', phoneSide: 'left' },

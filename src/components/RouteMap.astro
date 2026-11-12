@@ -90,8 +90,8 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 	</svg>
 
 	<ul class="stops" aria-label="Where I've worked, on site and remotely">
-		{points.map(({ name, role, side, phoneSide, x, y }) => (
-			<li class="city stop" data-side={side} data-phone-side={phoneSide} data-city={name} data-role={role} data-x={x.toFixed(1)} data-y={y.toFixed(1)} style={`left: ${pct(x, width)}; top: ${pct(y, height)}`}>
+		{points.map(({ name, role, side, phoneSide, phoneAbove, x, y }) => (
+			<li class="city stop" data-side={side} data-phone-side={phoneSide} data-phone-above={phoneAbove} data-city={name} data-role={role} data-x={x.toFixed(1)} data-y={y.toFixed(1)} style={`left: ${pct(x, width)}; top: ${pct(y, height)}`}>
 				<span class="city-dot" aria-hidden="true"></span>
 				<span class="city-label">
 					<span class="city-plate" aria-hidden="true"></span>
