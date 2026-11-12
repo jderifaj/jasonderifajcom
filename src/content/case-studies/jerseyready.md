@@ -1,10 +1,10 @@
 ---
-summary: An award-winning, video-led site for PSEG, built in one week, that lets real New Jersey people tell the story.
+summary: A multi-award-winning, video-led site for PSEG, built in one week, that lets real New Jersey people tell the story.
 ---
 
 <dl class="case-facts">
 	<div><dt>Client</dt><dd>PSEG, Jersey Ready</dd></div>
-	<div><dt>Role</dt><dd>Front-end developer: video, custom player and motion</dd></div>
+	<div><dt>Role</dt><dd>Interactive developer</dd></div>
 	<div><dt>Year</dt><dd>2025</dd></div>
 	<div><dt>Stack</dt><dd>HTML, CSS, Bootstrap, JavaScript, YouTube IFrame Player API, GSAP, ScrollTrigger, DrawSVG</dd></div>
 </dl>
@@ -45,7 +45,7 @@ Everything else stays still, so the people in the videos stay the focus.
 
 ## The result
 
-Jersey Ready launched on schedule, one week after we started, and went on to win an award. The site shows that a short timeline doesn't have to mean a plain one, when the time goes into the few things that matter most.
+Jersey Ready launched on schedule, one week after we started, and went on to win multiple awards. The site shows that a short timeline doesn't have to mean a plain one, when the time goes into the few things that matter most.
 
 ## What I'd take to the next project
 
@@ -53,4 +53,3 @@ Jersey Ready launched on schedule, one week after we started, and went on to win
 - Real people on video tell a story faster than any amount of copy.
 - A third-party player doesn't have to look like one. Its API lets the design stay yours.
 - Build anything you'll use more than once as one reusable piece from the start.
-- I'd add a reduced-motion version from day one, so the background loops and animations can rest for readers who ask for less movement.
