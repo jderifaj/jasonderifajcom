@@ -304,6 +304,8 @@ ul {
 	backdrop-filter: blur(4px);
 	cursor: pointer;
 	transition: background 0.25s, color 0.25s;
+	/* The type below is capped to the tile's inner width (cqi), so the longest words fit at any size */
+	container-type: inline-size;
 }
 
 .tile + .tile {
@@ -311,13 +313,15 @@ ul {
 }
 
 .tile-title {
-	font-size: clamp(2rem, 3.6vw, 3.6rem);
+	/* "Words" is 2.96em wide */
+	font-size: min(clamp(2rem, 3.6vw, 3.6rem), 32cqi);
 	font-weight: 700;
 	line-height: 0.9;
 }
 
 .tile-label {
-	font-size: clamp(0.8rem, 0.5vw + 0.6rem, 1rem);
+	/* "Recommendations" is 8.46em wide and can't wrap */
+	font-size: min(clamp(0.8rem, 0.5vw + 0.6rem, 1rem), 11.5cqi);
 	font-weight: 500;
 }
 
@@ -792,7 +796,7 @@ ul {
 	}
 
 	.tile-title {
-		font-size: clamp(1.75rem, 2.7vw, 3rem);
+		font-size: min(clamp(1.75rem, 2.7vw, 3rem), 32cqi);
 	}
 
 	.poster-meta,
