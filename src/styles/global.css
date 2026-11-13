@@ -185,6 +185,10 @@ ul {
 }
 
 .band .role {
+	/* One line at every width: the title is about 16.2em wide and the band leaves
+	   84vw for it, so phones shrink it below the name's size */
+	font-size: min(1em, 5vw);
+	white-space: nowrap;
 	margin-bottom: -0.2em; /* descenders spill out of the band */
 	font-weight: 600;
 	line-height: 1;

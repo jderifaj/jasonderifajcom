@@ -18,7 +18,7 @@ test.describe('home page', () => {
 		await page.goto('/');
 
 		await expect(page.getByRole('heading', { level: 1, name: 'Jason Derifaj' })).toBeVisible();
-		await expect(page.getByText('Creative Front-End Developer', { exact: true })).toBeVisible();
+		await expect(page.getByText('Senior Creative Front-End Engineer', { exact: true })).toBeVisible();
 
 		const portrait = page.getByRole('img', { name: /Jason Derifaj, smiling/ });
 		await expect(portrait).toBeVisible();
