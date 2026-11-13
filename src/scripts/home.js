@@ -1,3 +1,4 @@
+import { initBurnIn } from './burn-in.js';
 import { initCaseStudyPulse } from './case-study.js';
 import { playIntro } from './intro.js';
 import { initPanels } from './panels.js';
@@ -7,6 +8,7 @@ import { initWorkPreview } from './work-preview.js';
 
 const intro = playIntro();
 initPanels();
+initBurnIn();
 initWorkPreview();
 initCaseStudyPulse();
 measureCopy();

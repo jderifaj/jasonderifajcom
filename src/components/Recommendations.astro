@@ -1,18 +1,28 @@
 ---
 import { recommendations } from '../data/recommendations';
+
+/** Splits a quote around its highlight, so src/scripts/burn-in.js can drop the words onto it. */
+const split = (quote: string, highlight: string) => {
+	const at = quote.indexOf(highlight);
+	if (at === -1) throw new Error(`Highlight "${highlight}" is not in its quote`);
+	return [quote.slice(0, at), quote.slice(at + highlight.length)];
+};
 ---
 <ul class="recommendations">
-	{recommendations.map(({ quote, name, role }) => (
-		<li>
-			<figure>
-				<blockquote>
-					<p>{quote}</p>
-				</blockquote>
-				<figcaption>
-					<span class="recommendation-name">{name}</span>
-					<span class="recommendation-role">{role}</span>
-				</figcaption>
-			</figure>
-		</li>
-	))}
+	{recommendations.map(({ quote, highlight, name, role }) => {
+		const [before, after] = split(quote, highlight);
+		return (
+			<li>
+				<figure>
+					<blockquote>
+						<p>{before}<span class="burn">{highlight}</span>{after}</p>
+					</blockquote>
+					<figcaption>
+						<span class="recommendation-name">{name}</span>
+						<span class="recommendation-role">{role}</span>
+					</figcaption>
+				</figure>
+			</li>
+		);
+	})}
 </ul>

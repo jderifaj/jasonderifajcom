@@ -26,6 +26,26 @@ test.describe('panels', () => {
 		await expect(dialog.locator('blockquote')).toHaveCount(recommendations.length);
 	});
 
+	test('each quote holds its highlight, which slides in and stays tinted', async ({ page }) => {
+		for (const { quote, highlight } of recommendations) expect(quote).toContain(highlight);
+
+		await page.goto('/');
+		await page.getByRole('button', { name: /^Words/ }).click();
+		const dialog = page.getByRole('dialog', { name: 'Recommendations from colleagues' });
+		await expect(dialog.locator('.burn')).toHaveText(recommendations.map((r) => r.highlight));
+		// They play in order, so the first to settle is 01's, a few seconds after the panel opens
+		await expect(dialog.locator('.burn.is-lit').first()).toHaveText(recommendations[0].highlight, { timeout: 8000 });
+	});
+
+	test('with reduced motion, every highlight is tinted at once and nothing slides', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		await page.goto('/');
+		await page.getByRole('button', { name: /^Words/ }).click();
+		const dialog = page.getByRole('dialog', { name: 'Recommendations from colleagues' });
+		await expect(dialog.locator('.burn.is-lit')).toHaveCount(recommendations.length);
+		await expect(dialog.locator('.burn-layer')).toHaveCount(0);
+	});
+
 	test('works from the keyboard, and Escape closes', async ({ page }) => {
 		await page.goto('/');
 		const opener = page.getByRole('button', { name: /^Work/ });
