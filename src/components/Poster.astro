@@ -66,7 +66,7 @@ const disciplines = ['Design systems', 'Interaction', 'Accessibility'];
 			<p class="role">Senior Creative Front-End Engineer</p>
 			<p class="disciplines">
 				{disciplines.map((discipline, i) => (
-					<>{i > 0 && <span class="disciplines-slash" aria-hidden="true">/</span>}<span>{discipline}</span></>
+					<>{i > 0 && <> <span class="disciplines-slash" aria-hidden="true">/</span> </>}<span>{discipline}</span></>
 				))}
 			</p>
 		</div>

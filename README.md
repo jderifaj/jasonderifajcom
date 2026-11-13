@@ -8,33 +8,39 @@ Most of my work is client sites built at ICF's Creative Studio for PSEG, BGE, Co
 
 ## The design
 
-The home page is a single typographic poster: a duotone close-up portrait fills the screen, a white band carries my name and title, and large lines of type end in short accent dashes. Behind the type, an outline of North Carolina is overprinted on the portrait in the manner of Max Huber's 1950s covers: an outline and a truss lattice.
+The home page is a single typographic poster on a 12-column grid, in overlapping colour planes: deep green on the left, navy on the right and emerald at the foot. My name is the anchor, set huge in mint along the bottom edge and crossing from the emerald plane onto the navy one. On the navy, a route map from Athens, GA to Washington, DC is drawn like a technical drawing: hairline states, crosshairs at each whole degree, and numbered monospace labels on 90° leaders, one for each thing I do.
 
-The work and the testimonials are tucked behind two tiles, **Work** and **Words**, which open full-screen panels.
+The page builds in from white: the emerald plane rises, then navy and green fill the page, and the name turns from black to mint as the planes pass behind it. Then the map draws itself.
+
+The work and the testimonials are behind **Work** and **Words**, which open full-screen panels, and each case study has its own page.
 
 ## How it works
 
 - **Astro 7** renders the site to static HTML.
-- **Plain CSS** in `src/styles/global.css`, in numbered sections, with the palette and type sizes as custom properties on `:root`. Type is Figtree, self-hosted from `@fontsource-variable/figtree`, with the Latin subset preloaded.
+- **Plain CSS** in `src/styles/global.css`, in numbered sections, with the palette and type sizes as custom properties on `:root`. Type is IBM Plex Sans, self-hosted from `@fontsource-variable/ibm-plex-sans` with the Latin subset preloaded, and IBM Plex Mono (`@fontsource/ibm-plex-mono`) for labels and metadata.
 - **Native `<dialog>`** elements for the panels, opened with `commandfor`/`command` buttons, with a small script fallback for browsers that don't support those yet.
-- **GSAP** runs the poster's intro and pointer parallax, then brings North Carolina in last: the outline fades up and the lattice draws itself line by line, growing from a few random points until the clusters meet, draws the lines in when a panel opens, and drives the hover preview: hovering or focusing a project shows a large screenshot in the lower right, and new screenshots wipe in over the old one.
-- **Astro's image pipeline** serves the portrait as AVIF with a WebP fallback, and turns the project screenshots into small thumbnails and 1024 px hover previews at build time.
+- **GSAP** runs the poster's build-in and the route map (the states trace their outlines, then each leg draws north and each label's leader draws out to the axis), the pointer parallax on the map's layers, the panels' lines, and the hover preview: hovering or focusing a project shows a large screenshot in the lower right, and new screenshots wipe in over the old one.
+- **Astro's image pipeline** turns the project screenshots into thumbnails (1x to 3x) and 1024 px hover previews at build time.
 
 ```
 src/
 ├── data/
 │   ├── projects.ts          Curated work, newest first
-│   ├── north-carolina.ts    The state outline (U.S. Census, public domain)
+│   ├── east-coast.ts        The route map's states (U.S. Census, public domain)
+│   ├── route.ts             The route's stops and the map's shape
+│   ├── north-carolina.ts    The state outline for the alternate map
 │   └── recommendations.ts   Quotes from colleagues
 ├── components/
 │   ├── Poster.astro         The home page poster
+│   ├── RouteMap.astro       The route map, its grid and labels
 │   ├── Panel.astro          Full-screen dialog shell
 │   ├── WorkList.astro       Curated work rows and the hover preview card
 │   └── Recommendations.astro
 ├── scripts/
 │   ├── home.js              Entry point
-│   ├── intro.js             Poster intro and pointer parallax
-│   ├── state.js             North Carolina's outline and growing lattice
+│   ├── intro.js             The poster's build-in
+│   ├── route.js             Draws the route map in; its pointer parallax
+│   ├── state.js             North Carolina's outline and growing lattice (alternate map)
 │   ├── panels.js            Opening, closing and animating the panels
 │   ├── work-preview.js      The hover preview card
 │   └── motion.js            Reduced-motion and pointer helpers
@@ -57,7 +63,7 @@ The build stops with a clear error if a project's screenshot is missing.
 - **Astro** because the site is mostly static content; it ships plain HTML and adds JavaScript only where a section needs it.
 - **Content in the HTML**, so it reads without JavaScript and is easy for search engines and screen readers. Without JavaScript, the panels still open in browsers that support invoker commands.
 - **Animation as an enhancement:** everything is in the HTML first, and GSAP adds motion on top. Visitors with reduced motion turned on get plain fades instead.
-- **Grain as a texture, not in the photo:** the portrait's film grain is a 7 KB tile blended over a smooth image with `mix-blend-mode: soft-light`. Noise barely compresses, so keeping it out of the photo makes the portrait about a third the size.
+- **Type, not effects:** the composition comes from scale, the grid and three flat colours, with IBM Plex Mono for metadata, so there's no photo to load and the poster is text and SVG.
 - **Sharp previews:** the hover card loses its transforms once it settles, because a transformed layer is resampled by the browser and looks soft.
 - **Accessible by default:** links that open a new tab say so to screen readers, the earlier magazine issues name the magazine, recommendations are marked up as quotes, and every target is at least 24 px. Axe checks run on every page state in the tests.
 

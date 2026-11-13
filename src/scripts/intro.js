@@ -26,6 +26,7 @@ export function playIntro() {
 		.add(() => {
 			gsap.set('.name-fill', { clearProps: 'clipPath' });
 			gsap.set('.name-ink', { display: 'none' });
+			document.querySelector('.poster')?.classList.add('is-built');
 		}, 2.4)
 		.from(['.band .role', '.disciplines', '.poster-meta'], { opacity: 0, y: 18, stagger: 0.1, duration: 0.7 }, 2.4)
 		// Each contact row wipes in along its rule

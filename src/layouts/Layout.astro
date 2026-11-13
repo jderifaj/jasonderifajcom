@@ -15,7 +15,7 @@ const {
 	title,
 	description,
 	image = '/og-image.jpg',
-	imageAlt = 'Jason Derifaj, Senior Creative Front-End Engineer — blue duotone portrait beside the name and title',
+	imageAlt = 'Jason Derifaj, Senior Creative Front-End Engineer: the name in large mint type across green and navy, under a route map from Athens to Washington',
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -32,7 +32,7 @@ const imageUrl = new URL(image, Astro.site);
 		<meta name="description" content={description} />
 		<meta name="author" content="Jason Derifaj" />
 		<link rel="canonical" href={canonical} />
-		<meta name="theme-color" content="#255987" />
+		<meta name="theme-color" content="#005c4b" />
 
 		<!-- Icons -->
 		<link rel="icon" href="/favicon.ico" sizes="32x32" />

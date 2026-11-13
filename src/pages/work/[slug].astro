@@ -29,9 +29,9 @@ const { Content, frontmatter } = caseStudy;
 			</a>
 		</header>
 
-		<main class="panel-body">
-			<article class="case-study-body">
-				<h1 class="case-title">{project.title}<span class="dash" aria-hidden="true"></span></h1>
+		<main>
+			<div class="case-hero">
+				<h1 class="case-title">{project.title}</h1>
 				<p class="case-summary">{frontmatter.summary}</p>
 				{project.url ? (
 					<p>
@@ -43,6 +43,8 @@ const { Content, frontmatter } = caseStudy;
 				) : (
 					<p class="case-offline">{project.noLink ?? "No live site: this project isn't public."}</p>
 				)}
+			</div>
+			<article class="case-study-body panel-body">
 				<Content />
 			</article>
 		</main>

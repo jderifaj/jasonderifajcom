@@ -115,7 +115,7 @@ ul {
 .poster {
 	/* The name's size: it runs from the left margin almost to the right edge. Its foot (the
 	   emerald plane) takes 0.95 of it at the bottom. */
-	--name-size: clamp(4.5rem, 15.8vw, 22rem);
+	--name-size: clamp(2.5rem, 15.8vw, 22rem);
 	/* The navy plane's left edge: the middle of the gap between columns 5 and 6 */
 	--plane-edge: calc(var(--gutter) + 5 * (var(--col) + var(--gap)) - var(--gap) / 2);
 	position: relative;
@@ -126,12 +126,16 @@ ul {
 	padding: clamp(1.25rem, 4vh, 2.5rem) 0 calc(var(--name-size) * 0.95 + 1.75rem);
 	overflow: hidden;
 	color: var(--ice);
-	background: var(--paper); /* the planes cover it; it shows only as they come in */
+	background: var(--ground); /* the planes cover it */
 }
 
 /* With script and motion, the poster starts as a blank white page: everything on it waits
-   for src/scripts/intro.js, which brings the planes in first */
+   for src/scripts/intro.js, which brings the planes in first, then marks it built */
 @media (prefers-reduced-motion: no-preference) {
+	.js .poster:not(.is-built) {
+		background: var(--paper);
+	}
+
 	.js .poster > * {
 		visibility: hidden;
 	}
@@ -190,7 +194,7 @@ ul {
 
 .credit {
 	grid-column: 1 / 6;
-	color: rgb(216 255 248 / 0.7);
+	color: rgb(216 255 248 / 0.8);
 }
 
 /* Name, title and disciplines ------------------------------------------------ */
@@ -257,8 +261,13 @@ ul {
 }
 
 .disciplines-slash {
-	margin: 0 0.75em;
+	margin: 0 0.35em; /* plus the spaces either side, where the line can wrap */
 	color: var(--mint);
+}
+
+/* Each discipline stays whole when the line wraps */
+.disciplines > span {
+	white-space: nowrap;
 }
 
 /* Copy below the name ------------------------------------------------------- */
@@ -456,7 +465,7 @@ ul {
 	font-size: calc(10px * var(--unit));
 	font-weight: 500;
 	letter-spacing: 0.08em;
-	fill: rgb(216 255 248 / 0.5);
+	fill: rgb(216 255 248 / 0.65);
 }
 
 /* The route's states: unfilled ice hairlines, quiet behind the route */
@@ -675,7 +684,7 @@ ul {
 }
 
 .contact-kind {
-	color: rgb(216 255 248 / 0.65);
+	color: rgb(216 255 248 / 0.8); /* 5.4:1 on the green */
 }
 
 .poster-contact a {
@@ -701,6 +710,7 @@ ul {
 }
 
 .poster-contact a:hover {
+	color: var(--paper); /* white on emerald, 4.6:1 */
 	background: var(--emerald);
 }
 
@@ -808,7 +818,7 @@ ul {
 	left: calc(var(--gutter) + var(--name-size) * 0.436);
 	z-index: 2;
 	line-height: 1;
-	color: rgb(216 255 248 / 0.8);
+	color: var(--paper); /* white on emerald, 4.6:1 */
 	transform: translateX(-100%);
 }
 
@@ -816,6 +826,8 @@ ul {
 /* 5. Panels
    ========================================================================== */
 
+/* Full-screen panels, drawn like the poster's navy plane: ice type, mint for names and
+   numbers, monospace for metadata, hairline rules */
 .panel {
 	width: 100vw;
 	max-width: none;
@@ -824,13 +836,13 @@ ul {
 	margin: 0;
 	padding: 0;
 	overflow: auto;
-	color: var(--ink);
-	background: var(--paper);
+	color: var(--ice);
+	background: var(--navy);
 	border: 0;
 }
 
 .panel::backdrop {
-	background: rgb(37 89 135 / 0.7);
+	background: rgb(0 92 75 / 0.85);
 }
 
 .panel-head {
@@ -841,36 +853,53 @@ ul {
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
-	padding: 1rem var(--gutter);
-	background: var(--paper);
-	border-bottom: 3px solid var(--ink);
+	padding: 1.25rem var(--gutter);
+	background: var(--navy);
+	border-bottom: 1px solid rgb(216 255 248 / 0.3);
 }
 
 .panel-head h2 {
-	font-size: clamp(1.75rem, 4vw, 3.5rem);
+	min-width: 0; /* a long title wraps rather than pushing Close off the screen */
+	/* On small phones, small enough that "Recommendations" fits beside Close */
+	font-size: min(clamp(1.75rem, 4vw, 3.5rem), 6.5vw);
 	font-weight: 700;
-	line-height: 1.1;
-	color: var(--accent);
+	letter-spacing: -0.035em;
+	line-height: 1;
+	color: var(--mint);
 }
 
+.panel-head .dash {
+	display: none;
+}
+
+/* Close, and Back to work on a case study: a quiet monospace button */
 .panel-close {
+	display: inline-flex;
 	flex-shrink: 0;
-	padding: 0.5rem 1rem;
-	font: inherit;
-	font-weight: 600;
-	color: var(--ink);
+	align-items: center;
+	gap: 0.6em;
+	min-height: 44px;
+	padding: 0 1rem;
+	font-family: var(--mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ice);
 	background: transparent;
-	border: 2px solid var(--ink);
+	border: 1px solid rgb(216 255 248 / 0.6);
 	cursor: pointer;
+	transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .panel-close:hover {
 	color: var(--paper);
-	background: var(--ink);
+	background: var(--emerald);
+	border-color: var(--emerald);
 }
 
 .panel-close:focus-visible {
-	outline: 3px solid var(--ink);
+	outline: 2px solid var(--mint);
 	outline-offset: 3px;
 }
 
@@ -888,9 +917,16 @@ ul {
 	align-items: center;
 	gap: var(--work-gap);
 	padding: 1rem 0;
-	font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.75rem);
+	font-size: clamp(1.05rem, 1.2vw + 0.55rem, 1.6rem);
+	font-weight: 500;
+	letter-spacing: -0.01em;
 	color: inherit;
 	text-decoration: none;
+}
+
+.work-link:focus-visible {
+	outline: 2px solid var(--mint);
+	outline-offset: 2px;
 }
 
 .work-thumb {
@@ -898,73 +934,72 @@ ul {
 	width: var(--thumb-width);
 	height: 40px;
 	object-fit: cover;
-	background: var(--accent-soft);
+	background: rgb(216 255 248 / 0.1);
+	outline: 1px solid rgb(216 255 248 / 0.2);
+}
+
+.work-title {
+	transition: color 0.2s;
 }
 
 .work-year {
-	font-weight: 700;
+	font-family: var(--mono);
+	font-weight: 500;
 	font-variant-numeric: tabular-nums;
-	color: var(--accent);
+	letter-spacing: 0.04em;
+	color: var(--mint);
 }
 
 .work-rule {
 	width: 100%;
-	height: 2px;
-	background: var(--ink);
+	height: 1px;
+	background: rgb(216 255 248 / 0.25);
+	transform-origin: left center;
 	transition: background 0.25s;
 }
 
 /* A project whose site is no longer public: the title isn't a link, and this says why */
 .work-offline {
 	display: inline-block;
-	margin-left: 0.4em;
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	margin-left: 0.6em;
+	font-family: var(--mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	vertical-align: 0.3em;
-	color: #555;
+	color: rgb(216 255 248 / 0.75);
 }
 
 .work-item:hover .work-title,
 .work-item:focus-within .work-title {
-	color: var(--accent);
+	color: var(--mint);
 }
 
 .work-item:hover .work-rule,
 .work-item:focus-within .work-rule {
-	background: var(--accent);
+	background: var(--emerald);
 }
 
-/* Earlier issues: type riding on a light blue bar, offset like the poster band */
+/* Earlier issues: an indented row on a faint band */
 .earlier {
-	position: relative;
-	isolation: isolate;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: baseline;
 	gap: 0.35rem 1.5rem;
 	margin: -0.4rem 0 1.25rem calc(var(--thumb-width) + var(--work-gap));
-	padding-right: 1rem;
-}
-
-.earlier::before {
-	content: '';
-	position: absolute;
-	top: 0.55em;
-	right: 0;
-	bottom: -0.55rem;
-	left: -0.75rem;
-	z-index: -1;
-	background: var(--accent-soft);
+	padding: 0.5rem 1rem 0.6rem 0.75rem;
+	background: rgb(216 255 248 / 0.06);
+	border-left: 1px solid var(--mint);
 }
 
 .earlier-label {
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	font-family: var(--mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
-	color: var(--accent);
+	color: var(--mint);
 }
 
 .earlier-list {
@@ -976,12 +1011,12 @@ ul {
 .earlier-link {
 	display: inline-flex;
 	align-items: baseline;
-	gap: 0.4rem;
+	gap: 0.5rem;
 	min-height: 24px; /* comfortable target size */
 	padding-block: 0.15rem;
-	font-size: clamp(0.95rem, 0.6vw + 0.7rem, 1.2rem);
+	font-size: clamp(0.95rem, 0.5vw + 0.75rem, 1.15rem);
 	font-weight: 500;
-	color: var(--ink);
+	color: var(--ice);
 	text-decoration: none;
 	transition: color 0.3s;
 }
@@ -990,14 +1025,19 @@ ul {
 	content: '';
 	align-self: center;
 	width: 0.9em;
-	height: 2px;
-	background: var(--accent-hot);
+	height: 1px;
+	background: var(--mint);
 	transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .earlier-link:hover,
 .earlier-link:focus-visible {
-	color: var(--accent);
+	color: var(--mint);
+}
+
+.earlier-link:focus-visible {
+	outline: 2px solid var(--mint);
+	outline-offset: 2px;
 }
 
 .earlier-link:hover::after,
@@ -1006,10 +1046,11 @@ ul {
 }
 
 .earlier-year {
+	font-family: var(--mono);
 	font-size: 0.75em;
-	font-weight: 600;
+	font-weight: 500;
 	font-variant-numeric: tabular-nums;
-	color: var(--accent);
+	color: var(--mint);
 }
 
 /* A row with a case study: the project link, then a "Case study" link */
@@ -1022,41 +1063,42 @@ ul {
 
 .work-row .work-year {
 	grid-column: 3;
-	font-size: clamp(1.05rem, 1.4vw + 0.5rem, 1.75rem);
+	font-size: clamp(0.95rem, 0.6vw + 0.7rem, 1.25rem);
 }
 
-/* The "Case study" link sits just left of the year, set like the "Earlier issues" label */
+/* The "Case study" link sits just left of the year, in monospace capitals */
 .case-toggle {
 	grid-column: 2;
 	display: inline-flex;
 	align-items: center;
-	gap: 0.6em;
+	gap: 0.7em;
 	min-height: 44px;
 	padding: 0 0.25em;
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	font-family: var(--mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
-	color: var(--accent);
+	color: var(--ice);
 	text-decoration: none;
 	transition: color 0.25s;
 }
 
 .case-toggle:hover {
-	color: var(--ink);
+	color: var(--mint);
 }
 
 .case-toggle:focus-visible {
-	outline: 3px solid var(--ink);
+	outline: 2px solid var(--mint);
 	outline-offset: 3px;
 }
 
-/* A small blue dot with a ring that pulses out from it (src/scripts/case-study.js) */
+/* A small mint square with a ring that pulses out from it (src/scripts/case-study.js) */
 .case-pulse {
 	display: inline-grid;
 	place-items: center;
-	width: 0.8em;
-	height: 0.8em;
+	width: 0.7em;
+	height: 0.7em;
 }
 
 .case-pulse-dot,
@@ -1064,68 +1106,86 @@ ul {
 	grid-area: 1 / 1;
 	width: 100%;
 	height: 100%;
-	border-radius: 50%;
-	background: var(--accent-hot);
+	background: var(--mint);
 }
 
 .case-pulse-ring {
 	opacity: 0;
 }
 
-/* The case study page, /work/<slug>/, set like an open panel */
+/* The case study page, /work/<slug>/: navy like the panels, its title on a deep green band */
 .case-page {
 	min-height: 100svh;
-	color: var(--ink);
-	background: var(--paper);
+	color: var(--ice);
+	background: var(--navy);
 }
 
 .case-kicker {
-	font-size: 0.8rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	font-family: var(--mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
-	color: var(--accent);
+	color: var(--mint);
 }
 
 .case-page .panel-close {
 	text-decoration: none;
 }
 
-.case-study-body {
+.case-hero {
+	padding: clamp(2.5rem, 7vh, 5rem) var(--gutter) clamp(2rem, 5vh, 3.5rem);
+	background: var(--ground);
+}
+
+.case-hero > * {
 	max-width: 70ch;
+}
+
+.case-study-body {
+	max-width: calc(70ch + 2 * var(--gutter)); /* 70ch of text inside the gutters */
 	font-size: 1.05rem;
-	line-height: 1.6;
+	line-height: 1.65;
 }
 
 .case-title {
-	font-size: clamp(2.25rem, 6vw, 4.5rem);
+	max-width: none;
+	font-size: clamp(2.5rem, 7vw, 6rem);
 	font-weight: 700;
-	line-height: 1.05;
-	color: var(--accent);
+	letter-spacing: -0.04em;
+	line-height: 0.95;
+	color: var(--mint);
+}
+
+.case-title .dash {
+	display: none;
 }
 
 .case-summary {
-	margin: 1rem 0;
+	margin: 1.25rem 0 1rem;
 	font-size: clamp(1.15rem, 1vw + 0.9rem, 1.5rem);
 	line-height: 1.4;
 }
 
 .case-live {
-	font-weight: 600;
-	color: var(--accent);
-	text-underline-offset: 0.2em;
+	font-weight: 500;
+	color: var(--ice);
+	text-decoration: underline 1px;
+	text-underline-offset: 0.25em;
 }
 
 .case-live:hover {
-	color: var(--ink);
+	color: var(--mint);
+	text-decoration-thickness: 2px;
 }
 
 .case-offline {
-	font-size: 0.8rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	font-family: var(--mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
-	color: #555;
+	color: rgb(216 255 248 / 0.8);
 }
 
 /* A looping screen recording inside a case study (src/scripts/case-video.js) */
@@ -1137,8 +1197,8 @@ ul {
 	display: block;
 	width: 100%;
 	height: auto;
-	background: var(--accent-soft);
-	border: 3px solid var(--ink);
+	background: rgb(216 255 248 / 0.08);
+	border: 1px solid rgb(216 255 248 / 0.3);
 }
 
 .case-video figcaption {
@@ -1148,7 +1208,7 @@ ul {
 	gap: 1rem;
 	margin-top: 0.6rem;
 	font-size: 0.9rem;
-	color: #555;
+	color: rgb(216 255 248 / 0.8);
 }
 
 .case-video-toggle {
@@ -1156,41 +1216,53 @@ ul {
 	min-width: 5.5rem;
 	min-height: 44px;
 	padding: 0 1rem;
-	font: inherit;
-	font-weight: 600;
-	color: var(--ink);
+	font-family: var(--mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ice);
 	background: transparent;
-	border: 2px solid var(--ink);
+	border: 1px solid rgb(216 255 248 / 0.6);
 	cursor: pointer;
 }
 
 .case-video-toggle:hover {
 	color: var(--paper);
-	background: var(--ink);
+	background: var(--emerald);
+	border-color: var(--emerald);
 }
 
 .case-video-toggle:focus-visible {
-	outline: 3px solid var(--ink);
+	outline: 2px solid var(--mint);
 	outline-offset: 3px;
 }
 
 .case-study-body code {
-	padding: 0.1em 0.3em;
-	font-size: 0.88em;
-	background: var(--accent-soft);
-	border-radius: 3px;
+	padding: 0.1em 0.35em;
+	font-family: var(--mono);
+	font-size: 0.85em;
+	background: rgb(216 255 248 / 0.1);
 }
 
-.case-live:focus-visible {
-	outline: 3px solid var(--ink);
+.case-study-body a {
+	color: var(--mint);
+	text-underline-offset: 0.2em;
+}
+
+.case-live:focus-visible,
+.case-study-body a:focus-visible {
+	outline: 2px solid var(--mint);
 	outline-offset: 3px;
 }
 
 .case-study-body h2 {
-	margin: 2rem 0 0.5rem;
-	font-size: clamp(1.2rem, 1vw + 0.8rem, 1.6rem);
-	line-height: 1.2;
-	color: var(--accent);
+	margin: 2.5rem 0 0.6rem;
+	font-size: clamp(1.25rem, 1vw + 0.85rem, 1.75rem);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.15;
+	color: var(--mint);
 }
 
 .case-study-body p {
@@ -1204,32 +1276,40 @@ ul {
 }
 
 .case-study-body li {
-	margin-bottom: 0.4rem;
+	margin-bottom: 0.45rem;
 }
 
 .case-study-body li::marker {
-	color: var(--accent-hot);
+	color: var(--mint);
 }
 
+.case-study-body strong {
+	font-weight: 600;
+	color: var(--paper);
+}
+
+/* The facts: a ruled table in monospace labels */
 .case-facts {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
 	gap: 1rem 1.5rem;
 	margin: 0.5rem 0 0;
-	padding: 1rem 1.25rem;
-	background: var(--accent-soft);
+	padding: 1rem 0;
+	border-top: 1px solid rgb(216 255 248 / 0.3);
+	border-bottom: 1px solid rgb(216 255 248 / 0.3);
 }
 
 .case-facts dt {
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	font-family: var(--mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
-	color: var(--accent);
+	color: var(--mint);
 }
 
 .case-facts dd {
-	margin: 0.2rem 0 0;
+	margin: 0.3rem 0 0;
 	font-weight: 500;
 }
 
@@ -1254,14 +1334,14 @@ ul {
 }
 
 .work-preview-shadow {
-	background: var(--accent);
+	background: var(--emerald);
 	transform: translate(0.75rem, 0.75rem);
 }
 
 .work-preview-frame {
 	overflow: hidden;
-	background: var(--paper);
-	border: 3px solid var(--ink);
+	background: var(--navy);
+	border: 1px solid var(--ice);
 }
 
 .work-preview-frame img {
@@ -1280,14 +1360,26 @@ ul {
 .recommendations {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
-	gap: 1.5rem;
+	gap: var(--gap);
 }
 
+/* Each quote under a hairline rule, numbered in monospace */
 .recommendations > li {
-	padding: clamp(1.25rem, 2vw, 2rem);
+	counter-increment: quote;
+	padding: 1rem 0 1.5rem;
 	font-size: 1.1rem;
 	line-height: 1.55;
-	border: 2px solid var(--ink);
+	border-top: 1px solid rgb(216 255 248 / 0.4);
+}
+
+.recommendations > li::before {
+	content: counter(quote, decimal-leading-zero);
+	display: block;
+	margin-bottom: 0.9rem;
+	font-family: var(--mono);
+	font-size: 0.6875rem;
+	letter-spacing: 0.12em;
+	color: var(--mint);
 }
 
 .recommendations figcaption {
@@ -1296,14 +1388,18 @@ ul {
 
 .recommendation-name {
 	display: block;
-	font-weight: 700;
-	color: var(--accent);
+	font-weight: 600;
+	color: var(--mint);
 }
 
 .recommendation-role {
 	display: block;
-	font-size: 0.95rem;
-	color: #555;
+	margin-top: 0.2rem;
+	font-family: var(--mono);
+	font-size: 0.75rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: rgb(216 255 248 / 0.8);
 }
 
 
@@ -1333,6 +1429,11 @@ ul {
 		box-shadow: 0 0 0 0.2em var(--ground);
 	}
 
+	/* The credit and the navigation stack, with room between them */
+	.masthead {
+		row-gap: 1.75rem;
+	}
+
 	.credit,
 	.tiles {
 		grid-column: 1 / -1;
@@ -1342,8 +1443,13 @@ ul {
 		margin-bottom: 1.5rem;
 	}
 
-	.band .role {
-		font-size: min(clamp(1.25rem, 2.35vw, 2.6rem), 5vw);
+	/* One column: the title block takes the full width */
+	.band-title {
+		max-width: none;
+	}
+
+	.disciplines {
+		white-space: normal;
 	}
 
 	/* The route map joins the page flow, its label axis (through Athens) on the left margin.
@@ -1374,7 +1480,8 @@ ul {
 		left: auto;
 		width: var(--route-width);
 		transform: none;
-		margin: calc(2.25rem + var(--drop) - var(--route-height) * var(--route-top-stop)) 0
+		/* Room above Washington's dot for its leader and a two-line label */
+		margin: calc(4.75rem + var(--drop) - var(--route-height) * var(--route-top-stop)) 0
 			calc(var(--drop) + 3.5rem - var(--route-height) * (1 - var(--route-bottom-stop)))
 			calc(-1 * var(--route-width) * var(--route-start));
 	}
@@ -1394,6 +1501,12 @@ ul {
 		white-space: normal;
 	}
 
+	/* The J is narrower than the date here: the date starts on the margin, over the J */
+	.copyright {
+		left: var(--gutter);
+		transform: none;
+	}
+
 	/* No room for the coordinates beside 76°W; the crosshairs stay */
 	.route-coord {
 		display: none;
@@ -1405,11 +1518,6 @@ ul {
 		left: -20vw;
 		width: 120vw;
 		transform: rotate(-7deg);
-	}
-
-	.copyright {
-		position: static;
-		padding: 1.25rem var(--gutter) 0;
 	}
 
 	.earlier {
