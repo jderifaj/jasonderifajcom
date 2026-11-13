@@ -15,7 +15,7 @@ sizeRoute();
 // The map starts drawing once the intro is most of the way in and everything has loaded:
 // the route up the east coast, or North Carolina (see posterMap in src/data/route.ts).
 if (intro) {
-	const introDone = new Promise((resolve) => intro.call(resolve, undefined, 1.2));
+	const introDone = new Promise((resolve) => intro.call(resolve, undefined, 2.6));
 	const pageLoaded =
 		document.readyState === 'complete'
 			? Promise.resolve()

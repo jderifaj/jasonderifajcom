@@ -3,30 +3,21 @@ import { eastCoast, project } from './east-coast';
 /**
  * The route map (src/components/RouteMap.astro): places I've done web work, on site and
  * remotely, in the order the route visits them. Each label first names the city, then, as the
- * route moves on, changes to `role`. `side` is which side of the dot the label sits on, and
- * `phoneSide` overrides it on screens 640px wide or less.
+ * route moves on, changes to `role`. The first stop is the furthest west, and every label
+ * lines up on a vertical axis through it.
  */
-type Side = 'left' | 'right';
-
 export interface Stop {
 	name: string;
 	role: string;
 	lat: number;
 	lon: number;
-	side: Side;
-	phoneSide?: Side;
-	/** On phones, put the label above its dot instead of beside it. */
-	phoneAbove?: boolean;
 }
 
 export const stops: Stop[] = [
-	// On phones Athens' label sits above its dot, so the URL below can rise up beside it.
-	{ name: 'Athens, GA', role: 'Interactive Web Development', lat: 33.9519, lon: -83.3576, side: 'right', phoneAbove: true },
-	// On phones the map is narrow, so these labels go left too or they'd run off the screen.
-	{ name: 'Cary, NC', role: 'Motion & Scroll Animation', lat: 35.7915, lon: -78.7811, side: 'right', phoneSide: 'left' },
-	{ name: 'Richmond, VA', role: 'Accessible, Fast Front-End', lat: 37.5407, lon: -77.436, side: 'right', phoneSide: 'left' },
-	// Top right of the route: its label goes left, into the open space, so it stays on screen.
-	{ name: 'Washington, DC', role: 'Design Systems & UI Engineering', lat: 38.9072, lon: -77.0369, side: 'left' },
+	{ name: 'Athens, GA', role: 'Interactive Web Development', lat: 33.9519, lon: -83.3576 },
+	{ name: 'Cary, NC', role: 'Motion & Scroll Animation', lat: 35.7915, lon: -78.7811 },
+	{ name: 'Richmond, VA', role: 'Accessible, Fast Front-End', lat: 37.5407, lon: -77.436 },
+	{ name: 'Washington, DC', role: 'Design Systems & UI Engineering', lat: 38.9072, lon: -77.0369 },
 ];
 
 /**
@@ -37,8 +28,9 @@ export const posterMap: 'route' | 'north-carolina' = 'route';
 
 /**
  * The map's shape, for laying out the poster around it (set as CSS variables on the copy):
- * its height as a share of its width, and Athens' and the highest stop's positions as shares
- * of its width and height.
+ * its height as a share of its width; Athens' position across, as a share of its width; the
+ * highest and lowest stops' positions down, as shares of its height; and how far right of
+ * Athens the map has to stay on screen (just past the furthest stop), as a share of its width.
  */
 export const routeGeometry = (() => {
 	const [, , width, height] = eastCoast.viewBox.split(' ').map(Number);
@@ -47,5 +39,7 @@ export const routeGeometry = (() => {
 		ratio: height / width,
 		start: points[0].x / width,
 		topStop: Math.min(...points.map((p) => p.y)) / height,
+		bottomStop: Math.max(...points.map((p) => p.y)) / height,
+		reach: (Math.max(...points.map((p) => p.x)) - points[0].x) / width + 0.03,
 	};
 })();

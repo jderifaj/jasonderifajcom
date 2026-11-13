@@ -1,6 +1,7 @@
 ---
-import '@fontsource-variable/figtree';
-import figtreeLatin from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import plexSansLatin from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 
 interface Props {
@@ -73,8 +74,8 @@ const imageUrl = new URL(image, Astro.site);
 			})}
 		/>
 
-		<!-- Self-hosted Figtree; preload the Latin subset the page is set in -->
-		<link rel="preload" href={figtreeLatin} as="font" type="font/woff2" crossorigin />
+		<!-- Self-hosted IBM Plex Sans; preload the Latin subset the page is set in -->
+		<link rel="preload" href={plexSansLatin} as="font" type="font/woff2" crossorigin />
 	</head>
 	<body>
 		<slot />

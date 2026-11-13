@@ -17,6 +17,22 @@
 	--ink: #16100e;
 	--paper: #fff;
 
+	/* Palette, by role: deep green ground; mint for the name and highlights; navy for the
+	   technical drawing; emerald for what you can press; ice for text */
+	--deep: #005c4b;
+	--emerald: #00864f;
+	--mint: #9df7f2;
+	--navy: #172e49;
+	--ice: #d8fff8;
+	--ground: var(--deep);
+	--signal: var(--mint);
+
+	--mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+	/* A 12-column grid between the gutters. Column 7 starts at the middle of the page. */
+	--gap: clamp(0.75rem, 1.6vw, 1.5rem);
+	--col: calc((100vw - 2 * var(--gutter) - 11 * var(--gap)) / 12);
+
 	--gutter: clamp(1rem, 8vw, 9rem);
 	--band-size: clamp(1.45rem, 3.6vw + 0.4rem, 4.4rem);
 	--line-size: clamp(1.5rem, 4vw + 0.2rem, 4.6rem);
@@ -25,7 +41,7 @@
 	--thumb-width: 75px;
 	--work-gap: clamp(0.75rem, 2vw, 1.5rem);
 
-	font-family: 'Figtree Variable', system-ui, sans-serif;
+	font-family: 'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, sans-serif;
 }
 
 
@@ -41,8 +57,8 @@
 html,
 body {
 	margin: 0;
-	background: var(--accent);
-	color: var(--paper);
+	background: var(--ground);
+	color: var(--ice);
 	-webkit-font-smoothing: antialiased;
 }
 
@@ -88,7 +104,7 @@ ul {
 	height: 0.08em;
 	margin-left: 0.3em;
 	vertical-align: 0.28em;
-	background: var(--accent-hot);
+	background: var(--signal);
 	transform-origin: left center;
 }
 
@@ -97,111 +113,162 @@ ul {
    ========================================================================== */
 
 .poster {
+	/* The name's size: it runs from the left margin almost to the right edge. Its foot (the
+	   emerald plane) takes 0.95 of it at the bottom. */
+	--name-size: clamp(4.5rem, 15.8vw, 22rem);
+	/* The navy plane's left edge: the middle of the gap between columns 5 and 6 */
+	--plane-edge: calc(var(--gutter) + 5 * (var(--col) + var(--gap)) - var(--gap) / 2);
 	position: relative;
 	isolation: isolate;
 	display: flex;
 	flex-direction: column;
 	min-height: 100svh;
-	padding: clamp(1.25rem, 4vh, 2.5rem) 0 clamp(2.5rem, 6vh, 4rem);
+	padding: clamp(1.25rem, 4vh, 2.5rem) 0 calc(var(--name-size) * 0.95 + 1.75rem);
 	overflow: hidden;
+	color: var(--ice);
+	background: var(--paper); /* the planes cover it; it shows only as they come in */
 }
 
-/* Bleeds past the edges so the pointer parallax never shows a gap */
-/* The bottom of the nose (75% down the photo) never shows, and sits right at the bottom edge.
-   object-position pins the photo's 75% line to the box's 75% line, and the box is sized so that
-   line falls 16px below the poster, which is more than the pointer drift
-   (src/scripts/intro.js) ever lifts it. Cover scaling then only decides the crop at the sides
-   and top. */
-.poster-photo {
-	--nose-line: 0.75;
-	position: absolute;
-	top: -24px;
-	left: -24px;
-	z-index: -2;
-	width: calc(100% + 48px);
-	max-width: none;
-	height: calc((100% + 40px) / var(--nose-line));
-	object-fit: cover;
-	object-position: 50% 75%;
+/* With script and motion, the poster starts as a blank white page: everything on it waits
+   for src/scripts/intro.js, which brings the planes in first */
+@media (prefers-reduced-motion: no-preference) {
+	.js .poster > * {
+		visibility: hidden;
+	}
 }
 
-/* Deepens the sky behind the type so the white lines hold their contrast */
-.poster::before {
-	content: '';
+/* The deep green plane: the left side, from the left edge to the navy plane, top to bottom */
+.poster-ground {
 	position: absolute;
-	inset: 0;
+	inset: 0 auto 0 0;
 	z-index: -1;
-	background: linear-gradient(180deg, rgb(22 16 14 / 0.3) 0%, rgb(22 16 14 / 0.16) 60%, rgb(22 16 14 / 0) 80%);
-	pointer-events: none;
+	width: var(--plane-edge);
+	background: var(--ground);
 }
 
-/* Film grain, laid over the portrait as a small repeating tile. Kept out of the photo
-   itself because noise barely compresses: this way the portrait is a third the size. */
-.poster::after {
-	content: '';
+/* The navy plane: column 6 to the right edge, top to bottom. The map is drawn on it. */
+.poster-block {
 	position: absolute;
-	inset: 0;
+	inset: 0 0 0 var(--plane-edge);
 	z-index: -1;
-	background: url('../assets/images/grain.webp');
-	mix-blend-mode: soft-light;
-	opacity: 0.75;
-	pointer-events: none;
+	background: var(--navy);
 }
 
-/* The credit line and the Work and Words tiles share a row above the band, the tiles at the
-   right; their height sets where the band falls */
+/* The emerald plane under the name's first word, at the foot of the left side */
+.poster-plane {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: -1;
+	width: var(--plane-edge);
+	height: calc(var(--name-size) * 0.95);
+	background: var(--emerald);
+}
+
+/* Small monospace metadata, used across the poster */
+.credit,
+.disciplines,
+.tile-index,
+.contact-kind,
+.copyright {
+	font-family: var(--mono);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+/* The top row, on the grid: the credit in columns 1 to 5, Work and Words from column 9 */
 .masthead {
-	display: flex;
-	align-items: flex-end;
-	justify-content: space-between;
-	gap: 1.5rem;
-	padding: 0 var(--gutter) 0.6rem;
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: var(--gap);
+	align-items: baseline;
+	padding: 0 var(--gutter) clamp(2rem, 8vh, 5rem);
 }
 
 .credit {
-	font-size: 0.6rem;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	opacity: 0.85;
+	grid-column: 1 / 6;
+	color: rgb(216 255 248 / 0.7);
 }
 
-/* White band with the name and title ---------------------------------------- */
+/* Name, title and disciplines ------------------------------------------------ */
 
+/* The title block holds columns 1 to 5; the name is placed on the poster itself */
 .band {
-	position: relative;
+	padding: 0 var(--gutter);
+}
+
+.band-title {
+	max-width: calc(5 * var(--col) + 4 * var(--gap));
+}
+
+/* The anchor: huge and tight, sitting on the poster's bottom edge, which crops the j's hook
+   (kept to half, so it still reads as a j). It crosses from the emerald plane onto the navy one. */
+.name {
+	position: absolute;
+	bottom: calc(var(--name-size) * -0.025);
+	left: var(--gutter);
 	z-index: 2;
-	padding: 0.18em var(--gutter) 0;
-	font-size: var(--band-size);
-	line-height: 1.05;
-	color: var(--ink);
-	background: var(--paper);
-}
-
-.band h1 {
-	font-size: 1em;
+	margin-left: -0.05em; /* optical: the J's side bearing, so its stem sits on the margin */
+	font-size: var(--name-size);
 	font-weight: 700;
-	letter-spacing: -0.005em;
-	color: var(--accent);
-}
-
-.band .role {
-	/* One line at every width: the title is about 16.2em wide and the band leaves
-	   84vw for it, so phones shrink it below the name's size */
-	font-size: min(1em, 5vw);
-	white-space: nowrap;
-	margin-bottom: -0.2em; /* descenders spill out of the band */
-	font-weight: 600;
+	letter-spacing: -0.05em;
 	line-height: 1;
+	white-space: nowrap;
+	color: var(--mint);
+	pointer-events: none;
 }
 
-/* Copy below the band ------------------------------------------------------- */
+/* The black copy underneath shows only while the page builds in (src/scripts/intro.js) */
+.name-ink {
+	position: absolute;
+	inset: 0;
+	display: none;
+	color: var(--ink);
+}
+
+.name-fill {
+	position: relative;
+	display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.js .name-ink {
+		display: block;
+	}
+}
+
+/* Editorial: smaller, tight, set in two lines */
+.band .role {
+	max-width: 10.5em;
+	font-size: clamp(1.375rem, 2.1vw, 2.25rem);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1.02;
+	text-wrap: balance;
+}
+
+.disciplines {
+	margin-top: 1.1rem;
+	white-space: nowrap;
+	color: rgb(216 255 248 / 0.75);
+}
+
+.disciplines-slash {
+	margin: 0 0.75em;
+	color: var(--mint);
+}
+
+/* Copy below the name ------------------------------------------------------- */
 
 .copy {
 	position: relative;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	padding: 0.4em var(--gutter) 0;
+	padding: 0 var(--gutter);
 }
 
 /* North Carolina, overprinted on the portrait (src/components/NorthCarolina.astro).
@@ -251,14 +318,24 @@ ul {
 		stroke-dashoffset: 1;
 	}
 
-	/* The route map waits for src/scripts/route.js, which fades it in already close on Athens */
+	/* The route map waits for src/scripts/route.js, which draws it in */
 	.js .route-map {
 		opacity: 0;
 	}
 
-	.js .route-lattice line,
+	.js .route-state,
 	.js .route-strand {
 		stroke-dashoffset: 1;
+	}
+
+	.js .route-cross,
+	.js .route-coord {
+		opacity: 0;
+	}
+
+	.js .leader {
+		--rise: 0;
+		--run: 0;
 	}
 
 	/* Each city waits for its dot, then its wipe */
@@ -267,8 +344,14 @@ ul {
 	}
 
 	.js .city-plate,
+	.js .city-index,
 	.js .city-text {
 		opacity: 0;
+	}
+
+	/* A label's backing waits for it too (src/scripts/route.js adds is-shown) */
+	.js .stop:not(.is-shown) .city-label {
+		background: none;
 	}
 }
 
@@ -278,62 +361,58 @@ ul {
 	font-size: clamp(0.6875rem, 1.05cqi, 1rem);
 }
 
-/* The route map (src/components/RouteMap.astro): Athens to Washington over a soft-edged east
-   coast. Its stops reuse the city dot and label below; the camera is its viewBox. */
-/* Athens starts left of centre and the route runs up and to the right. */
-/* The map's width is set on the copy, so the map and the text below it (the intro line,
-   contacts and the stop labels) are all sized from it and grow and shrink together. Sized by
-   the screen's width, and by its height on short screens, so Athens stays above the copy.
-   --url-size is the type size the site's URL had when it sat under the map. The URL is gone,
-   but Athens' place is still measured from that size. */
+/* The route map (src/components/RouteMap.astro): Athens to Washington, drawn like a technical
+   diagram in the navy block. The intro line and contacts hold columns 1 to 6. The map's label
+   axis (a vertical line through Athens) is column 9's left edge, the same line Work starts on,
+   so it clears the name; the route runs up and to the right from there.
+
+   The map's width is set on the copy. --drop is the height of each label's leader, from its
+   dot to the label's row. */
 .copy--route {
-	--route-width: min(clamp(26rem, 58vw, 66rem), 88svh);
-	--url-size: calc(var(--route-width) * 0.077);
-	--note-size: max(0.8125rem, calc(var(--route-width) * 0.023));
+	--route-width: min(60vw, 100svh);
+	--route-height: calc(var(--route-width) * var(--route-ratio));
+	--drop: 1.75rem;
 }
 
-.copy--route .poster-meta,
-.copy--route .poster-contact {
-	font-size: var(--note-size);
-}
-
-/* Athens' dot sits over the "j" that starts the URL (a quarter of its type size in from the
-   margin), and the rest of the map extends from there. --route-start is Athens' share of
-   the map's width. */
+/* No tilt: the leaders are true horizontals and verticals */
 .state--route {
-	--athens-x: calc(var(--gutter) + var(--url-size) * 0.25);
-	top: 0.5rem;
-	left: calc(var(--athens-x) - var(--route-width) * var(--route-start));
+	--axis: calc(var(--gutter) + 6 * (var(--col) + var(--gap)));
+	top: calc(2.25rem + var(--drop) - var(--route-height) * var(--route-top-stop));
+	left: calc(var(--axis) - var(--route-width) * var(--route-start));
 	width: var(--route-width);
-	transform: rotate(4deg);
-	transform-origin: 50% 50%;
+	transform: none;
 }
 
-/* Where the tiles float, the map is as big as the poster allows: Athens' dot sits just above
-   the URL's "j" while the map's top runs up under the white band, with the highest stop
-   (Washington) just clear of it. The URL's size follows the map's width, so there's one width
-   that does both, solved from the copy's height (--copy-h, measured by src/scripts/route.js;
-   without script the map keeps the sizing above):
+/* On wide screens the map is as big as the navy block allows, solved from the room between
+   the navigation and the foot of the copy (--room, measured by src/scripts/route.js; without
+   script it keeps the sizing above). Athens' label sits just above the foot, Washington's
+   label row clears the navigation, and the furthest stop stays inside the right margin:
 
-     top = 100% - 3rem - H + 0.85 × url     (Athens above the "j")
-     top = 1.5rem - H × top-stop            (Washington just below the band)
-     H = width × ratio, url = 0.077 × width
+     foot:    top = 100% - 2.6rem - drop - H × bottom-stop
+     nav:     H × (bottom-stop - top-stop) + 2 × drop + 8rem ≤ room
+     right:   W × reach ≤ 100vw - gutter - axis
 
    */
 @media (min-width: 900px) {
-	.copy--route[style*='--copy-h'] {
+	.copy--route[style*='--room'] {
 		--route-width: clamp(
-			26rem,
-			calc((var(--copy-h) - 4.5rem) / (var(--route-ratio) * (1 - var(--route-top-stop)) - 0.0655)),
-			110vw
+			24rem,
+			min(
+				calc((var(--room) - 8rem - 2 * var(--drop)) / (var(--route-ratio) * (var(--route-bottom-stop) - var(--route-top-stop)))),
+				calc((100vw - var(--gutter) - var(--gutter) - 6 * (var(--col) + var(--gap))) / var(--route-reach))
+			),
+			120vw
 		);
 	}
 
-	.state--route {
-		top: max(
-			calc(1.5rem - var(--route-width) * var(--route-ratio) * var(--route-top-stop)),
-			calc(100% - 3rem - var(--route-width) * var(--route-ratio) + var(--url-size) * 0.85)
-		);
+	.copy--route[style*='--room'] .state--route {
+		top: calc(100% - 2.6rem - var(--drop) - var(--route-height) * var(--route-bottom-stop));
+	}
+
+	/* The intro line and contacts keep to columns 1 to 5 */
+	.copy--route .poster-meta,
+	.copy--route .poster-contact {
+		max-width: calc(5 * var(--col) + 4 * var(--gap));
 	}
 }
 
@@ -342,61 +421,153 @@ ul {
 	width: 100%;
 	height: auto;
 	overflow: hidden;
-	/* Every edge dissolves, so the region is suggested rather than drawn to a border,
-	   while the middle (route and the land under the URL) stays solid */
+	/* Full strength on the navy plane; west of its edge the map runs on faintly behind the
+	   copy. The other edges dissolve, so the region is suggested rather than drawn to a border. */
 	mask-image:
-		linear-gradient(to right, transparent, #000 14%, #000 86%, transparent),
-		linear-gradient(to bottom, transparent, #000 5%, #000 86%, transparent);
+		linear-gradient(
+			to right,
+			transparent,
+			rgb(0 0 0 / 0.3) 14%,
+			rgb(0 0 0 / 0.3) calc(var(--route-start) * 100% - (var(--axis) - var(--plane-edge))),
+			#000 0,
+			#000 94%,
+			transparent
+		),
+		linear-gradient(to bottom, transparent, #000 5%, #000 74%, transparent 94%);
 	mask-composite: intersect;
 }
 
-/* The route's states are lightly filled, which also lifts the dark URL text that sits over them */
-.route-state {
-	fill: rgb(255 255 255 / 0.16);
-	stroke: rgb(255 255 255 / 0.4);
-	stroke-width: 1.2;
-	stroke-linejoin: round;
-	vector-effect: non-scaling-stroke;
-}
-
-.route-state--near {
-	fill: rgb(255 255 255 / 0.08);
-	stroke: rgb(255 255 255 / 0.16);
-}
-
-/* Lines that draw on can't use non-scaling-stroke: with it, the browser measures the dash in
-   screen pixels, so pathLength="1" no longer spans the line and it stops short of the dot.
-   Instead, widths are in screen pixels times --unit (map units per pixel), which
-   src/scripts/route.js keeps current as the camera zooms. */
+/* Hairlines: lines that draw on can't use non-scaling-stroke (with it, the browser measures the
+   dash in screen pixels, so pathLength="1" no longer spans the line). Instead, widths are in
+   screen pixels times --unit (map units per pixel), which src/scripts/route.js keeps current. */
 .route-map {
-	--unit: 1.2;
+	--unit: 1;
 }
 
-.route-lattice line,
-.route-strand {
+/* The latitude and longitude grid: crosshairs where whole degrees cross, and two coordinates */
+.route-cross {
 	fill: none;
-	stroke-dasharray: 1; /* with pathLength="1", lets each line be drawn on */
-	stroke-linecap: round;
-}
-
-.route-lattice line {
-	stroke: rgb(255 255 255 / 0.2);
+	stroke: rgb(216 255 248 / 0.3);
 	stroke-width: calc(1 * var(--unit));
 }
 
-.route-strand--main {
-	stroke: rgb(255 255 255 / 0.9);
-	stroke-width: calc(2.5 * var(--unit));
+.route-coord {
+	font-family: var(--mono);
+	font-size: calc(10px * var(--unit));
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	fill: rgb(216 255 248 / 0.5);
 }
 
-.route-strand--side {
-	stroke: rgb(255 255 255 / 0.38);
-	stroke-width: calc(1.2 * var(--unit));
+/* The route's states: unfilled ice hairlines, quiet behind the route */
+.route-state {
+	fill: none;
+	stroke: rgb(216 255 248 / 0.42);
+	stroke-width: calc(1 * var(--unit));
+	stroke-linejoin: round;
+	stroke-dasharray: 1;
 }
 
-/* A share of the map's own width (cqi), so the labels scale with it; never below 11px */
+/* The route: the one line in mint */
+.route-strand {
+	fill: none;
+	stroke: var(--mint);
+	stroke-width: calc(1.5 * var(--unit));
+	stroke-linecap: round;
+	stroke-dasharray: 1; /* with pathLength="1", lets each line be drawn on */
+}
+
+/* Stop labels: small monospace capitals, the same size at every width */
 .stops {
-	font-size: max(0.6875rem, 1.4cqi);
+	font-size: 0.75rem;
+}
+
+/* Each leader is a 90° elbow from the dot to the label axis. Athens is on the axis, so its
+   leader only drops; the others rise, then run left. --rise and --run (0 to 1) let
+   src/scripts/route.js draw each part. */
+.leader {
+	--rise: 1;
+	--run: 1;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.leader::before,
+.leader::after {
+	content: '';
+	position: absolute;
+	background: rgb(216 255 248 / 0.7);
+}
+
+.leader::before {
+	left: -0.5px;
+	width: 1px;
+	height: var(--drop);
+	transform: scaleY(var(--rise));
+}
+
+.stop[data-leader='up'] .leader::before {
+	bottom: 0;
+	transform-origin: 50% 100%;
+}
+
+.stop[data-leader='down'] .leader::before {
+	top: 0;
+	transform-origin: 50% 0;
+}
+
+.stop[data-leader='up'] .leader::after {
+	top: calc(-1 * var(--drop) - 0.5px);
+	right: 0;
+	width: calc(var(--from-axis) * 1cqi);
+	height: 1px;
+	transform: scaleX(var(--run));
+	transform-origin: 100% 50%;
+}
+
+/* Labels are annotations, starting on the axis: each sits on its rising leader's run, or hangs
+   under a short rule from Athens' drop */
+.stop .city-label {
+	left: calc(var(--from-axis) * -1cqi);
+	padding: 0 0.6em 0.5em 0;
+	color: var(--ice);
+	background: var(--navy); /* knocks out the map lines behind the words */
+}
+
+/* It sits on its leader's run, which stays in view just below it */
+.stop[data-leader='up'] .city-label {
+	top: calc(-1 * var(--drop));
+	transform: translateY(calc(-100% - 1px));
+}
+
+.stop[data-leader='down'] .city-label {
+	top: var(--drop);
+	padding: 0.5em 0 0;
+	transform: none;
+}
+
+/* The number, in route order */
+.city-index {
+	position: relative;
+	margin-right: 1em;
+	color: var(--mint);
+}
+
+/* No plate: Athens' becomes the rule its label hangs from */
+.stop .city-plate {
+	display: none;
+}
+
+.stop[data-leader='down'] .city-plate {
+	display: block;
+	inset: 0 0 auto;
+	height: 1px;
+	background: rgb(216 255 248 / 0.7);
+}
+
+.stop .city-shine {
+	display: none;
 }
 
 .city {
@@ -411,21 +582,23 @@ ul {
 	left: -0.3em;
 	width: 0.6em;
 	height: 0.6em;
-	border-radius: 50%;
-	background: var(--paper);
-	box-shadow: 0 0 0 0.18em var(--accent-hot);
+	background: var(--mint);
+	box-shadow: 0 0 0 0.2em var(--navy);
 }
 
-/* The label sits beside its dot, centered on it */
+/* The label sits beside its dot, centered on it: a solid white rectangle with monospace capitals */
 .city-label {
 	position: absolute;
 	top: 0;
 	left: 0.85em;
 	padding: 0.3em 0.5em;
-	font-weight: 600;
-	line-height: 1.15;
+	font-family: var(--mono);
+	font-weight: 500;
+	line-height: 1.2;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 	white-space: nowrap;
-	color: var(--accent);
+	color: var(--ink);
 	transform: translateY(-50%);
 }
 
@@ -441,12 +614,11 @@ ul {
 	}
 }
 
-/* The light bar, offset below the text */
+/* The solid white plate behind the text */
 .city-plate {
 	position: absolute;
 	inset: 0;
-	background: var(--accent-soft);
-	transform: translate(0.3em, 0.3em);
+	background: var(--paper);
 }
 
 .city-text {
@@ -464,131 +636,180 @@ ul {
 	position: absolute;
 	inset: 0;
 	opacity: 0;
-	background: linear-gradient(100deg, transparent 35%, rgb(75 156 211 / 0.38) 50%, transparent 65%) no-repeat;
+	background: linear-gradient(100deg, transparent 35%, rgb(255 51 51 / 0.3) 50%, transparent 65%) no-repeat;
 	background-size: 250% 100%;
 }
 
-/* The blue bar that wipes across and uncovers the label (src/scripts/state.js) */
+/* The bar that wipes across and uncovers the label (src/scripts/route.js, state.js) */
 .city-wipe {
 	position: absolute;
-	inset: 0 -0.3em -0.3em 0;
-	background: var(--accent-hot);
+	inset: 0;
+	background: var(--signal);
 	transform: scaleX(0);
 }
 
-/* The intro line and contacts sit at the foot of the poster, leaving the map clear */
+/* The intro line and contacts sit at the foot of the poster, in columns 1 to 6 */
 .poster-meta {
-	max-width: 72ch;
+	max-width: 40ch;
 	margin-top: auto;
-	font-size: var(--small-size);
-	line-height: 1.5;
+	padding-top: 2rem;
+	font-size: clamp(1rem, 0.4vw + 0.75rem, 1.25rem);
+	line-height: 1.45;
 }
 
+/* Contacts: a ruled table, kind on the left, the address large on the right */
 .poster-contact {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem 0;
-	margin-top: 0.35rem;
-	font-size: var(--small-size);
-	font-weight: 600;
-	line-height: 1.5;
+	margin-top: clamp(1.25rem, 3vh, 2rem);
 }
 
-.poster-contact li::after {
-	content: '—';
-	margin: 0 0.5em;
-	font-weight: 400;
+.poster-contact li:last-child {
+	border-bottom: 1px solid rgb(216 255 248 / 0.3);
+}
+
+.poster-contact li {
+	display: grid;
+	grid-template-columns: max(var(--col) + var(--gap), 5.25rem) 1fr;
+	align-items: baseline;
+	padding: 0.55rem 0;
+	border-top: 1px solid rgb(216 255 248 / 0.3);
+}
+
+.contact-kind {
+	color: rgb(216 255 248 / 0.65);
 }
 
 .poster-contact a {
-	color: var(--paper);
-	text-decoration: underline 1px;
-	text-underline-offset: 0.2em;
+	justify-self: start;
+	margin-left: -0.3em;
+	padding: 0.05em 0.3em;
+	font-size: clamp(1.0625rem, 0.6vw + 0.8rem, 1.5rem);
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	white-space: nowrap;
+	color: var(--ice);
+	text-decoration: none;
+	transition: background 0.2s, color 0.2s;
+}
+
+.contact-arrow {
+	display: inline-block;
+	margin-left: 0.5em;
+	font-family: var(--mono);
+	font-size: 0.8em;
+	color: var(--mint);
+	transition: transform 0.2s;
 }
 
 .poster-contact a:hover {
-	text-decoration-thickness: 2px;
+	background: var(--emerald);
+}
+
+.poster-contact a:hover .contact-arrow {
+	transform: translateX(0.2em);
 }
 
 .poster-contact a:focus-visible {
-	outline: 2px solid var(--paper);
+	outline: 2px solid var(--mint);
 	outline-offset: 2px;
 }
 
-/* Work and Words tiles that open the panels ---------------------------------- */
+/* Work and Words: two words and their numbers, from column 9 ------------------ */
 
 .tiles {
+	grid-column: 9 / 13;
 	display: flex;
-	flex-shrink: 0;
+	justify-content: space-between;
+	gap: calc(var(--col) + var(--gap));
 }
 
+/* Each tile: the word with its number beside it, the label under them. Work holds the left
+   edge, Words the right. */
 .tile {
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
-	width: clamp(8.5rem, 10.5vw, 12rem);
-	aspect-ratio: 1;
-	padding: clamp(0.75rem, 1.2vw, 1.25rem);
-	font: inherit;
+	align-items: flex-start;
+	gap: 0.85em;
+	padding: 0 0 0.3em;
 	text-align: left;
-	color: var(--paper);
-	background: rgb(255 255 255 / 0.16);
-	border: clamp(5px, 0.7vw, 10px) solid rgb(255 255 255 / 0.4);
-	-webkit-backdrop-filter: blur(4px);
-	backdrop-filter: blur(4px);
+	font: inherit;
+	color: var(--ice);
+	background: none;
+	border: 0;
 	cursor: pointer;
-	transition: background 0.25s, color 0.25s;
-	/* The type below is capped to the tile's inner width (cqi), so the longest words fit at any size */
-	container-type: inline-size;
 }
 
-.tile + .tile {
-	border-left: 0;
+/* An emerald rule draws under the word on hover and focus */
+.tile::before {
+	content: '';
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 2px;
+	background: var(--emerald);
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .tile-title {
-	/* "Words" is 2.96em wide */
-	font-size: min(clamp(1.75rem, 2.7vw, 3rem), 32cqi);
-	font-weight: 700;
-	line-height: 0.9;
+	font-size: clamp(1.25rem, 1.6vw, 1.875rem);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	transition: color 0.2s;
+}
+
+.tile:last-child {
+	align-items: flex-end;
+	text-align: right;
+}
+
+.tile-head {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4em;
+}
+
+.tile-index {
+	color: var(--mint);
 }
 
 .tile-label {
-	/* "Recommendations" is 8.46em wide and can't wrap */
-	font-size: min(clamp(0.8rem, 0.5vw + 0.6rem, 1rem), 11.5cqi);
+	font-size: 0.6875rem;
 	font-weight: 500;
+	letter-spacing: 0.06em;
+	line-height: 1.2;
+	text-transform: uppercase;
 }
 
-.tile .dash {
-	width: 1.6em;
-	height: 0.15em;
-	vertical-align: 0.25em;
-	background: currentColor;
-	transition: width 0.25s;
+.tile:hover::before,
+.tile:focus-visible::before {
+	transform: scaleX(1);
 }
 
-.tile:hover,
-.tile:focus-visible {
-	color: var(--accent);
-	background: var(--paper);
-}
-
-.tile:hover .dash,
-.tile:focus-visible .dash {
-	width: 2.6em;
+.tile:hover .tile-title,
+.tile:focus-visible .tile-title {
+	color: var(--mint);
 }
 
 .tile:focus-visible {
-	outline: 3px solid var(--ink);
-	outline-offset: 3px;
+	outline: 2px solid var(--mint);
+	outline-offset: 4px;
 }
 
+/* Sitting on the name's J, its last figure ending where the J's top ends. The J's top is
+   0.803 of the name's size above the bottom edge, and its right edge 0.436 of it in from the
+   margin (IBM Plex Sans Bold, measured). */
 .copyright {
 	position: absolute;
-	right: var(--gutter);
-	bottom: clamp(1rem, 3vh, 2rem);
-	font-size: 0.75rem;
-	font-weight: 300;
+	bottom: calc(var(--name-size) * 0.803 + 0.35rem);
+	left: calc(var(--gutter) + var(--name-size) * 0.436);
+	z-index: 2;
+	line-height: 1;
+	color: rgb(216 255 248 / 0.8);
+	transform: translateX(-100%);
 }
 
 
@@ -1089,29 +1310,62 @@ ul {
 /* 8. Responsive and reduced motion
    ========================================================================== */
 
-/* Wide screens: the copyright moves to the lower left */
-@media (min-width: 900px) {
-	.copyright {
-		right: auto;
-		left: var(--gutter);
-	}
-}
-
-/* Narrower layouts, where the poster can run taller than the screen and nothing drifts: the
-   same rule without the drift, so the bottom of the nose lands on the poster's bottom edge. */
+/* Narrower layouts */
 @media (max-width: 899px) {
-	.poster-photo {
-		inset: 0 auto auto 0;
-		width: 100%;
-		height: calc(100% / var(--nose-line));
+	/* One column: no navy block, and the map draws on the green */
+	.poster-block {
+		display: none;
 	}
 
-	/* The route map joins the page flow with Athens close to the left edge of the screen
-	   (--route-start is its share of the map's width). The copy follows it, rising onto the
-	   map's lower land so the URL sits on its lighter ground. */
+	.poster-plane {
+		width: 100%;
+	}
+
+	.poster-ground {
+		width: 100%;
+	}
+
+	.stop .city-label {
+		background: var(--ground);
+	}
+
+	.city-dot {
+		box-shadow: 0 0 0 0.2em var(--ground);
+	}
+
+	.credit,
+	.tiles {
+		grid-column: 1 / -1;
+	}
+
+	.tiles {
+		margin-bottom: 1.5rem;
+	}
+
+	.band .role {
+		font-size: min(clamp(1.25rem, 2.35vw, 2.6rem), 5vw);
+	}
+
+	/* The route map joins the page flow, its label axis (through Athens) on the left margin.
+	   The margins crop it to the route: from just above Washington's label row to just below
+	   Athens' label, where the intro line follows. */
 	.copy--route {
-		--route-width: min(95vw, 42rem);
-		--url-size: calc(var(--route-width) * 0.05);
+		/* At least 32rem, so Cary (the stop nearest the axis) clears a two-line label */
+		--route-width: clamp(32rem, 135vw, 52rem);
+		--drop: 1.5rem;
+	}
+
+	/* The intro line follows close below: the map fades out just under Athens' label */
+	.state--route .route-map {
+		mask-image:
+			linear-gradient(to right, transparent calc(var(--route-start) * 100% - 1rem), #000 0, #000 94%, transparent),
+			linear-gradient(
+				to bottom,
+				transparent,
+				#000 5%,
+				#000 calc(var(--route-bottom-stop) * 100% + 0.5rem),
+				transparent calc(var(--route-bottom-stop) * 100% + var(--drop) + 3rem)
+			);
 	}
 
 	.state.state--route {
@@ -1119,63 +1373,31 @@ ul {
 		top: auto;
 		left: auto;
 		width: var(--route-width);
-		/* In the flow, the margin starts at the copy's padding, so Athens lands over the URL's "j" */
-		margin: 0.5rem 0 calc(var(--route-width) * var(--route-ratio) * -0.29)
-			calc(var(--url-size) * 0.25 - var(--route-width) * var(--route-start));
+		transform: none;
+		margin: calc(2.25rem + var(--drop) - var(--route-height) * var(--route-top-stop)) 0
+			calc(var(--drop) + 3.5rem - var(--route-height) * (1 - var(--route-bottom-stop)))
+			calc(-1 * var(--route-width) * var(--route-start));
 	}
 
 	.state--route + .poster-meta {
 		margin-top: 0;
 	}
-
-	/* Athens' label rises above its dot here, so the intro line can come up beside it */
-	.stop[data-phone-above] .city-label {
-		transform: translateY(-125%);
-	}
 }
 
 /* Small screens */
 @media (max-width: 640px) {
-	/* The tiles take the top right, and the credit drops below them */
-	.masthead {
-		flex-direction: column-reverse;
-		align-items: stretch;
-		gap: 0.6rem;
+	/* Route labels wrap to two lines (16 characters at most), so each fits between the axis
+	   and its dot */
+	.stop .city-label {
+		width: max-content;
+		max-width: 12.5em;
+		white-space: normal;
 	}
 
-	.tiles {
-		align-self: flex-end;
+	/* No room for the coordinates beside 76°W; the crosshairs stay */
+	.route-coord {
+		display: none;
 	}
-
-	/* Narrow map: some route labels move to the left of their dots (phoneSide in src/data/route.ts) */
-	.stop[data-phone-side='left'] .city-label {
-		right: 0.85em;
-		left: auto;
-	}
-
-	/* Large on phones, but no bigger than 38rem, so wider small screens don't balloon */
-	.copy--route {
-		--route-width: min(150vw, 38rem);
-		--url-size: calc(var(--route-width) * 0.039);
-	}
-
-	/* Labels on the phone map: a larger share of it, so they stay readable */
-	.stops {
-		font-size: max(0.6875rem, 1.8cqi);
-	}
-
-	/* The URL sits low on the map here: keep the land under it at full strength, and lighter */
-	.state--route .route-map {
-		mask-image:
-			linear-gradient(to right, transparent, #000 14%, #000 86%, transparent),
-			linear-gradient(to bottom, transparent, #000 10%, #000 93%, transparent);
-	}
-
-	.state--route .route-state:not(.route-state--near) {
-		fill: rgb(255 255 255 / 0.2);
-	}
-
-
 
 	/* Narrow enough that all four cities and their labels stay on screen */
 	.state {

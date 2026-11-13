@@ -1,54 +1,61 @@
 import gsap from 'gsap';
+import { hasFinePointer, pointerOffset } from './motion.js';
 
 /**
- * Flies the route map in (src/components/RouteMap.astro), like an aerial shot pulling back:
- * the camera starts close on Athens, its dot pops and its label is uncovered, then each leg
- * draws north while the camera pans and widens to keep the line in view. Each stop's dot pops
- * as its strands arrive. A sparse lattice draws in near the route as the line passes.
+ * Draws the route map in (src/components/RouteMap.astro), like a technical drawing being
+ * plotted: the crosshairs and coordinates come up, the states trace their outlines one after
+ * another, then the route. Athens' node appears, its leader drops to the label axis and a bar
+ * uncovers its label; each leg then draws north to the next stop, whose leader rises and turns
+ * to the axis.
  *
  * Each label names its city when its dot pops, and keeps it until the next city appears; then
  * it changes to what I do there (Washington, the last stop, changes a beat after it appears).
  *
- * The camera is the SVG's viewBox. Dots and labels are HTML, repositioned from the viewBox on
- * every update, so they keep their size; line widths follow the zoom through --unit.
+ * The map holds still on the whole route, so the labels stay on their axis. With a mouse, the
+ * background layers (the crosshairs, the states) shift slightly against the pointer, behind
+ * the route and its labels, which stay put.
  */
 
-const LEG_SECONDS = [3.4, 2.6, 2]; // how long each leg takes to draw
-const CAMERA_LAG = 0.25; // the camera settles a little after the line arrives
-const HOLD = 0.55; // pause at each stop before the next leg leaves
-const START_WIDTH = 0.3; // the opening shot, as a share of the full frame's width
-/** Which side of its dot a stop's label is on (phones can override it; see src/data/route.ts). */
-const sideOf = (stop) =>
-	stop.dataset.phoneSide && matchMedia('(max-width: 640px)').matches ? stop.dataset.phoneSide : stop.dataset.side;
-
+const STATE = { duration: 1.4, stagger: 0.12 }; // then the states trace their outlines
+const LEG_SECONDS = [1.8, 1.4, 1.1]; // how long each leg takes to draw
+const HOLD = 0.45; // pause at each stop before the next leg leaves
 const CHANGE_AFTER = 0.35; // a stop's label changes this long after the next city's dot appears
 const LAST_CHANGE = 1.4; // nothing follows the last stop: its label changes this long after it appears
+/** How far each background layer drifts with the pointer, in map units, from centre to edge. */
+const DEPTH = { grid: 12, states: 6 };
 
 /**
- * Gives the CSS the copy's height (--copy-h), which it solves the map's size from on wide
- * screens: as big as fits between the white band and the URL (see .copy--route in global.css).
+ * Gives the CSS the copy's height (--copy-h) and the room from under the navigation to the
+ * copy's foot (--room), which it solves the map's size from on wide screens (see .copy--route
+ * in global.css).
  */
 export function measureCopy() {
 	const copy = document.querySelector('.copy--route');
 	if (!copy) return;
-	const set = () => copy.style.setProperty('--copy-h', `${copy.clientHeight}px`);
+	const nav = document.querySelector('.tiles');
+	const set = () => {
+		copy.style.setProperty('--copy-h', `${copy.clientHeight}px`);
+		// The room from under the navigation to the foot of the copy, which the map can fill
+		if (nav) copy.style.setProperty('--room', `${copy.getBoundingClientRect().bottom - nav.getBoundingClientRect().bottom}px`);
+	};
 	set();
 	new ResizeObserver(set).observe(copy);
+	window.addEventListener('resize', set);
 }
 
 /**
- * Keeps line widths steady on screen: sets --unit, the map units per screen pixel, from the
- * current viewBox. Called on every camera move, and on load and resize for the still map.
+ * Keeps line widths steady on screen: sets --unit, the map units per screen pixel, which the
+ * CSS multiplies hairline widths and the coordinates' type size by. Called on load and resize.
+ * (Lines that draw on can't use non-scaling-stroke: with it, the browser measures the dash in
+ * screen pixels, so pathLength="1" no longer spans the line.)
  */
 export function sizeRoute() {
 	const svg = document.querySelector('[data-route] .route-map');
 	if (!svg) return;
 	const unit = () => svg.viewBox.baseVal.width / (svg.getBoundingClientRect().width || 1);
-	svg.style.setProperty('--unit', unit().toFixed(4));
-	if (!svg.dataset.sized) {
-		svg.dataset.sized = 'yes';
-		window.addEventListener('resize', () => svg.style.setProperty('--unit', unit().toFixed(4)));
-	}
+	const set = () => svg.style.setProperty('--unit', unit().toFixed(4));
+	set();
+	new ResizeObserver(set).observe(svg);
 }
 
 export function drawRoute() {
@@ -56,82 +63,71 @@ export function drawRoute() {
 	if (!root) return;
 
 	const svg = root.querySelector('.route-map');
-	const W = +root.dataset.width;
-	const H = +root.dataset.height;
-	const stops = [...root.querySelectorAll('.stop')].map((el) => ({ el, x: +el.dataset.x, y: +el.dataset.y }));
+	const stops = [...root.querySelectorAll('.stop')];
 	const strands = [...root.querySelectorAll('.route-strand')];
-	const lattice = [...root.querySelectorAll('.route-lattice line')];
-
-	// Camera framings: close on Athens, then each one takes in the route so far, ending on the full frame.
-	const frame = (points, minWidth) => {
-		const xs = points.map((p) => p.x);
-		const ys = points.map((p) => p.y);
-		let w = Math.max(minWidth, (Math.max(...xs) - Math.min(...xs)) * 1.6, ((Math.max(...ys) - Math.min(...ys)) * 1.6 * W) / H);
-		w = Math.min(w, W);
-		return { cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2, w };
-	};
-	const shots = [
-		frame([stops[0]], W * START_WIDTH),
-		frame(stops.slice(0, 2), W * 0.55),
-		frame(stops.slice(0, 3), W * 0.75),
-		{ cx: W / 2, cy: H / 2, w: W },
-	];
+	const states = [...root.querySelectorAll('.route-state')];
 
 	// Labels start on the city names; each changes to its role as the route moves on.
-	for (const { el } of stops) el.querySelector('.city-text').textContent = el.dataset.city;
+	for (const stop of stops) stop.querySelector('.city-text').textContent = stop.dataset.city;
 
-	const camera = { ...shots[0] };
-	const place = () => {
-		const h = (camera.w * H) / W;
-		// Keep the shot inside the map.
-		const x = gsap.utils.clamp(0, W - camera.w, camera.cx - camera.w / 2);
-		const y = gsap.utils.clamp(0, H - h, camera.cy - h / 2);
-		svg.setAttribute('viewBox', `${x} ${y} ${camera.w} ${h}`);
-		sizeRoute();
-		for (const stop of stops) {
-			stop.el.style.left = `${((stop.x - x) / camera.w) * 100}%`;
-			stop.el.style.top = `${((stop.y - y) / h) * 100}%`;
-		}
-	};
-	place();
+	const timeline = gsap.timeline();
+	timeline
+		.to(svg, { opacity: 1, duration: 0.4, ease: 'sine.out' }, 0)
+		.fromTo(root.querySelectorAll('.route-cross, .route-coord'), { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'sine.out' }, 0.2)
+		.fromTo(
+			states,
+			{ strokeDashoffset: 1 },
+			{ strokeDashoffset: 0, duration: STATE.duration, ease: 'sine.inOut', stagger: STATE.stagger, autoRound: false },
+			0.5,
+		);
 
-	const timeline = gsap.timeline({ onUpdate: place });
-	timeline.to(svg, { opacity: 1, duration: 0.8, ease: 'sine.out' }, 0);
-	timeline.add(revealStop(stops[0].el), 0.2);
+	let at = 0.5 + STATE.stagger * (states.length - 1) + STATE.duration * 0.5;
+	timeline.add(revealStop(stops[0]), at);
+	at += 1.2;
 
-	let at = 0.2 + 0.9;
 	LEG_SECONDS.forEach((seconds, leg) => {
-		const mine = strands.filter((s) => +s.dataset.leg === leg);
-		timeline
-			.to(camera, { ...shots[leg + 1], duration: seconds + CAMERA_LAG, ease: 'power1.inOut' }, at)
-			.fromTo(
-				mine,
-				{ strokeDashoffset: 1 },
-				{ strokeDashoffset: 0, duration: seconds, ease: 'sine.inOut', stagger: 0.18, autoRound: false },
-				at,
-			);
+		timeline.fromTo(
+			strands.filter((s) => +s.dataset.leg === leg),
+			{ strokeDashoffset: 1 },
+			{ strokeDashoffset: 0, duration: seconds, ease: 'sine.inOut', autoRound: false },
+			at,
+		);
 
-		// Lattice near this leg draws as the line passes it, slowly and faintly.
-		for (const line of lattice.filter((l) => +l.dataset.leg === leg)) {
-			const passes = at + seconds * +line.dataset.t;
-			timeline.fromTo(
-				line,
-				{ strokeDashoffset: Math.random() < 0.5 ? 1 : -1 },
-				{ strokeDashoffset: 0, duration: gsap.utils.random(1.2, 2.2), ease: 'sine.inOut', autoRound: false },
-				passes + gsap.utils.random(-0.1, 0.5),
-			);
-		}
-
-		// The next stop's dot pops as its strands arrive.
-		const arrive = at + seconds + 0.18 * (mine.length - 1) - 0.1;
-		timeline
-			.add(revealStop(stops[leg + 1].el), arrive)
-			.add(changeLabel(stops[leg].el), arrive + CHANGE_AFTER);
+		// The next stop's node appears as the line arrives.
+		const arrive = at + seconds - 0.1;
+		timeline.add(revealStop(stops[leg + 1]), arrive).add(changeLabel(stops[leg]), arrive + CHANGE_AFTER);
 		at = arrive + HOLD;
 	});
 
-	timeline.add(changeLabel(stops.at(-1).el), at - HOLD + LAST_CHANGE);
+	timeline.add(changeLabel(stops.at(-1)), at - HOLD + LAST_CHANGE);
+
+	if (hasFinePointer()) followPointer(root);
 }
+
+/** The background layers drift against the pointer, the grid furthest, as if further back; the name drifts with it. */
+function followPointer(root) {
+	const layers = [...root.querySelectorAll('[data-depth]')].map((layer) => ({
+		depth: DEPTH[layer.dataset.depth],
+		x: gsap.quickTo(layer, 'x', { duration: 1.4, ease: 'power3.out' }),
+		y: gsap.quickTo(layer, 'y', { duration: 1.4, ease: 'power3.out' }),
+	}));
+
+	// The name, in front, drifts the other way, a little.
+	const name = document.querySelector('.name');
+	const nameX = name && gsap.quickTo(name, 'x', { duration: 1.6, ease: 'power3.out' });
+
+	window.addEventListener('pointermove', (event) => {
+		const { x, y } = pointerOffset(event);
+		for (const layer of layers) {
+			layer.x(x * -2 * layer.depth);
+			layer.y(y * -2 * layer.depth);
+		}
+		nameX?.(x * 16);
+	});
+}
+
+/** Labels hang left of their leader (rising leaders), or right of it (Athens' drop). */
+const rises = (stop) => stop.dataset.leader === 'up';
 
 /**
  * The city name becomes what I do there, slowly: the plate eases to its new length, the
@@ -143,7 +139,7 @@ function changeLabel(stop) {
 	const text = stop.querySelector('.city-text');
 	const shine = stop.querySelector('.city-shine');
 	const role = stop.dataset.role;
-	const fromLeft = sideOf(stop) === 'left';
+	const fromLeft = !rises(stop);
 
 	let toWidth = 0;
 
@@ -170,7 +166,7 @@ function changeLabel(stop) {
 				...[...role].map((char) => {
 					const span = document.createElement('span');
 					span.className = 'city-letter';
-					span.textContent = char === ' ' ? '\u00a0' : char;
+					span.textContent = char === ' ' ? ' ' : char;
 					return span;
 				}),
 			);
@@ -189,19 +185,27 @@ function changeLabel(stop) {
 		}, 2.2);
 }
 
-/** The dot pops, then a blue bar slides out from it, the label appears under it, and the bar slides off. */
+/**
+ * The node appears and its leader draws out to the label axis: the upright first, then (for a
+ * rising leader) the run along to the axis. A bar slides out from where the leader
+ * arrives, the label appears under it, and the bar slides off.
+ */
 function revealStop(stop) {
 	const dot = stop.querySelector('.city-dot');
+	const leader = stop.querySelector('.leader');
 	const wipe = stop.querySelector('.city-wipe');
-	const label = stop.querySelectorAll('.city-plate, .city-text');
-	// The bar grows from the dot's side and leaves from the far side.
-	const near = sideOf(stop) === 'left' ? '100% 50%' : '0% 50%';
-	const far = sideOf(stop) === 'left' ? '0% 50%' : '100% 50%';
+	const label = stop.querySelectorAll('.city-plate, .city-index, .city-text');
+	// The bar grows from the leader's side of the label and leaves from the far side.
+	const near = rises(stop) ? '100% 50%' : '0% 50%';
+	const far = rises(stop) ? '0% 50%' : '100% 50%';
 
 	return gsap.timeline()
-		.fromTo(dot, { scale: 0 }, { scale: 1, duration: 0.5, ease: 'back.out(3)' })
-		.fromTo(wipe, { scaleX: 0, transformOrigin: near }, { scaleX: 1, duration: 0.4, ease: 'power3.in' }, '>-0.15')
+		.fromTo(dot, { scale: 0 }, { scale: 1, duration: 0.35, ease: 'power3.out' })
+		.fromTo(leader, { '--rise': 0, '--run': 0 }, { '--rise': 1, duration: 0.35, ease: 'power2.inOut' }, '>-0.2')
+		.to(leader, { '--run': 1, duration: rises(stop) ? 0.5 : 0, ease: 'power2.inOut' })
+		.fromTo(wipe, { scaleX: 0, transformOrigin: near }, { scaleX: 1, duration: 0.35, ease: 'power3.in' }, '>-0.05')
 		.set(label, { opacity: 1 })
+		.add(() => stop.classList.add('is-shown'))
 		.set(wipe, { transformOrigin: far })
 		.to(wipe, { scaleX: 0, duration: 0.5, ease: 'power3.out' });
 }

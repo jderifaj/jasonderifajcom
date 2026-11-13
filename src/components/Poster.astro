@@ -1,39 +1,41 @@
 ---
-import { Picture } from 'astro:assets';
+/**
+ * The home page poster, set on a 12-column grid, in overlapping planes on white: deep green on
+ * the left, a navy plane from column 6 to the right edge that carries the route map, and an
+ * emerald plane under the foot of the left side. The map runs on behind the copy and under the name. The name is
+ * the anchor: huge, sitting on the bottom edge and cropped by it and by the right edge, it
+ * crosses from the emerald plane onto the navy one. Title, intro and contacts hold columns 1
+ * to 5 above it; Work and Words sit at the top right.
+ */
 import NorthCarolina from './NorthCarolina.astro';
 import RouteMap from './RouteMap.astro';
 import { posterMap, routeGeometry } from '../data/route';
-import portrait from '../assets/images/jason-magazine.jpg';
 
 const contacts = [
-	{ label: 'jderifaj@gmail.com', href: 'mailto:jderifaj@gmail.com' },
-	{ label: 'GitHub', href: 'https://github.com/jderifaj', rel: 'me' },
-	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/jason-derifaj-b219a72', rel: 'me' },
+	{ kind: 'Email', label: 'jderifaj@gmail.com', href: 'mailto:jderifaj@gmail.com' },
+	{ kind: 'GitHub', label: 'github.com/jderifaj', href: 'https://github.com/jderifaj', rel: 'me' },
+	{ kind: 'LinkedIn', label: 'linkedin.com/in/jason-derifaj', href: 'https://www.linkedin.com/in/jason-derifaj-b219a72', rel: 'me' },
 ];
 
 const tiles = [
-	{ panel: 'work', title: 'Work', label: 'Curated projects' },
-	{ panel: 'recommendations', title: 'Words', label: 'Recommendations' },
+	{ panel: 'work', index: '01', title: 'Work', label: 'Curated projects' },
+	{ panel: 'recommendations', index: '02', title: 'Words', label: 'Recommendations' },
 ];
+
+const name = ['Jason', 'Derifaj'];
+
+const disciplines = ['Design systems', 'Interaction', 'Accessibility'];
 ---
 <section class="poster" aria-labelledby="poster-name">
-	<Picture
-		src={portrait}
-		formats={['avif', 'webp']}
-		widths={[800, 1200, 1600]}
-		sizes="100vw"
-		quality={60}
-		alt="Jason Derifaj, smiling, in a grainy blue portrait styled like a 1960s magazine photograph"
-		class="poster-photo"
-		loading="eager"
-		fetchpriority="high"
-	/>
+	<div class="poster-ground" aria-hidden="true"></div>
+	<div class="poster-block" aria-hidden="true"></div>
+	<div class="poster-plane" aria-hidden="true"></div>
 
 	<div class="masthead">
-		<p class="credit">Photo: self-portrait&ensp;|&ensp;Design &amp; code: Jason Derifaj</p>
+		<p class="credit">Design &amp; code: Jason Derifaj</p>
 
-		<div class="tiles">
-			{tiles.map(({ panel, title, label }) => (
+		<nav class="tiles" aria-label="Portfolio">
+			{tiles.map(({ panel, index, title, label }) => (
 				<button
 					class="tile"
 					type="button"
@@ -42,24 +44,38 @@ const tiles = [
 					aria-haspopup="dialog"
 					data-open={panel}
 				>
-					<span class="tile-title">{title}</span>
-					<span class="tile-label">{label} <span class="dash" aria-hidden="true"></span></span>
+					<span class="tile-head">
+						<span class="tile-title">{title}</span>
+						<span class="tile-index" aria-hidden="true">{index}</span>
+					</span>
+					<span class="tile-label"><span class="visually-hidden">: </span>{label}</span>
 				</button>
 			))}
-		</div>
+		</nav>
 	</div>
 
 	<div class="band">
 		<div class="band-title">
-			<h1 id="poster-name">Jason Derifaj</h1>
+			{/* Screen readers get the name whole. It's drawn twice: in black underneath, then in mint,
+			    which src/scripts/intro.js uncovers as the planes rise behind it. */}
+			<h1 id="poster-name" class="name">
+				<span class="visually-hidden">{name.join(' ')}</span>
+				<span class="name-ink" aria-hidden="true">{name.join(' ')}</span>
+				<span class="name-fill" aria-hidden="true">{name.join(' ')}</span>
+			</h1>
 			<p class="role">Senior Creative Front-End Engineer</p>
+			<p class="disciplines">
+				{disciplines.map((discipline, i) => (
+					<>{i > 0 && <span class="disciplines-slash" aria-hidden="true">/</span>}<span>{discipline}</span></>
+				))}
+			</p>
 		</div>
 	</div>
 
 	<div
 		class:list={['copy', { 'copy--route': posterMap === 'route' }]}
 		style={posterMap === 'route'
-			? `--route-ratio: ${routeGeometry.ratio.toFixed(4)}; --route-start: ${routeGeometry.start.toFixed(4)}; --route-top-stop: ${routeGeometry.topStop.toFixed(4)}`
+			? `--route-ratio: ${routeGeometry.ratio.toFixed(4)}; --route-start: ${routeGeometry.start.toFixed(4)}; --route-top-stop: ${routeGeometry.topStop.toFixed(4)}; --route-bottom-stop: ${routeGeometry.bottomStop.toFixed(4)}; --route-reach: ${routeGeometry.reach.toFixed(4)}`
 			: undefined}
 	>
 		{posterMap === 'route' ? (
@@ -73,11 +89,14 @@ const tiles = [
 			— résumé on request — #creativefrontend —
 		</p>
 		<ul class="poster-contact" aria-label="Contact">
-			{contacts.map(({ label, href, rel }) => (
-				<li><a href={href} rel={rel}>{label}</a></li>
+			{contacts.map(({ kind, label, href, rel }) => (
+				<li>
+					<span class="contact-kind">{kind}</span>
+					<a href={href} rel={rel}>{label}<span class="contact-arrow" aria-hidden="true">{href.startsWith('mailto:') ? '→' : '↗'}</span></a>
+				</li>
 			))}
 		</ul>
 	</div>
 
-	<p class="copyright">&copy; {new Date().getFullYear()} Jason Derifaj</p>
+	<p class="copyright">&copy; {new Date().getFullYear()}</p>
 </section>
