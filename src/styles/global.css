@@ -575,6 +575,13 @@ ul {
 	margin-top: 0.3em;
 }
 
+/* Over a route label, which replays on hover (src/scripts/route.js), the cursor says so. The
+   copy lies over the map and takes the pointer, so the class goes on the page, not the label. */
+.is-over-label,
+.is-over-label * {
+	cursor: pointer;
+}
+
 /* The number, in route order */
 .city-index {
 	position: relative;

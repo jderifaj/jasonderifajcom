@@ -108,8 +108,12 @@ test.describe('home page', () => {
 			const box = (await cary.locator('.city-label').boundingBox())!;
 			await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 3 });
 			await expect(cary.locator('.city-text')).toHaveText('Started a family', { timeout: 4_000 });
+			// The cursor shows the label can be hovered.
+			const cursorAt = (x: number, y: number) => page.evaluate(([x, y]) => getComputedStyle(document.elementFromPoint(x, y)!).cursor, [x, y]);
+			expect(await cursorAt(box.x + box.width / 2, box.y + box.height / 2)).toBe('pointer');
 			await expect(cary.locator('.city-text')).toHaveText('Joined N.C. State', { timeout: 6_000 });
 			await page.mouse.move(5, 5);
+			expect(await cursorAt(5, 5)).not.toBe('pointer');
 			await expect(cary.locator('.city-text')).toHaveText('Motion & Scroll Animation');
 			await expect(cary.locator('.city-name')).toHaveText('Cary, NC');
 		}

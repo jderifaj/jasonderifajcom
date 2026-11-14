@@ -152,10 +152,13 @@ function replayOnHover(stops) {
 		current?.leave();
 		current = over ?? null;
 		current?.enter();
+		// The labels can't take the pointer, so the page shows their cursor (see .is-over-label)
+		document.documentElement.classList.toggle('is-over-label', Boolean(current));
 	});
 	document.documentElement.addEventListener('pointerleave', () => {
 		current?.leave();
 		current = null;
+		document.documentElement.classList.remove('is-over-label');
 	});
 }
 
