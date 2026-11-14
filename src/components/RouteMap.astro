@@ -8,8 +8,9 @@
  * Every label sits on one vertical axis through Athens, the first stop, and hangs off a leader
  * with a 90° elbow: Athens' drops straight down to its label, the others rise from their dot
  * and turn left to theirs. Dots, leaders and labels are HTML laid over the map, so they keep
- * their size. Each label is numbered in route order, and names its city, then changes to what
- * I do as the route moves on; the finished map (and screen readers) show both.
+ * their size. Each label is numbered in route order and names its city; under the city, a line
+ * steps through what happened there, then lands on what I do there as the route moves on. The
+ * finished map shows the city and what I do; screen readers hear all three.
  */
 import { eastCoast, frame, project } from '../data/east-coast';
 import { stops } from '../data/route';
@@ -78,11 +79,12 @@ const marks = [{ lat: 34, lon: -76 }].map(({ lat, lon }) => ({ x: lonX(lon), y: 
 	</svg>
 
 	<ul class="stops" aria-label="Where I've worked, on site and remotely">
-		{points.map(({ name, role, x, y }, i) => (
+		{points.map(({ name, moments, role, x, y }, i) => (
 			<li
 				class="city stop"
 				data-leader={i === 0 ? 'down' : 'up'}
 				data-city={name}
+				data-moments={JSON.stringify(moments)}
 				data-role={role}
 				style={`left: ${pct(x, width)}; top: ${pct(y, height)}; --from-axis: ${fromAxis(x)}`}
 			>
@@ -92,9 +94,10 @@ const marks = [{ lat: 34, lon: -76 }].map(({ lat, lon }) => ({ x: lonX(lon), y: 
 					<span class="city-plate" aria-hidden="true"></span>
 					<span class="city-index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
 					<span class="city-shine" aria-hidden="true"></span>
-					{/* Shows the role, the end state; route.js starts it on the city name */}
+					<span class="city-name" aria-hidden="true">{name}</span>
+					{/* Shows the role, the end state; route.js starts it blank, then steps through the moments */}
 					<span class="city-text" aria-hidden="true">{role}</span>
-					<span class="visually-hidden">{name}: {role}</span>
+					<span class="visually-hidden">{name}: {moments.join('. ')}. {role}</span>
 					<span class="city-wipe" aria-hidden="true"></span>
 				</span>
 			</li>

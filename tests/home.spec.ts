@@ -29,7 +29,7 @@ test.describe('home page', () => {
 		for (const discipline of [
 			'Interactive Web Development',
 			'Motion & Scroll Animation',
-			'Design Systems & UI Engineering',
+			'AI-Augmented Front-End Development',
 			'Accessible, Fast Front-End',
 		]) {
 			await expect(page.getByRole('listitem').filter({ hasText: discipline })).toHaveCount(1);
@@ -44,16 +44,16 @@ test.describe('home page', () => {
 		const stops = page.getByRole('list', { name: /Where I've worked/ });
 		// Screen readers hear the city and what I do there; the finished map shows what I do.
 		await expect(stops.locator('.visually-hidden')).toHaveText([
-			'Athens, GA: Interactive Web Development',
-			'Cary, NC: Motion & Scroll Animation',
-			'Richmond, VA: Accessible, Fast Front-End',
-			'Washington, DC: Design Systems & UI Engineering',
+			'Athens, GA: First web job, University of Georgia. Interactive Web Development',
+			'Cary, NC: Started a family. Joined N.C. State. Motion & Scroll Animation',
+			'Richmond, VA: First corporate gig, Ironworks. Accessible, Fast Front-End',
+			'Washington, DC: ICF acquires Ironworks. AI-Augmented Front-End Development',
 		]);
 		await expect(stops.locator('.city-text')).toHaveText([
 			'Interactive Web Development',
 			'Motion & Scroll Animation',
 			'Accessible, Fast Front-End',
-			'Design Systems & UI Engineering',
+			'AI-Augmented Front-End Development',
 		]);
 		const width = page.viewportSize()!.width;
 		const lefts: number[] = [];
@@ -73,17 +73,20 @@ test.describe('home page', () => {
 	});
 
 	test('route map: draws in from Athens to Washington, every stop uncovered', async ({ page }) => {
+		test.setTimeout(60_000);
 		await page.goto('/');
 		test.skip(!(await page.locator('[data-route]').count()), 'the poster shows the North Carolina map');
 
-		// Athens is named first, then changes to what I do there once the line leaves it.
+		// Athens keeps its name; under it, what happened there, then what I do there once the line leaves it.
 		const athens = page.locator('.stop .city-text').first();
-		await expect(athens).toHaveText('Athens, GA', { timeout: 8_000 });
+		await expect(athens).toHaveText('First web job, University of Georgia', { timeout: 10_000 });
+		await expect(athens).toHaveText('Interactive Web Development', { timeout: 10_000 });
+		await expect(page.locator('.stop .city-name')).toHaveText(['Athens, GA', 'Cary, NC', 'Richmond, VA', 'Washington, DC']);
 		await expect(athens).toHaveText('Interactive Web Development', { timeout: 8_000 });
 
 		await expect(page.locator('.stop .city-text')).toHaveText(
-			['Interactive Web Development', 'Motion & Scroll Animation', 'Accessible, Fast Front-End', 'Design Systems & UI Engineering'],
-			{ timeout: 15_000 },
+			['Interactive Web Development', 'Motion & Scroll Animation', 'Accessible, Fast Front-End', 'AI-Augmented Front-End Development'],
+			{ timeout: 30_000 },
 		);
 		for (const text of await page.locator('.stop .city-text').all()) {
 			await expect.poll(() => text.evaluate((el) => getComputedStyle(el).opacity), { timeout: 5_000 }).toBe('1');
@@ -96,6 +99,20 @@ test.describe('home page', () => {
 		for (const leader of await page.locator('.leader').all()) {
 			await expect.poll(() => leader.evaluate((el) => getComputedStyle(el).getPropertyValue('--run').trim())).toBe('1');
 		}
+
+		// With a mouse, hovering a label replays its line; moving off puts it back at rest.
+		if (test.info().project.name === 'desktop') {
+			await expect(page.locator('[data-route]')).toHaveAttribute('data-replay', 'ready', { timeout: 10_000 });
+			const cary = page.locator('.stop').nth(1);
+			// The copy lies over the map, so move the mouse onto the label's box rather than hover() it.
+			const box = (await cary.locator('.city-label').boundingBox())!;
+			await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 3 });
+			await expect(cary.locator('.city-text')).toHaveText('Started a family', { timeout: 4_000 });
+			await expect(cary.locator('.city-text')).toHaveText('Joined N.C. State', { timeout: 6_000 });
+			await page.mouse.move(5, 5);
+			await expect(cary.locator('.city-text')).toHaveText('Motion & Scroll Animation');
+			await expect(cary.locator('.city-name')).toHaveText('Cary, NC');
+		}
 	});
 
 
@@ -107,7 +124,7 @@ test.describe('home page', () => {
 		await expect(list.getByRole('listitem')).toHaveText([
 			'Interactive Web Development',
 			'Motion & Scroll Animation',
-			'Design Systems & UI Engineering',
+			'AI-Augmented Front-End Development',
 			'Accessible, Fast Front-End',
 		]);
 		expect(await list.getByRole('listitem').evaluateAll((items) => items.map((li) => (li as HTMLElement).dataset.city))).toEqual([

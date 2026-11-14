@@ -2,22 +2,24 @@ import { eastCoast, project } from './east-coast';
 
 /**
  * The route map (src/components/RouteMap.astro): places I've done web work, on site and
- * remotely, in the order the route visits them. Each label first names the city, then, as the
- * route moves on, changes to `role`. The first stop is the furthest west, and every label
- * lines up on a vertical axis through it.
+ * remotely, in the order the route visits them. Each label first names the city, then steps
+ * through the `moments` that happened there, then, as the route moves on, lands on `role`.
+ * The first stop is the furthest west, and every label lines up on a vertical axis through it.
  */
 export interface Stop {
 	name: string;
 	role: string;
+	/** What happened there, shown in order between the city and the role */
+	moments: string[];
 	lat: number;
 	lon: number;
 }
 
 export const stops: Stop[] = [
-	{ name: 'Athens, GA', role: 'Interactive Web Development', lat: 33.9519, lon: -83.3576 },
-	{ name: 'Cary, NC', role: 'Motion & Scroll Animation', lat: 35.7915, lon: -78.7811 },
-	{ name: 'Richmond, VA', role: 'Accessible, Fast Front-End', lat: 37.5407, lon: -77.436 },
-	{ name: 'Washington, DC', role: 'Design Systems & UI Engineering', lat: 38.9072, lon: -77.0369 },
+	{ name: 'Athens, GA', moments: ['First web job, University of Georgia'], role: 'Interactive Web Development', lat: 33.9519, lon: -83.3576 },
+	{ name: 'Cary, NC', moments: ['Started a family', 'Joined N.C. State'], role: 'Motion & Scroll Animation', lat: 35.7915, lon: -78.7811 },
+	{ name: 'Richmond, VA', moments: ['First corporate gig, Ironworks'], role: 'Accessible, Fast Front-End', lat: 37.5407, lon: -77.436 },
+	{ name: 'Washington, DC', moments: ['ICF acquires Ironworks'], role: 'AI-Augmented Front-End Development', lat: 38.9072, lon: -77.0369 },
 ];
 
 /**

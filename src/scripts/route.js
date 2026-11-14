@@ -8,8 +8,13 @@ import { hasFinePointer, pointerOffset } from './motion.js';
  * uncovers its label; each leg then draws north to the next stop, whose leader rises and turns
  * to the axis.
  *
- * Each label names its city when its dot pops, and keeps it until the next city appears; then
- * it changes to what I do there (Washington, the last stop, changes a beat after it appears).
+ * Each label names its city when its dot pops, and keeps it. Under the city, a line shows what
+ * happened there (one moment or a few, in turn) before the next leg leaves; when the next city
+ * appears it lands on what I do there (Washington, the last stop, lands a beat after its
+ * moment). Every phrase holds still at least PAUSE seconds before the next one starts.
+ *
+ * Once it has finished, hovering a label with a mouse replays its line (the moments, then what I
+ * do there); moving off returns it to rest.
  *
  * The map holds still on the whole route, so the labels stay on their axis. With a mouse, the
  * background layers (the crosshairs, the states) shift slightly against the pointer, behind
@@ -18,9 +23,9 @@ import { hasFinePointer, pointerOffset } from './motion.js';
 
 const STATE = { duration: 1.4, stagger: 0.12 }; // then the states trace their outlines
 const LEG_SECONDS = [1.8, 1.4, 1.1]; // how long each leg takes to draw
-const HOLD = 0.45; // pause at each stop before the next leg leaves
-const CHANGE_AFTER = 0.35; // a stop's label changes this long after the next city's dot appears
-const LAST_CHANGE = 1.4; // nothing follows the last stop: its label changes this long after it appears
+const PAUSE = 0.3; // every phrase, the city included, holds still at least this long before the next one starts
+const CHANGE_AFTER = 0.35; // a stop's label lands on its role this long after the next city's dot appears
+const LAST_READ = 1.4; // nothing follows the last stop: its last moment holds this much longer before the role
 /** How far each background layer drifts with the pointer, in map units, from centre to edge. */
 const DEPTH = { grid: 12, states: 6 };
 
@@ -67,8 +72,8 @@ export function drawRoute() {
 	const strands = [...root.querySelectorAll('.route-strand')];
 	const states = [...root.querySelectorAll('.route-state')];
 
-	// Labels start on the city names; each changes to its role as the route moves on.
-	for (const stop of stops) stop.querySelector('.city-text').textContent = stop.dataset.city;
+	// Labels start on the city alone; the line under it steps through the moments, then the role.
+	for (const stop of stops) stop.querySelector('.city-text').textContent = '\u00a0';
 
 	const timeline = gsap.timeline();
 	timeline
@@ -81,9 +86,27 @@ export function drawRoute() {
 			0.5,
 		);
 
-	let at = 0.5 + STATE.stagger * (states.length - 1) + STATE.duration * 0.5;
-	timeline.add(revealStop(stops[0]), at);
-	at += 1.2;
+	// When each stop's label may next change: its current phrase has landed and held for PAUSE.
+	const readyAt = new Map();
+	const change = (stop, to, time) => {
+		const at = Math.max(time, readyAt.get(stop) ?? 0);
+		const tl = changeLabel(stop, to);
+		timeline.add(tl, at);
+		readyAt.set(stop, at + tl.duration() + PAUSE);
+		return at;
+	};
+
+	/** Reveals a stop on its city, then steps through its moments; returns when the next leg can leave. */
+	const arriveAt = (stop, time) => {
+		const reveal = revealStop(stop);
+		timeline.add(reveal, time);
+		readyAt.set(stop, time + reveal.duration() + PAUSE);
+		const moments = JSON.parse(stop.dataset.moments || '[]');
+		for (const moment of moments) change(stop, moment, 0);
+		return readyAt.get(stop);
+	};
+
+	let at = arriveAt(stops[0], 0.5 + STATE.stagger * (states.length - 1) + STATE.duration * 0.5);
 
 	LEG_SECONDS.forEach((seconds, leg) => {
 		timeline.fromTo(
@@ -95,13 +118,84 @@ export function drawRoute() {
 
 		// The next stop's node appears as the line arrives.
 		const arrive = at + seconds - 0.1;
-		timeline.add(revealStop(stops[leg + 1]), arrive).add(changeLabel(stops[leg]), arrive + CHANGE_AFTER);
-		at = arrive + HOLD;
+		change(stops[leg], stops[leg].dataset.role, arrive + CHANGE_AFTER);
+		at = arriveAt(stops[leg + 1], arrive);
 	});
 
-	timeline.add(changeLabel(stops.at(-1)), at - HOLD + LAST_CHANGE);
+	const last = stops.at(-1);
+	change(last, last.dataset.role, readyAt.get(last) + LAST_READ);
 
-	if (hasFinePointer()) followPointer(root);
+	if (hasFinePointer()) {
+		followPointer(root);
+		timeline.eventCallback('onComplete', () => {
+			replayOnHover(stops);
+			root.dataset.replay = 'ready';
+		});
+	}
+}
+
+/**
+ * Hovering a label replays its moments, then its role, PAUSE apart; moving off puts it back at
+ * rest. The copy lies over the map and takes the pointer, so this hit-tests the labels' boxes
+ * as the pointer moves rather than listening on the labels.
+ */
+function replayOnHover(stops) {
+	const replays = stops.map(labelReplay);
+	let current = null;
+	window.addEventListener('pointermove', (event) => {
+		if (event.pointerType !== 'mouse') return;
+		const over = replays.find(({ label }) => {
+			const box = label.getBoundingClientRect();
+			return event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom;
+		});
+		if (over === current) return;
+		current?.leave();
+		current = over ?? null;
+		current?.enter();
+	});
+	document.documentElement.addEventListener('pointerleave', () => {
+		current?.leave();
+		current = null;
+	});
+}
+
+/** One label's replay: enter() plays its line through, leave() returns it to rest. */
+function labelReplay(stop) {
+	const label = stop.querySelector('.city-label');
+	const text = stop.querySelector('.city-text');
+	const shine = stop.querySelector('.city-shine');
+	const { role } = stop.dataset;
+	const moments = JSON.parse(stop.dataset.moments || '[]');
+	let replay = null;
+
+	const halt = () => {
+		replay?.kill();
+		replay = null;
+		gsap.killTweensOf([label, text, shine, ...text.children]);
+	};
+
+	const enter = () => {
+		halt();
+		replay = gsap.timeline();
+		let at = 0;
+		for (const phrase of [...moments, role]) {
+			const change = changeLabel(stop, phrase);
+			replay.add(change, at);
+			at += change.duration() + PAUSE;
+		}
+	};
+
+	const leave = () => {
+		if (!replay) return;
+		halt();
+		// Back to rest: the role, fading in at its natural width.
+		text.textContent = role;
+		gsap.set(label, { clearProps: 'width' });
+		gsap.set(shine, { opacity: 0 });
+		gsap.fromTo(text, { yPercent: 0, opacity: 0, filter: 'none' }, { opacity: 1, duration: 0.3, ease: 'sine.out' });
+	};
+
+	return { label, enter, leave };
 }
 
 /** The background layers drift against the pointer, the grid furthest, as if further back; the name drifts with it. */
@@ -130,18 +224,19 @@ function followPointer(root) {
 const rises = (stop) => stop.dataset.leader === 'up';
 
 /**
- * The city name becomes what I do there, slowly: the plate eases to its new length, the
+ * The label's words become `to` (a moment, or what I do there), slowly: the plate eases to its new length, the
  * name drifts up and softens away, a band of light sweeps across, and the new words rise
  * in letter by letter, each coming into focus.
  */
-function changeLabel(stop) {
+function changeLabel(stop, role) {
 	const label = stop.querySelector('.city-label');
 	const text = stop.querySelector('.city-text');
 	const shine = stop.querySelector('.city-shine');
-	const role = stop.dataset.role;
 	const fromLeft = !rises(stop);
 
 	let toWidth = 0;
+	// The new words have landed once the last letter is in (see the stagger below).
+	const landed = 0.6 + 0.9 + 0.022 * Math.max(role.length - 1, 0);
 
 	return gsap.timeline()
 		.add(() => {
@@ -182,7 +277,7 @@ function changeLabel(stop) {
 			text.textContent = role;
 			gsap.set(label, { clearProps: 'width' });
 			gsap.set(shine, { opacity: 0 });
-		}, 2.2);
+		}, Math.max(landed, 1.45));
 }
 
 /**
@@ -194,7 +289,7 @@ function revealStop(stop) {
 	const dot = stop.querySelector('.city-dot');
 	const leader = stop.querySelector('.leader');
 	const wipe = stop.querySelector('.city-wipe');
-	const label = stop.querySelectorAll('.city-plate, .city-index, .city-text');
+	const label = stop.querySelectorAll('.city-plate, .city-index, .city-name, .city-text');
 	// The bar grows from the leader's side of the label and leaves from the far side.
 	const near = rises(stop) ? '100% 50%' : '0% 50%';
 	const far = rises(stop) ? '0% 50%' : '100% 50%';

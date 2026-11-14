@@ -30,6 +30,6 @@ export function project(lat: number, lon: number) {
 export const cities = [
 	{ name: 'Cary', lat: 35.7915, lon: -78.7811, label: 'Interactive Web Development', side: 'right' },
 	{ name: 'Charlotte', lat: 35.2271, lon: -80.8431, label: 'Motion & Scroll Animation', side: 'right' },
-	{ name: 'Asheville', lat: 35.5951, lon: -82.5515, label: 'Design Systems & UI Engineering', side: 'right' },
+	{ name: 'Asheville', lat: 35.5951, lon: -82.5515, label: 'AI-Augmented Front-End Development', side: 'right' },
 	{ name: 'Wilmington', lat: 34.2104, lon: -77.8868, label: 'Accessible, Fast Front-End', side: 'left' },
 ] as const;

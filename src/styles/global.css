@@ -354,6 +354,7 @@ ul {
 
 	.js .city-plate,
 	.js .city-index,
+	.js .city-name,
 	.js .city-text {
 		opacity: 0;
 	}
@@ -554,6 +555,24 @@ ul {
 	top: var(--drop);
 	padding: 0.5em 0 0;
 	transform: none;
+}
+
+/* Two lines: the number and city, then what happened there or what I do, under the city */
+.stop .city-label {
+	display: grid;
+	grid-template-columns: auto auto;
+	justify-content: start;
+}
+
+.stop .city-name {
+	position: relative;
+	grid-column: 2;
+	color: rgb(216 255 248 / 0.7);
+}
+
+.stop .city-text {
+	grid-column: 2;
+	margin-top: 0.3em;
 }
 
 /* The number, in route order */
@@ -1536,8 +1555,8 @@ ul {
 		left: auto;
 		width: var(--route-width);
 		transform: none;
-		/* Room above Washington's dot for its leader and a two-line label */
-		margin: calc(4.75rem + var(--drop) - var(--route-height) * var(--route-top-stop)) 0
+		/* Room above Washington's dot for its leader and a three-line label (city, then two) */
+		margin: calc(6rem + var(--drop) - var(--route-height) * var(--route-top-stop)) 0
 			calc(var(--drop) + 3.5rem - var(--route-height) * (1 - var(--route-bottom-stop)))
 			calc(-1 * var(--route-width) * var(--route-start));
 	}
@@ -1549,11 +1568,11 @@ ul {
 
 /* Small screens */
 @media (max-width: 640px) {
-	/* Route labels wrap to two lines (16 characters at most), so each fits between the axis
-	   and its dot */
+	/* Route labels wrap: the city, then what I do in two lines (about 20 characters each), so
+	   each fits between the axis and its dot */
 	.stop .city-label {
 		width: max-content;
-		max-width: 12.5em;
+		max-width: 15em;
 		white-space: normal;
 	}
 
