@@ -8,10 +8,11 @@ import { hasFinePointer, pointerOffset } from './motion.js';
  * uncovers its label; each leg then draws north to the next stop, whose leader rises and turns
  * to the axis.
  *
- * Each label names its city when its dot pops, and keeps it. Under the city, a line shows what
- * happened there (one moment or a few, in turn) before the next leg leaves; when the next city
- * appears it lands on what I do there (Washington, the last stop, lands a beat after its
- * moment). Every phrase holds still at least PAUSE seconds before the next one starts.
+ * Each label names its city when its dot pops, and keeps it. Under the city, a line steps
+ * through what happened there (one moment or a few), then lands on what I do there. Every
+ * phrase holds still at least PAUSE seconds before the next one starts. The line never stops:
+ * it leaves each stop as its dot appears and draws on at a steady pace, however slow, arriving
+ * at the next stop just as the one before finishes its sequence, when the next stop appears.
  *
  * Once it has finished, hovering a label with a mouse replays its line (the moments, then what I
  * do there); moving off returns it to rest.
@@ -22,10 +23,7 @@ import { hasFinePointer, pointerOffset } from './motion.js';
  */
 
 const STATE = { duration: 1.4, stagger: 0.12 }; // then the states trace their outlines
-const LEG_SECONDS = [1.8, 1.4, 1.1]; // how long each leg takes to draw
 const PAUSE = 0.3; // every phrase, the city included, holds still at least this long before the next one starts
-const CHANGE_AFTER = 0.35; // a stop's label lands on its role this long after the next city's dot appears
-const LAST_READ = 1.4; // nothing follows the last stop: its last moment holds this much longer before the role
 /** How far each background layer drifts with the pointer, in map units, from centre to edge. */
 const DEPTH = { grid: 12, states: 6 };
 
@@ -96,34 +94,32 @@ export function drawRoute() {
 		return at;
 	};
 
-	/** Reveals a stop on its city, then steps through its moments; returns when the next leg can leave. */
-	const arriveAt = (stop, time) => {
+	/**
+	 * Plays a stop's whole sequence: its node and city, its moments, then its role. Returns when
+	 * its dot is in (the line can leave) and when the sequence is done (the next stop can appear).
+	 */
+	const playStop = (stop, time) => {
 		const reveal = revealStop(stop);
 		timeline.add(reveal, time);
 		readyAt.set(stop, time + reveal.duration() + PAUSE);
 		const moments = JSON.parse(stop.dataset.moments || '[]');
-		for (const moment of moments) change(stop, moment, 0);
-		return readyAt.get(stop);
+		for (const phrase of [...moments, stop.dataset.role]) change(stop, phrase, 0);
+		return { leave: time, done: readyAt.get(stop) };
 	};
 
-	let at = arriveAt(stops[0], 0.5 + STATE.stagger * (states.length - 1) + STATE.duration * 0.5);
+	let played = playStop(stops[0], 0.5 + STATE.stagger * (states.length - 1) + STATE.duration * 0.5);
 
-	LEG_SECONDS.forEach((seconds, leg) => {
+	stops.slice(1).forEach((next, leg) => {
+		// The line leaves as the dot appears and draws on at a steady pace for the whole of the
+		// stop's sequence, so it never stops; the next stop appears as it arrives.
 		timeline.fromTo(
 			strands.filter((s) => +s.dataset.leg === leg),
 			{ strokeDashoffset: 1 },
-			{ strokeDashoffset: 0, duration: seconds, ease: 'sine.inOut', autoRound: false },
-			at,
+			{ strokeDashoffset: 0, duration: played.done - played.leave, ease: 'none', autoRound: false },
+			played.leave,
 		);
-
-		// The next stop's node appears as the line arrives.
-		const arrive = at + seconds - 0.1;
-		change(stops[leg], stops[leg].dataset.role, arrive + CHANGE_AFTER);
-		at = arriveAt(stops[leg + 1], arrive);
+		played = playStop(next, played.done);
 	});
-
-	const last = stops.at(-1);
-	change(last, last.dataset.role, readyAt.get(last) + LAST_READ);
 
 	if (hasFinePointer()) {
 		followPointer(root);
@@ -227,9 +223,9 @@ function followPointer(root) {
 const rises = (stop) => stop.dataset.leader === 'up';
 
 /**
- * The label's words become `to` (a moment, or what I do there), slowly: the plate eases to its new length, the
- * name drifts up and softens away, a band of light sweeps across, and the new words rise
- * in letter by letter, each coming into focus.
+ * The label's words become `to` (a moment, or what I do there): the plate eases to its new
+ * length, the old words drift up and soften away, a band of light sweeps across, and the new
+ * words rise in letter by letter, each coming into focus.
  */
 function changeLabel(stop, role) {
 	const label = stop.querySelector('.city-label');
@@ -239,7 +235,7 @@ function changeLabel(stop, role) {
 
 	let toWidth = 0;
 	// The new words have landed once the last letter is in (see the stagger below).
-	const landed = 0.6 + 0.9 + 0.022 * Math.max(role.length - 1, 0);
+	const landed = 0.3 + 0.03 + 0.5 + 0.012 * Math.max(role.length - 1, 0);
 
 	return gsap.timeline()
 		.add(() => {
@@ -251,13 +247,13 @@ function changeLabel(stop, role) {
 			text.textContent = name;
 			gsap.set(label, { width: fromWidth });
 		})
-		.to(text, { yPercent: -70, opacity: 0, filter: 'blur(5px)', duration: 0.55, ease: 'power2.in' }, 0)
-		.to(label, { width: () => toWidth, duration: 1.1, ease: 'expo.inOut' }, 0.05)
+		.to(text, { yPercent: -70, opacity: 0, filter: 'blur(5px)', duration: 0.3, ease: 'power2.in' }, 0)
+		.to(label, { width: () => toWidth, duration: 0.6, ease: 'expo.inOut' }, 0.03)
 		.fromTo(
 			shine,
 			{ backgroundPosition: fromLeft ? '-60% 0' : '160% 0', opacity: 1 },
-			{ backgroundPosition: fromLeft ? '160% 0' : '-60% 0', duration: 1.3, ease: 'sine.inOut' },
-			0.15,
+			{ backgroundPosition: fromLeft ? '160% 0' : '-60% 0', duration: 0.7, ease: 'sine.inOut' },
+			0.08,
 		)
 		.add(() => {
 			text.replaceChildren(
@@ -272,15 +268,15 @@ function changeLabel(stop, role) {
 			gsap.fromTo(
 				text.children,
 				{ yPercent: 90, opacity: 0, filter: 'blur(6px)' },
-				{ yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: 0.9, ease: 'expo.out', stagger: 0.022, delay: 0.05 },
+				{ yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: 0.5, ease: 'expo.out', stagger: 0.012, delay: 0.03 },
 			);
-		}, 0.55)
+		}, 0.3)
 		.add(() => {
 			// Back to plain text and a natural width once it has settled.
 			text.textContent = role;
 			gsap.set(label, { clearProps: 'width' });
 			gsap.set(shine, { opacity: 0 });
-		}, Math.max(landed, 1.45));
+		}, Math.max(landed, 0.8));
 }
 
 /**
@@ -298,12 +294,12 @@ function revealStop(stop) {
 	const far = rises(stop) ? '0% 50%' : '100% 50%';
 
 	return gsap.timeline()
-		.fromTo(dot, { scale: 0 }, { scale: 1, duration: 0.35, ease: 'power3.out' })
-		.fromTo(leader, { '--rise': 0, '--run': 0 }, { '--rise': 1, duration: 0.35, ease: 'power2.inOut' }, '>-0.2')
-		.to(leader, { '--run': 1, duration: rises(stop) ? 0.5 : 0, ease: 'power2.inOut' })
-		.fromTo(wipe, { scaleX: 0, transformOrigin: near }, { scaleX: 1, duration: 0.35, ease: 'power3.in' }, '>-0.05')
+		.fromTo(dot, { scale: 0 }, { scale: 1, duration: 0.25, ease: 'power3.out' })
+		.fromTo(leader, { '--rise': 0, '--run': 0 }, { '--rise': 1, duration: 0.25, ease: 'power2.inOut' }, '>-0.15')
+		.to(leader, { '--run': 1, duration: rises(stop) ? 0.35 : 0, ease: 'power2.inOut' })
+		.fromTo(wipe, { scaleX: 0, transformOrigin: near }, { scaleX: 1, duration: 0.25, ease: 'power3.in' }, '>-0.05')
 		.set(label, { opacity: 1 })
 		.add(() => stop.classList.add('is-shown'))
 		.set(wipe, { transformOrigin: far })
-		.to(wipe, { scaleX: 0, duration: 0.5, ease: 'power3.out' });
+		.to(wipe, { scaleX: 0, duration: 0.35, ease: 'power3.out' });
 }

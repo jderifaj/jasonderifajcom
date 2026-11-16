@@ -81,6 +81,20 @@ test.describe('home page', () => {
 		const athens = page.locator('.stop .city-text').first();
 		await expect(athens).toHaveText('First web job, University of Georgia', { timeout: 10_000 });
 		await expect(athens).toHaveText('Interactive Web Development', { timeout: 10_000 });
+		// Each stop appears only once the one before has finished: when Cary shows, Athens is on its role.
+		const athensWhenCaryShows = await page.evaluate(() => {
+			const [first, second] = document.querySelectorAll('.stop');
+			const read = () => first.querySelector('.city-text')!.textContent;
+			if (second.classList.contains('is-shown')) return `already shown (Athens: ${read()})`;
+			return new Promise<string>((resolve) => {
+				new MutationObserver((_, observer) => {
+					if (!second.classList.contains('is-shown')) return;
+					observer.disconnect();
+					resolve(read()!);
+				}).observe(second, { attributes: true, attributeFilter: ['class'] });
+			});
+		});
+		expect(athensWhenCaryShows).toBe('Interactive Web Development');
 		await expect(page.locator('.stop .city-name')).toHaveText(['Athens, GA', 'Cary, NC', 'Richmond, VA', 'Washington, DC']);
 		await expect(athens).toHaveText('Interactive Web Development', { timeout: 8_000 });
 
