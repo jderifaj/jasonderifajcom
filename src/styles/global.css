@@ -984,6 +984,59 @@ ul {
 	transition: background 0.25s;
 }
 
+/* A live site: a mint arrow beside the title that slides out "View live" on hover or focus */
+.work-live {
+	display: inline-flex;
+	align-items: center;
+	margin-left: 0.45em;
+	vertical-align: 0.1em;
+	font-family: var(--mono);
+	color: var(--mint);
+	white-space: nowrap;
+}
+
+.work-title-end {
+	white-space: nowrap;
+}
+
+.work-live-arrow {
+	display: inline-block;
+	font-size: 0.8em;
+	transition: transform 0.25s;
+}
+
+.work-live-word {
+	display: inline-block;
+	overflow: hidden;
+	max-width: 0;
+	margin-left: 0;
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	opacity: 0;
+	transform: translateX(-0.5em);
+	transition:
+		max-width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+		margin-left 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+		opacity 0.25s,
+		transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.work-link:hover .work-live-arrow,
+.work-link:focus-visible .work-live-arrow {
+	transform: translate(0.15em, -0.15em);
+}
+
+.work-link:hover .work-live-word,
+.work-link:focus-visible .work-live-word {
+	max-width: 8em;
+	margin-left: 0.6em;
+	opacity: 1;
+	transform: none;
+	transition-delay: 0.05s;
+}
+
 /* A project whose site is no longer public: the title isn't a link, and this says why */
 .work-offline {
 	display: inline-block;
@@ -1574,6 +1627,14 @@ ul {
 }
 
 /* Small screens */
+/* The smallest phones: the LinkedIn address doesn't fit beside its kind, so the kind sits above it */
+@media (max-width: 374px) {
+	.poster-contact li {
+		grid-template-columns: 1fr;
+		row-gap: 0.15rem;
+	}
+}
+
 @media (max-width: 640px) {
 	/* Route labels wrap: the city, then what I do in two lines (about 20 characters each), so
 	   each fits between the axis and its dot */

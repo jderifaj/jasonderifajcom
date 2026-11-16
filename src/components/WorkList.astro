@@ -36,6 +36,10 @@ const rows = await Promise.all(
 );
 
 const newTab = { target: '_blank', rel: 'noopener' };
+
+/** The title's last word stays on one line with the live-site arrow, so the arrow never wraps alone. */
+const lead = (title: string) => title.slice(0, title.lastIndexOf(' ') + 1);
+const last = (title: string) => title.slice(title.lastIndexOf(' ') + 1);
 ---
 <ul class="work-list">
 	{rows.map((project) => (
@@ -44,8 +48,10 @@ const newTab = { target: '_blank', rel: 'noopener' };
 				{project.url ? (
 					<a class="work-link" href={project.url} {...newTab} data-preview={project.preview}>
 						<Image class="work-thumb" src={project.screenshot} width={75} densities={[1, 2, 3]} alt={project.alt} />
-						<span class="work-title">{project.title}</span>
-						<span class="visually-hidden">(opens in a new tab)</span>
+						<span class="work-title">
+							{lead(project.title)}<span class="work-title-end">{last(project.title)}<span class="work-live" aria-hidden="true"><span class="work-live-arrow">↗</span><span class="work-live-word">View live</span></span></span>
+						</span>
+						<span class="visually-hidden">(live site, opens in a new tab)</span>
 					</a>
 				) : (
 					<div class="work-link" data-preview={project.preview}>
