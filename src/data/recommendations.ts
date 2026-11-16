@@ -17,18 +17,25 @@ export const recommendations: Recommendation[] = [
 			'Dear Jason, I wanted to express my sincere appreciation for your outstanding work on the PSEG Enterprise Brand Hub launch. You went over and above to help pull off what could have easily been a 6-month process. You delivered high-quality work in a crunch time, which is truly impressive, and your professionalism and collaboration throughout the project were very much appreciated. Thank you for your exceptional contribution.',
 	},
 	{
-		name: 'Kelley Pressey',
-		role: 'Lead Community Development Specialist - ICF',
-		highlight: 'repeatedly done amazing work',
+		name: 'Eduardo Minaya',
+		role: 'Associate Creative Director - ICF',
+		highlight: 'demonstrated great resilience and maintained a positive attitude',
 		quote:
-			"Jason has repeatedly done amazing work for the HUD Exchange. From streamlining web design and coding processes, to producing innovative, creative, and modern solutions to our client's requests. He is an instrumental asset to the team as he continues to push the boundary of what we have done to what we could do. Recently, he's been working on producing beautiful interactive web pages for our client that will allow enhanced engagement on the site. Jason, I look forward to the continued innovation!",
+			'I want to express my gratitude for all the hard work you have done this year. We have gone through a year of many changes, and you have demonstrated great resilience and maintained a positive attitude throughout this year. I am proud to lead this team, and the success we are achieving as a team is all thanks to you!',
 	},
 	{
 		name: 'Billy Weinheimer',
 		role: 'Senior Art Director - ICF',
 		highlight: 'brings a positive energy',
 		quote:
-			'Jason is always available to work out a problem, come up with a new solution, and try a different approach to come up with the best way forward. He is excited to be involved in new projects and brings a positive energy which is great to work with. I would recommend having Jason on any team.',
+			"Jason is always available to work out a problem, come up with a new solution, and try a different approach to come up with the best way forward. He is excited to be involved in new projects and brings a positive energy which is great to work with. Over the past few months Jason has won multiple awards for his work on digital sites, including the BGE Come On In campaign (dotCOMM Awards) and the BGE The Efficient Home digital magazine (AMA MX Awards). Jason's dedication to making the sites both beautiful and functional, while keeping the user in mind during the process, led directly to the success of both projects and the awards they won. I would recommend having Jason on any team.",
+	},
+	{
+		name: 'Kelley Pressey',
+		role: 'Lead Community Development Specialist - ICF',
+		highlight: 'repeatedly done amazing work',
+		quote:
+			"Jason has repeatedly done amazing work for the HUD Exchange. From streamlining web design and coding processes, to producing innovative, creative, and modern solutions to our client's requests. He is an instrumental asset to the team as he continues to push the boundary of what we have done to what we could do. Recently, he's been working on producing beautiful interactive web pages for our client that will allow enhanced engagement on the site. Jason, I look forward to the continued innovation!",
 	},
 	{
 		name: 'Kaipeng Yu',
@@ -38,8 +45,22 @@ export const recommendations: Recommendation[] = [
 			"It's my great pleasure to work with Jason on a variety of projects, including DTE, HUD, NYCA, EPA, etc. Jason is an excellent front-end developer who is always enthusiastic about exploring new technologies and who can always figure out the core frameworks and logistics within a complex system and generate a simplified demo out of it. I learned lots of cool libraries and front-end practices when I worked with Jason, such as GreenSocks, which also facilitated my other front-end works, specifically micro-interactions and animations. I also want to highlight Jason's focus on accessibility, which can be very complicated in certain cases. Jason is very familiar with the best practices and is always able to provide good solutions. I am so glad we have Jason in our group.",
 	},
 	{
+		name: 'Becky Robbins',
+		role: 'Senior Marketing Manager - ICF',
+		highlight: 'created a beautiful brand and website in an impressively short time',
+		quote:
+			'Wonderful job on the RISE Homes website development! You all mobilized quickly, organized effectively, and created a beautiful brand and website in an impressively short time. The site is professional, clear, and IT THOROUGHLY impressed both the program team and the client. Well done!',
+	},
+	{
+		name: 'Ayesha Ghori',
+		role: 'Manager, Software Delivery',
+		highlight: 'make it appear effortless',
+		quote:
+			"Your dedication to creating the incredible infographic tool for the Build for Future project is evident. It's clear that countless hours of hard work were invested, yet you've managed to make it appear effortless. Thank you for your commitment and skill.",
+	},
+	{
 		name: 'Michelle Rush',
-		role: 'Business Analyst - ICF',
+		role: 'Senior Project Manager - ICF',
 		highlight: 'excellent collaborator',
 		quote:
 			"Jason is an excellent collaborator and is consistently praised by our Gateway clients for his high quality work and quick turnaround. He recently exceeded the clients' expectations by turning around a number of slick website enhancements in a very short period of time. They continue to express gratitude for the impact that those enhancements had on the site. Jason is excellent at recommending various designs to help the client visualize and make informed decisions. Great collaboration Jason!",
