@@ -42,8 +42,7 @@ export const projects: Project[] = [
 		title: 'Winter Tips, BGE',
 		alt: 'Winter Tips, Neighbor-to-Neighbor headline with snow piled on it, beside a neighbor on a snowy Baltimore street',
 		year: 2026,
-		// Link to come.
-		noLink: 'Link coming soon',
+		url: 'https://bgesmartenergy.com/wintertips/',
 	},
 	{
 		slug: 'alexrenew',

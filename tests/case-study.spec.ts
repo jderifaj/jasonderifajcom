@@ -58,18 +58,17 @@ test('the Jersey Ready row links to its case study page', async ({ page }) => {
 	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveAttribute('href', 'https://njready.com/');
 });
 
-test('BGE Winter Tips is first in Curated work, says its link is coming, and opens its case study', async ({ page }) => {
+test('BGE Winter Tips is first in Curated work, links to its live site, and opens its case study', async ({ page }) => {
 	await page.goto('/');
 	await page.getByRole('button', { name: /^Work/ }).click();
 	const first = page.getByRole('dialog', { name: 'Curated work' }).locator('.work-item').first();
 	await expect(first).toContainText('Winter Tips, BGE');
-	await expect(first.getByText('Link coming soon')).toBeVisible();
-	await expect(first.getByRole('link')).toHaveCount(1);
+	await expect(first.locator('a.work-link')).toHaveAttribute('href', 'https://bgesmartenergy.com/wintertips/');
 
 	await first.getByRole('link', { name: 'Case study: Winter Tips, BGE' }).click();
 	await expect(page).toHaveURL('/work/bge-winter/');
 	await expect(page.getByRole('heading', { level: 1, name: 'Winter Tips, BGE' })).toBeVisible();
-	await expect(page.getByText('Link coming soon')).toBeVisible();
+	await expect(page.getByRole('link', { name: /Visit the live site/ })).toHaveAttribute('href', 'https://bgesmartenergy.com/wintertips/');
 });
 
 for (const slug of ['alexrenew', 'comed-feature', 'bge-issue5', 'dallas', 'jerseyready', 'bge-winter']) {
